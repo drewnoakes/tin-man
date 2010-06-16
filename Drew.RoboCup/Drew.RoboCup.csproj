@@ -42,7 +42,10 @@
     <Compile Include="EasingFunctions.cs" />
     <Compile Include="FieldGeometry.cs">
     </Compile>
-    <Compile Include="Geometry.cs" />
+    <Compile Include="Geometry\GeometryUtil.cs" />
+    <Compile Include="Geometry\RadialPosition.cs" />
+    <Compile Include="Geometry\TransformationMatrix.cs" />
+    <Compile Include="Geometry\Vector3.cs" />
     <Compile Include="HingeController.cs" />
     <Compile Include="IBody.cs" />
     <Compile Include="IBodyManipulator.cs" />
@@ -65,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Nao" />
+    <Folder Include="Geometry" />
     <Folder Include="PerceptorParsing" />
   </ItemGroup>
 </Project>

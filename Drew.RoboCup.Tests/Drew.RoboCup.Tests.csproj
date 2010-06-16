@@ -40,6 +40,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Geometry\GeometryUtilTest.cs" />
+    <Compile Include="Geometry\TransformationMatrixTest.cs" />
+    <Compile Include="Geometry\VectorTest.cs" />
     <Compile Include="PerceptorParsing\PerceptorParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -48,6 +51,7 @@
       <Project>{30BE9710-1121-4383-B908-A5CB5EB4C1BF}</Project>
       <Name>Drew.RoboCup</Name>
     </ProjectReference>
+    <Folder Include="Geometry" />
     <Folder Include="PerceptorParsing" />
   </ItemGroup>
 </Project>

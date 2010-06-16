@@ -26,62 +26,75 @@ namespace Drew.RoboCup
 	/// <pre>
 	///        |--------------- 18 m --------------|
 	///  
-	///  (0,0,0)
-	///        *-----------------+-----------------+
-	///        |                 |                 |
-	///        |                 |                 |
-	///        |                 |                 |
-	///       -* (0,4.95,0)      |                 +-     ---
-	///        |                 |                 |        |
-	///   Goal |                 O                 | Goal  2.1m
-	///        |                 |                 |        |
-	///       -+ (0,7.05,0)      |                 +-     ---
-	///        |                 |                 |
-	///        |                 |                 |
-	///        |                 |                 |
-	///        +-----------------+-----------------+
-	///                                            (18,12,0)
+	///  (-9,-6)
+	///        *-----------------+-----------------+            ---
+	///        |                 |                 |              |
+	///        |                 |                 |              |
+	///        |                 |                 |              |
+	///       -* (-9,-1.05)      |                 +-     ---     |
+	///        |                 |                 |        |     |
+	///   Goal |                 O (0,0)           | Goal  2.1m  12m
+	///        |                 |                 |        |     |
+	///       -+ (-9,1.05)       |                 +-     ---     |
+	///        |                 |                 |              |
+	///        |                 |                 |              |
+	///        |                 |                 |              |
+	///        +-----------------+-----------------+            ---
+	///                                            (9,6)
 	/// </pre>
 	/// </remarks>
 	public static class FieldGeometry
 	{
-	    private const double FieldHeight = 12.0;
-	    private const double FieldWidth = 18.0;
+	    // TODO field dimensions may be variable, depending upon simulator
+	    private const double FieldYLength = 12.0;
+	    private const double FieldXLength = 18.0;
 	    private const double GoalWidth = 2.1;
 	    private const double GoalHeight = 0.8;
 	    
-	    public static readonly Vector3 FlagLeftTopBasePosition = new Vector3(0, 0, 0);
-	    public static readonly Vector3 FlagLeftBottomBasePosition = new Vector3(0, FieldHeight, 0);
-	    public static readonly Vector3 FlagRightTopBasePosition = new Vector3(FieldWidth, 0, 0);
-	    public static readonly Vector3 FlagRightBottomBasePosition = new Vector3(FieldWidth, FieldHeight, 0);
+	    public static readonly Vector3 FlagLeftTopPosition; // = new Vector3(0, 0, 0);
+	    public static readonly Vector3 FlagLeftBottomPosition; // = new Vector3(0, FieldHeight, 0);
+	    public static readonly Vector3 FlagRightTopPosition; // = new Vector3(FieldWidth, 0, 0);
+	    public static readonly Vector3 FlagRightBottomPosition; // = new Vector3(FieldWidth, FieldHeight, 0);
+	    	
+	    public static readonly Vector3 GoalLeftTopPosition; // = new Vector3(0, FieldHeight/2 - GoalWidth/2, GoalHeight);
+	    public static readonly Vector3 GoalLeftBottomPosition; // = new Vector3(0, FieldHeight/2 + GoalWidth/2, GoalHeight);
+	    public static readonly Vector3 GoalRightTopPosition; // = new Vector3(FieldWidth, FieldHeight/2 - GoalWidth/2, GoalHeight);
+	    public static readonly Vector3 GoalRightBottomPosition; // = new Vector3(FieldWidth, FieldHeight/2 + GoalWidth/2, GoalHeight);
 	    
-	    public static readonly Vector3 GoalLeftTopBasePosition = new Vector3(0, FieldHeight/2 - GoalWidth/2, 0);
-	    public static readonly Vector3 GoalLeftBottomBasePosition = new Vector3(0, FieldHeight/2 + GoalWidth/2, 0);
-	    public static readonly Vector3 GoalRightTopBasePosition = new Vector3(FieldWidth, FieldHeight/2 - GoalWidth/2, 0);
-	    public static readonly Vector3 GoalRightBottomBasePosition = new Vector3(FieldWidth, FieldHeight/2 + GoalWidth/2, 0);
-	
-	    public static readonly Vector3 GoalLeftTopTopPosition = new Vector3(0, FieldHeight/2 - GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalLeftBottomTopPosition = new Vector3(0, FieldHeight/2 + GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalRightTopTopPosition = new Vector3(FieldWidth, FieldHeight/2 - GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalRightBottomTopPosition = new Vector3(FieldWidth, FieldHeight/2 + GoalWidth/2, GoalHeight);
+	    static FieldGeometry() {
+            const double flagHeight = 0; // 0.375f;     // TODO verify that the spotted point of the flag is at ground level (Z==0)
+            const double goalFlagX = FieldXLength/2;    // TODO verify that the flag is exactly on the corner of the field
+            const double goalFlagHeight = GoalHeight/2; // TODO verify this -- the height of the point spotted on the goal is halfway up it?
+        
+            // Coordinate system is such that (0,0) is the exact center of the field
+            
+            FlagLeftTopPosition     = new Vector3(-FieldXLength/2, +FieldYLength/2, flagHeight);
+            FlagRightTopPosition    = new Vector3(+FieldXLength/2, +FieldYLength/2, flagHeight);
+            FlagLeftBottomPosition  = new Vector3(-FieldXLength/2, -FieldYLength/2, flagHeight);
+            FlagRightBottomPosition = new Vector3(+FieldXLength/2, -FieldYLength/2, flagHeight);
+            GoalLeftTopPosition     = new Vector3(-goalFlagX, +GoalWidth/2, goalFlagHeight);
+            GoalRightTopPosition    = new Vector3(+goalFlagX, +GoalWidth/2, goalFlagHeight);
+            GoalLeftBottomPosition  = new Vector3(-goalFlagX, -GoalWidth/2, goalFlagHeight);
+            GoalRightBottomPosition = new Vector3(+goalFlagX, -GoalWidth/2, goalFlagHeight);
+	    }
 	    
 	    public static Vector3 GetLandmarkVector(Landmark landmark) {
 	        switch (landmark) {
-	            case Landmark.FlagLeftTop:      return FlagLeftTopBasePosition;
-	            case Landmark.FlagLeftBottom:   return FlagLeftBottomBasePosition;
-	            case Landmark.FlagRightTop:     return FlagRightTopBasePosition;
-	            case Landmark.FlagRightBottom:  return FlagRightBottomBasePosition;
-	            case Landmark.GoalLeftTop:      return GoalLeftTopTopPosition;
-	            case Landmark.GoalLeftBottom:   return GoalLeftBottomTopPosition;
-	            case Landmark.GoalRightTop:     return GoalRightTopTopPosition;
-	            case Landmark.GoalRightBottom:  return GoalRightBottomTopPosition;
+	            case Landmark.FlagLeftTop:      return FlagLeftTopPosition;
+	            case Landmark.FlagLeftBottom:   return FlagLeftBottomPosition;
+	            case Landmark.FlagRightTop:     return FlagRightTopPosition;
+	            case Landmark.FlagRightBottom:  return FlagRightBottomPosition;
+	            case Landmark.GoalLeftTop:      return GoalLeftTopPosition;
+	            case Landmark.GoalLeftBottom:   return GoalLeftBottomPosition;
+	            case Landmark.GoalRightTop:     return GoalRightTopPosition;
+	            case Landmark.GoalRightBottom:  return GoalRightBottomPosition;
 	            default: throw new ArgumentException("Unexpected Landmark enum value: " + landmark);
 	        }
 	    }
 	    
 	    public static bool IsInField(Vector3 vector) {
-	        return vector.X > 0 && vector.X < FieldWidth
-	            && vector.Y > 0 && vector.Y < FieldHeight;
+	        return vector.X >= -FieldXLength/2 && vector.X <= FieldXLength/2
+	            && vector.Y > -FieldYLength/2 && vector.Y < FieldYLength/2;
 	    }
 	}
 }
