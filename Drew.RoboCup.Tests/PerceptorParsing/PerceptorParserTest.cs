@@ -94,24 +94,24 @@ namespace Drew.RoboCup.PerceptorParsing
         [Test]
         public void ShouldParseHingeJoint()
         {
-        	var parser = Parse("(HJ (n hj1) (ax 0.78))");
+        	var parser = Parse("(HJ (n hj1) (ax 1.5))");
         	Assert.IsNotNull(parser.State.HingeJointStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var state = parser.State.HingeJointStates.Single();
             Assert.AreEqual("hj1", state.Label);
-            Assert.AreEqual(0.78,  state.Angle, 0.0001);
+            Assert.AreEqual(Angle.FromDegrees(1.5), state.Angle);
         }
         
         [Test]
         public void ShouldParseUniversalJoint()
         {
-        	var parser = Parse("(UJ (n laj1) (ax1 -1.32) (ax2 2.00))");
+        	var parser = Parse("(UJ (n laj1) (ax1 -1.50) (ax2 2.00))");
         	Assert.IsNotNull(parser.State.UniversalJointStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var state = parser.State.UniversalJointStates.Single();
             Assert.AreEqual("laj1", state.Label);
-            Assert.AreEqual(-1.32,  state.Angle1, 0.0001);
-            Assert.AreEqual(2.00,   state.Angle2, 0.0001);
+            Assert.AreEqual(Angle.FromDegrees(-1.5), state.Angle1);
+            Assert.AreEqual(Angle.FromDegrees(2.00),  state.Angle2);
         }
  
         [Test]
@@ -144,39 +144,39 @@ namespace Drew.RoboCup.PerceptorParsing
         [Test]
         public void ShouldParseSeenFlag()
         {
-        	var parser = Parse("(See (F2L (pol 11.52 52.16 -8.16)))");
+        	var parser = Parse("(See (F2L (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.LandmarkPositions);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var state = parser.State.LandmarkPositions.Single();
             Assert.AreEqual(Landmark.FlagLeftBottom,  state.Landmark);
-            Assert.AreEqual(11.52, state.RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(52.16, state.RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-8.16, state.RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(11.52, state.PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(Angle.FromDegrees(52.50), state.PolarPosition.Theta);
+            Assert.AreEqual(Angle.FromDegrees(-8.10), state.PolarPosition.Phi);
         }        
         
         [Test]
         public void ShouldParseSeenGoal()
         {
-        	var parser = Parse("(See (G2R (pol 11.52 52.16 -8.16)))");
+        	var parser = Parse("(See (G2R (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.LandmarkPositions);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var state = parser.State.LandmarkPositions.Single();
             Assert.AreEqual(Landmark.GoalRightBottom, state.Landmark);
-            Assert.AreEqual(11.52, state.RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(52.16, state.RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-8.16, state.RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(11.52, state.PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(Angle.FromDegrees(52.50), state.PolarPosition.Theta);
+            Assert.AreEqual(Angle.FromDegrees(-8.10), state.PolarPosition.Phi);
         }
         
         [Test]
         public void ShouldParseSeenBall()
         {
-        	var parser = Parse("(See (B (pol 11.52 52.16 -8.16)))");
+        	var parser = Parse("(See (B (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.BallPosition);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var state = parser.State.BallPosition.Value;
             Assert.AreEqual(11.52, state.Distance, 0.0001);
-            Assert.AreEqual(52.16, state.Angle1, 0.0001);
-            Assert.AreEqual(-8.16, state.Angle2, 0.0001);
+            Assert.AreEqual(Angle.FromDegrees(52.50), state.Theta);
+            Assert.AreEqual(Angle.FromDegrees(-8.10), state.Phi);
         }
         
         [Test]
@@ -197,21 +197,21 @@ namespace Drew.RoboCup.PerceptorParsing
 		    Assert.AreEqual(4, state.PartPositions.Count());
 		    var components = state.PartPositions.ToList();
 		    Assert.AreEqual("head", components[0].Label);
-            Assert.AreEqual(9.04,   components[0].RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(-57.66, components[0].RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-28.25, components[0].RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(9.04,   components[0].PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(-57.66, components[0].PolarPosition.Theta.Degrees, 0.0001);
+            Assert.AreEqual(-28.25, components[0].PolarPosition.Phi.Degrees, 0.0001);
 		    Assert.AreEqual("rlowerarm", components[1].Label);
-            Assert.AreEqual(8.93,   components[1].RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(-57.84, components[1].RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-29.70, components[1].RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(8.93,   components[1].PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(-57.84, components[1].PolarPosition.Theta.Degrees, 0.0001);
+            Assert.AreEqual(-29.70, components[1].PolarPosition.Phi.Degrees, 0.0001);
 		    Assert.AreEqual("llowerarm", components[2].Label);
-            Assert.AreEqual(9.07,   components[2].RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(-59.44, components[2].RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-28.47, components[2].RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(9.07,   components[2].PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(-59.44, components[2].PolarPosition.Theta.Degrees, 0.0001);
+            Assert.AreEqual(-28.47, components[2].PolarPosition.Phi.Degrees, 0.0001);
 		    Assert.AreEqual("rfoot", components[3].Label);
-            Assert.AreEqual(9.01,   components[3].RadialPosition.Distance, 0.0001);
-            Assert.AreEqual(-59.41, components[3].RadialPosition.Angle1, 0.0001);
-            Assert.AreEqual(-30.45, components[3].RadialPosition.Angle2, 0.0001);
+            Assert.AreEqual(9.01,   components[3].PolarPosition.Distance, 0.0001);
+            Assert.AreEqual(-59.41, components[3].PolarPosition.Theta.Degrees, 0.0001);
+            Assert.AreEqual(-30.45, components[3].PolarPosition.Phi.Degrees, 0.0001);
         }
         
         [Test]
@@ -243,7 +243,7 @@ namespace Drew.RoboCup.PerceptorParsing
 		    var message = parser.State.Messages.Single();
 		    Assert.IsFalse(message.IsFromSelf);
 		    Assert.AreEqual("overhere", message.MessageText);
-		    Assert.AreEqual(12.34, message.RelativeDirection);
+		    Assert.AreEqual(Angle.FromDegrees(12.34), message.RelativeDirection);
 		    Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
         

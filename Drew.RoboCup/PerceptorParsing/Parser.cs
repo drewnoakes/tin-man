@@ -44,7 +44,7 @@ public string TeamName;
     private List<LandmarkPosition> LandmarkPositions;
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
-    private RadialPosition? BallPosition;
+    private Polar? BallPosition;
     private List<Message> Messages;
     
     public PerceptorState State { get; private set; }
@@ -56,7 +56,7 @@ public string TeamName;
         return d;
     }
 
-    private void SeeLandmark(RadialPosition pos, Landmark landmark) {
+    private void SeeLandmark(Polar pos, Landmark landmark) {
         if (LandmarkPositions==null)
             LandmarkPositions = new List<LandmarkPosition>(4);
         LandmarkPositions.Add(new LandmarkPosition(landmark, pos));
@@ -124,6 +124,11 @@ public string TeamName;
 		d = AsDouble(t.val); 
 	}
 
+	void AngleInDegrees(out Angle a) {
+		Expect(1);
+		a = Angle.FromDegrees(AsDouble(t.val)); 
+	}
+
 	void Ident(out string s) {
 		Expect(2);
 		s = t.val; 
@@ -143,12 +148,12 @@ public string TeamName;
 		v = new Vector3(x, y, z); 
 	}
 
-	void RadialPosition(out RadialPosition pos) {
+	void Polar(out Polar pos) {
 		double distance, angle1, angle2; 
 		Double(out distance);
 		Double(out angle1);
 		Double(out angle2);
-		pos = new RadialPosition(distance, angle1, angle2); 
+		pos = new Polar(distance, Angle.FromDegrees(angle1), Angle.FromDegrees(angle2)); 
 	}
 
 	void IntFlag(out bool isSet) {
@@ -157,9 +162,9 @@ public string TeamName;
 		isSet = d != 0; 
 	}
 
-	void PolarPosExpr(out RadialPosition pos) {
+	void PolarPosExpr(out Polar pos) {
 		Expect(4);
-		RadialPosition(out pos);
+		Polar(out pos);
 		Expect(5);
 	}
 
@@ -246,7 +251,7 @@ public string TeamName;
 	}
 
 	void HingeJointExpr(out HingeJointState hj) {
-		string label; double angle; 
+		string label; Angle angle; 
 		Expect(21);
 		Expect(7);
 		Expect(17);
@@ -254,14 +259,14 @@ public string TeamName;
 		Expect(5);
 		Expect(7);
 		Expect(22);
-		Double(out angle);
+		AngleInDegrees(out angle);
 		Expect(5);
 		Expect(5);
 		hj = new HingeJointState(label, angle); 
 	}
 
 	void UniversalJointExpr(out UniversalJointState uj) {
-		string label; double angle1, angle2; 
+		string label; Angle angle1, angle2; 
 		Expect(23);
 		Expect(7);
 		Expect(17);
@@ -269,11 +274,11 @@ public string TeamName;
 		Expect(5);
 		Expect(7);
 		Expect(24);
-		Double(out angle1);
+		AngleInDegrees(out angle1);
 		Expect(5);
 		Expect(7);
 		Expect(25);
-		Double(out angle2);
+		AngleInDegrees(out angle2);
 		Expect(5);
 		Expect(5);
 		uj = new UniversalJointState(label, angle1, angle2); 
@@ -339,7 +344,7 @@ public string TeamName;
 	}
 
 	void VisibleItemExpr() {
-		string label = la.val; RadialPosition pos; 
+		string label = la.val; Polar pos; 
 		while (StartOf(3)) {
 			switch (la.kind) {
 			case 35: {
@@ -409,7 +414,7 @@ public string TeamName;
 		Double(out playerId);
 		Expect(5);
 		while (la.kind == 7) {
-			string partLabel; RadialPosition pos; 
+			string partLabel; Polar pos; 
 			Get();
 			Ident(out partLabel);
 			PolarPosExpr(out pos);
@@ -429,14 +434,14 @@ public string TeamName;
 	}
 
 	void HearExpr(out Message message) {
-		TimeSpan time; double direction = -1; string messageText; 
+		TimeSpan time; Angle direction = Angle.NaN; string messageText; 
 		Expect(46);
 		TimeSpan(out time);
 		if (la.kind == 1 || la.kind == 47) {
 			if (la.kind == 47) {
 				Get();
 			} else {
-				Double(out direction);
+				AngleInDegrees(out direction);
 			}
 		}
 		MessageText(out messageText);

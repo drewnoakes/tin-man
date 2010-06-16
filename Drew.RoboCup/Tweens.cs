@@ -30,13 +30,13 @@ namespace Drew.RoboCup
     
     public sealed class HingeMotionTween : IBodyManipulator {
         private readonly HingeController _hinge;
-        private readonly double _finalAngle;
+        private readonly Angle _finalAngle;
         private readonly TimeSpan _moveDuration;
         private readonly EasingFunction _easingFunction;
         private TimeSpan _moveStartTime = TimeSpan.MinValue;
-        private double _moveStartAngle = double.NaN;
+        private Angle _moveStartAngle = Angle.NaN;
         
-        public HingeMotionTween(HingeController hinge, double finalAngle, TimeSpan moveDuration, EaseType easeType) {
+        public HingeMotionTween(HingeController hinge, Angle finalAngle, TimeSpan moveDuration, EaseType easeType) {
             if (moveDuration<=TimeSpan.Zero)
                 throw new ArgumentOutOfRangeException("moveDuration", "Must be greater than zero.");
             hinge.ValidateAngle(finalAngle);
@@ -69,12 +69,12 @@ namespace Drew.RoboCup
                         
             var moveTotalAngle = _finalAngle - _moveStartAngle;
             var moveTimeRatio = elapsed.Ticks / (double)_moveDuration.Ticks;
-            var expectedAngle = _easingFunction(elapsed.TotalMilliseconds,
-                                                _moveStartAngle, 
-                                                moveTotalAngle, 
+            var expectedRadians = _easingFunction(elapsed.TotalMilliseconds,
+                                                _moveStartAngle.Radians, 
+                                                moveTotalAngle.Radians, 
                                                 _moveDuration.TotalMilliseconds);
             
-            _hinge.MoveTo(expectedAngle);
+            _hinge.MoveTo(Angle.FromRadians(expectedRadians));
         }
     }
     

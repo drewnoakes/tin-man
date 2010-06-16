@@ -40,9 +40,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Geometry\AngleTest.cs" />
     <Compile Include="Geometry\GeometryUtilTest.cs" />
+    <Compile Include="Geometry\PolarTest.cs" />
     <Compile Include="Geometry\TransformationMatrixTest.cs" />
-    <Compile Include="Geometry\VectorTest.cs" />
+    <Compile Include="Geometry\Vector3Test.cs" />
     <Compile Include="PerceptorParsing\PerceptorParserTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

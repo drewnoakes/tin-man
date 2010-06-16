@@ -80,32 +80,32 @@ namespace Drew.RoboCup.Nao
 
 		public NaoBody()
 		{
-			HJ1 = new HingeController("hj1", "he1", -120, 120);
-			HJ2 = new HingeController("hj2", "he2", -45, 45);
+		    HJ1 = new HingeController("hj1", "he1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
+		    HJ2 = new HingeController("hj2", "he2", Angle.FromDegrees(-45), Angle.FromDegrees(45));
 
-			LAJ1 = new HingeController("laj1", "lae1", -120, 120);
-			LAJ2 = new HingeController("laj2", "lae2", -1, 95);
-			LAJ3 = new HingeController("laj3", "lae3", -120, 120);
-			LAJ4 = new HingeController("laj4", "lae4", -90, 1);
+		    LAJ1 = new HingeController("laj1", "lae1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
+		    LAJ2 = new HingeController("laj2", "lae2", Angle.FromDegrees(-1), Angle.FromDegrees(95));
+			LAJ3 = new HingeController("laj3", "lae3", Angle.FromDegrees(-120), Angle.FromDegrees(120));
+			LAJ4 = new HingeController("laj4", "lae4", Angle.FromDegrees(-90), Angle.FromDegrees(1));
 
-			RAJ1 = new HingeController("raj1", "rae1", -120, 120);
-			RAJ2 = new HingeController("raj2", "rae2", -95, 1);
-			RAJ3 = new HingeController("raj3", "rae3", -120, 120);
-			RAJ4 = new HingeController("raj4", "rae4", -1, 90);
+			RAJ1 = new HingeController("raj1", "rae1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
+			RAJ2 = new HingeController("raj2", "rae2", Angle.FromDegrees(-95), Angle.FromDegrees(1));
+			RAJ3 = new HingeController("raj3", "rae3", Angle.FromDegrees(-120), Angle.FromDegrees(120));
+			RAJ4 = new HingeController("raj4", "rae4", Angle.FromDegrees(-1), Angle.FromDegrees(90));
 
-			LLJ1 = new HingeController("llj1", "lle1", -90, 1);
-			LLJ2 = new HingeController("llj2", "lle2", -25, 45);
-			LLJ3 = new HingeController("llj3", "lle3", -25, 100);
-			LLJ4 = new HingeController("llj4", "lle4", -130, 1);
-			LLJ5 = new HingeController("llj5", "lle5", -45, 75);
-			LLJ6 = new HingeController("llj6", "lle6", -45, 25);
+			LLJ1 = new HingeController("llj1", "lle1", Angle.FromDegrees(-90), Angle.FromDegrees(1));
+			LLJ2 = new HingeController("llj2", "lle2", Angle.FromDegrees(-25), Angle.FromDegrees(45));
+			LLJ3 = new HingeController("llj3", "lle3", Angle.FromDegrees(-25), Angle.FromDegrees(100));
+			LLJ4 = new HingeController("llj4", "lle4", Angle.FromDegrees(-130), Angle.FromDegrees(1));
+			LLJ5 = new HingeController("llj5", "lle5", Angle.FromDegrees(-45), Angle.FromDegrees(75));
+			LLJ6 = new HingeController("llj6", "lle6", Angle.FromDegrees(-45), Angle.FromDegrees(25));
 
-			RLJ1 = new HingeController("rlj1", "rle1", -90, 1);
-			RLJ2 = new HingeController("rlj2", "rle2", -45, 25);
-			RLJ3 = new HingeController("rlj3", "rle3", -25, 100);
-			RLJ4 = new HingeController("rlj4", "rle4", -130, 1);
-			RLJ5 = new HingeController("rlj5", "rle5", -45, 75);
-			RLJ6 = new HingeController("rlj6", "rle6", -25, 45);
+			RLJ1 = new HingeController("rlj1", "rle1", Angle.FromDegrees(-90), Angle.FromDegrees(1));
+			RLJ2 = new HingeController("rlj2", "rle2", Angle.FromDegrees(-45), Angle.FromDegrees(25));
+			RLJ3 = new HingeController("rlj3", "rle3", Angle.FromDegrees(-25), Angle.FromDegrees(100));
+			RLJ4 = new HingeController("rlj4", "rle4", Angle.FromDegrees(-130), Angle.FromDegrees(1));
+			RLJ5 = new HingeController("rlj5", "rle5", Angle.FromDegrees(-45), Angle.FromDegrees(75));
+			RLJ6 = new HingeController("rlj6", "rle6", Angle.FromDegrees(-25), Angle.FromDegrees(45));
 
 			AllHinges = new[] {
 				HJ1,

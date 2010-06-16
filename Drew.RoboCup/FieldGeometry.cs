@@ -51,22 +51,22 @@ namespace Drew.RoboCup
 	    private const double GoalWidth = 2.1;
 	    private const double GoalHeight = 0.8;
 	    
-	    public static readonly Vector3 FlagLeftTopPosition; // = new Vector3(0, 0, 0);
-	    public static readonly Vector3 FlagLeftBottomPosition; // = new Vector3(0, FieldHeight, 0);
-	    public static readonly Vector3 FlagRightTopPosition; // = new Vector3(FieldWidth, 0, 0);
-	    public static readonly Vector3 FlagRightBottomPosition; // = new Vector3(FieldWidth, FieldHeight, 0);
+	    public static readonly Vector3 FlagLeftTopPosition;
+	    public static readonly Vector3 FlagLeftBottomPosition;
+	    public static readonly Vector3 FlagRightTopPosition;
+	    public static readonly Vector3 FlagRightBottomPosition;
 	    	
-	    public static readonly Vector3 GoalLeftTopPosition; // = new Vector3(0, FieldHeight/2 - GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalLeftBottomPosition; // = new Vector3(0, FieldHeight/2 + GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalRightTopPosition; // = new Vector3(FieldWidth, FieldHeight/2 - GoalWidth/2, GoalHeight);
-	    public static readonly Vector3 GoalRightBottomPosition; // = new Vector3(FieldWidth, FieldHeight/2 + GoalWidth/2, GoalHeight);
+	    public static readonly Vector3 GoalLeftTopPosition;
+	    public static readonly Vector3 GoalLeftBottomPosition;
+	    public static readonly Vector3 GoalRightTopPosition;
+	    public static readonly Vector3 GoalRightBottomPosition;
 	    
 	    static FieldGeometry() {
             const double flagHeight = 0; // 0.375f;     // TODO verify that the spotted point of the flag is at ground level (Z==0)
             const double goalFlagX = FieldXLength/2;    // TODO verify that the flag is exactly on the corner of the field
             const double goalFlagHeight = GoalHeight/2; // TODO verify this -- the height of the point spotted on the goal is halfway up it?
         
-            // Coordinate system is such that (0,0) is the exact center of the field
+            // Using global coordinate system.  (0,0) is the exact center of the field.
             
             FlagLeftTopPosition     = new Vector3(-FieldXLength/2, +FieldYLength/2, flagHeight);
             FlagRightTopPosition    = new Vector3(+FieldXLength/2, +FieldYLength/2, flagHeight);
@@ -78,7 +78,12 @@ namespace Drew.RoboCup
             GoalRightBottomPosition = new Vector3(+goalFlagX, -GoalWidth/2, goalFlagHeight);
 	    }
 	    
-	    public static Vector3 GetLandmarkVector(Landmark landmark) {
+	    /// <summary>
+	    /// Gets the location of a landmark in global coordinates.
+	    /// </summary>
+	    /// <param name="landmark"></param>
+	    /// <returns></returns>
+	    public static Vector3 GetLandmarkPointGlobal(Landmark landmark) {
 	        switch (landmark) {
 	            case Landmark.FlagLeftTop:      return FlagLeftTopPosition;
 	            case Landmark.FlagLeftBottom:   return FlagLeftBottomPosition;

@@ -9,6 +9,24 @@ namespace Drew.RoboCup
 	{
 	    public static readonly Vector3 Origin = new Vector3(0,0,0);
 	    
+	    /// <summary>
+	    /// Returns a vector which is perpendicular to both <paramref name="a"/> and <paramref name="b" /> and the plane containing them.
+	    /// If either of these vectors are zero, or they are parallel, then their cross product is zero.
+	    /// The magnitude of the product equals the area of a parallelogram with the vectors for sides.
+	    /// Cross products are anticommutative, meaning <tt>A x B == -(B x A)</tt>.
+	    /// </summary>
+	    /// <param name="a"></param>
+	    /// <param name="b"></param>
+	    /// <returns></returns>
+	    public static Vector3 GetCrossProduct(Vector3 a, Vector3 b) {
+	        // a × b = (a2b3 − a3b2, a3b1 − a1b3, a1b2 − a2b1)
+	        return new Vector3(
+	                    a.Y * b.Z - a.Z * b.Y,
+	                    a.Z * b.X - a.X * b.Z,
+	                    a.X * b.Y - a.Y * b.X
+	                    );
+	    }
+	    
 	    public double X { get; private set; }
 	    public double Y { get; private set; }
 	    public double Z { get; private set; }
@@ -19,20 +37,6 @@ namespace Drew.RoboCup
 			Z = z;
 		}
 	    
-	    public static Vector3 operator -(Vector3 a, Vector3 b) {
-	            return new Vector3(
-	                a.X - b.X,
-	                a.Y - b.Y,
-	                a.Z - b.Z);
-	    }
-	
-	    public static Vector3 operator +(Vector3 a, Vector3 b) {
-	            return new Vector3(
-	                a.X + b.X,
-	                a.Y + b.Y,
-	                a.Z + b.Z);
-	    }
-	
 	    public Vector3 Normalize() {
             // norm2 = sqrt(xax[0] * xax[0] + xax[1] * xax[1] + xax[2] * xax[2]);
             // for(i=0; i<3; i++) xax[i] /= norm2;
@@ -48,6 +52,45 @@ namespace Drew.RoboCup
 	    public double GetLength() {
 	         return Math.Sqrt(X * X + Y * Y + Z * Z);
 	    }
+	    
+	    public Vector3 Cross(Vector3 vector) {
+	        return GetCrossProduct(this, vector);
+	    }
+	    
+	    #region Operator overloads
+	    
+	    public static Vector3 operator -(Vector3 a, Vector3 b) {
+	            return new Vector3(
+	                a.X - b.X,
+	                a.Y - b.Y,
+	                a.Z - b.Z);
+	    }
+	
+	    public static Vector3 operator +(Vector3 a, Vector3 b) {
+	            return new Vector3(
+	                a.X + b.X,
+	                a.Y + b.Y,
+	                a.Z + b.Z);
+	    }
+
+	    public static Vector3 operator *(Vector3 v, double scale) {
+	            return new Vector3(
+	                v.X * scale,
+	                v.Y * scale,
+	                v.Z * scale);
+	    }
+
+	    public static bool operator ==(Vector3 a, Vector3 b) {
+	        return a.Equals(b);
+	    }
+
+	    public static bool operator !=(Vector3 a, Vector3 b) {
+	        return !a.Equals(b);
+	    }
+
+	    #endregion
+	    
+	    #region ToString, Equality and Hashing
 	
 		public override string ToString() {
 		    return string.Format("<{0:0.00},{1:0.00},{2:0.00}>", X, Y, Z);
@@ -70,5 +113,7 @@ namespace Drew.RoboCup
 	            return c;
 	        }
         }
+	    
+	    #endregion
 	}
 }

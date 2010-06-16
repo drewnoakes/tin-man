@@ -120,7 +120,8 @@ namespace Drew.RoboCup
                     frame.Add(new WaitMotion(frameDuration));
                     foreach (XmlNode hingeNode in frameNode.SelectNodes("hinge")) {
                         var label = hingeNode.GetAttributeValue("label");
-                        var angle = double.Parse(hingeNode.GetAttributeValue("angle"));
+                        var angleDegrees = double.Parse(hingeNode.GetAttributeValue("angle"));
+                        var angle = Angle.FromDegrees(angleDegrees);
                         var hinge = body.GetHingeControllerForLabel(label);
                         if (hinge==null) {
                             Console.WriteLine("{0}: No hinge with label '{1}' was found.  Skipping.", sequenceName, label);

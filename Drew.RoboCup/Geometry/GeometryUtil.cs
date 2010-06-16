@@ -6,23 +6,21 @@ using System;
 namespace Drew.RoboCup
 {
 	public static class GeometryUtil {
-	    public static double NormaliseDegrees(double degrees) {
-	        // TODO can this be done this with mod division?
-	        while (degrees < 0)
-	            degrees += 360;
-	        while (degrees >= 360)
-	            degrees -= 360;
-	        return degrees;
-	    }
-	    
-	    public static double DegreesToRadians(double degrees) {
-	        const double degToRadFactor = Math.PI/180;
-	        return degrees * degToRadFactor;
-	    }
-	    
-	    public static double RadiansToDegrees(double radians) {
-	        const double radToDegFactor = 180/Math.PI;
-	        return radians * radToDegFactor;
-	    }
+        /// <summary>
+        /// Calculates the distance along a line that is closest to <paramref name="point"/>.
+        /// </summary>
+        /// <param name="origin">The starting point of the line.</param>
+        /// <param name="direction">The direction of the line.</param>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        public static double CalculateDistanceAlongLineThatIsClosestToPoint(Vector3 origin, Vector3 direction, Vector3 point) {
+            // TODO if a dedicated Ray class is made, move this method to it
+            Vector3 v = direction.Normalize();
+            Vector3 s = v.Cross(new Vector3(0,0,1));
+            double u 
+                = ((s.X/s.Y) * (origin.Y - point.Y) + (point.X - origin.X))
+                / (v.X - (s.X/s.Y)*v.Y);
+            return (origin + v*u - point).GetLength();
+        }
 	}
 }

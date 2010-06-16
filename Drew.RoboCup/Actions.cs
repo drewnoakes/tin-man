@@ -15,14 +15,14 @@ namespace Drew.RoboCup
     public sealed class MoveHingeJointAction : IAction {
         private readonly string _effectorLabel;
         // TODO work out what the _move represents. Docs say 'change in angle of the joint', some code says 'angular velocity in radians per second'
-        private readonly double _move;
-        public MoveHingeJointAction(string effectorLabel, double move) {
+        private readonly Angle _move;
+        public MoveHingeJointAction(string effectorLabel, Angle move) {
             _effectorLabel = effectorLabel;
             _move = move;
         }
         
         public void AppendCommand(StringBuilder s) {
-            s.AppendFormat("({0} {1:0.######})", _effectorLabel, _move);
+            s.AppendFormat("({0} {1:0.######})", _effectorLabel, _move.Degrees);
         }
     }
     
@@ -32,7 +32,7 @@ namespace Drew.RoboCup
     public sealed class BeamAction : IAction {
         private readonly double _x;
         private readonly double _y;
-        private readonly double _rotation;
+        private readonly Angle _rotation;
         /// <summary>
         /// 
         /// </summary>
@@ -40,14 +40,14 @@ namespace Drew.RoboCup
         /// <param name="y"></param>
         /// <param name="rotation">Defines the rotation angle of the player. Zero degrees points to positive x axis (to
         /// the right of the field), 90 degrees to positive y axis (to the top of the field).</param>
-        public BeamAction(double x, double y, double rotation) {
+        public BeamAction(double x, double y, Angle rotation) {
             _x = x;
             _y = y;
             _rotation = rotation;
         }
         
         public void AppendCommand(StringBuilder s) {
-            s.AppendFormat("(beam {0:0.####} {1:0.####} {2:0.####})", _x, _y, _rotation);
+            s.AppendFormat("(beam {0:0.####} {1:0.####} {2:0.####})", _x, _y, _rotation.Degrees);
         }
     }
     

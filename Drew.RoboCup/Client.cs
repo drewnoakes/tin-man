@@ -12,27 +12,23 @@ using System.Threading;
 
 using Drew.RoboCup.PerceptorParsing;
 
-namespace Drew.RoboCup
-{
-    public sealed class Client
-    {
+namespace Drew.RoboCup {
+    public sealed class Client : IDisposable {
         private readonly TcpClient _client;
         private NetworkStream _stream;
         
-        public Client(string hostName, int port)
-        {
+        public Client(string hostName, int port) {
             Console.WriteLine("Connecting via TCP to {0}:{1}", hostName, port);
             try {
-            _client = new TcpClient(hostName, port);
-            } catch (SocketException ex) {
+                _client = new TcpClient(hostName, port);
+            } catch (SocketException) {
                 Console.Error.WriteLine("Unable to connect to {0}:{1}.  Exiting.", hostName, port);
+                throw;
             }
         }
         
-        public void Run(IRobot robot)
-        {
-            using (_client)
-            {
+        public void Run(IRobot robot) {
+            using (_client) {
                 _stream = _client.GetStream();
                 
                 Console.WriteLine("Sending initialisation messages");
@@ -40,7 +36,7 @@ namespace Drew.RoboCup
                 // Initialise with server.  We must first send the scene command, to specify which robot we'll be using.
                 // NOTE We read between sends, even though no reponse will be received.  If we don't then we appear in middle, white.
                 // TODO maybe just a pause is enough (rather than a read)
-                // TODO make this programming model a bit nicer
+                // TODO make this programming model a bit nicer (don't require AppendCommand)
                 var sb = new StringBuilder();
                 new SceneSpecificationAction(robot.RsgPath).AppendCommand(sb);
                 SendMessage(sb.ToString());
@@ -56,13 +52,10 @@ namespace Drew.RoboCup
                 bool printNextPerceptors = true;
                 bool printNextEffectors = true;
                 
-                TimeSpan lastSimulationTime = TimeSpan.Zero;
                 bool loopFinished = false;
-                while (!loopFinished)
-                {
+                while (!loopFinished) {
 					string data = ReadResponse();
 					if (data!=null) {
-                        
                         // TODO try and reuse these parsing objects (custom s-expression parser)
                         var parser = new Parser(new Scanner(new StringBuffer(data)));
                         parser.Parse();
@@ -75,14 +68,9 @@ namespace Drew.RoboCup
                             Console.WriteLine(parser.State.ToString());
                         }
 
-                        // Check for missed simulation steps (normally we're told about every 0.2 seconds)
-                        if (parser.State.SimulationTime.HasValue) {
-                            if (lastSimulationTime!=TimeSpan.Zero) {
-                                var deltaSecs = (parser.State.SimulationTime.Value - lastSimulationTime).TotalSeconds;
-                                if (deltaSecs > 0.3)
-                                    Console.WriteLine("SimulationTime delta: {0:0.###} s", deltaSecs);
-                            }
-                            lastSimulationTime = parser.State.SimulationTime.Value;
+                        if (!parser.State.SimulationTime.HasValue) {
+                            Debug.Fail("Received message from server that did not contain simulation time: " + data);
+                            continue;
                         }
                         
                         var actions = robot.Step(parser.State);
@@ -118,8 +106,7 @@ namespace Drew.RoboCup
             }
         }
         
-        private string ReadResponse()
-        {
+        private string ReadResponse() {
             // It seems like a good idea to pass the stream to Coco/R rather than loading the whole
             // string into memory first, however because Coco/R requires the ability to seek within
             // the stream, it would internally load the stream into a buffer anyway.  To avoid this
@@ -144,16 +131,14 @@ namespace Drew.RoboCup
             return Encoding.ASCII.GetString(bytes);
         }
 
-        private int ReadInt32()
-        {
+        private int ReadInt32() {
             var lengthBytes = new byte[4];
             _stream.Read(lengthBytes, 0, 4);
             int length = (lengthBytes[0] << 24) | (lengthBytes[1] << 16) | (lengthBytes[2] << 8) | (lengthBytes[3]);
             return length;
         }
         
-        private void SendMessage(string msg)
-        {
+        private void SendMessage(string msg) {
             /*
              * Messages exchanged between client and server use the default ASCII character set, i.e.
              * one character is encoded in a single byte. Further each individual message is prefixed with the
@@ -170,5 +155,11 @@ namespace Drew.RoboCup
             _stream.Write(numBytes, 0, numBytes.Length);
             _stream.Write(bytes, 0, bytes.Length);
         }
+        
+        public void Dispose() {
+            _stream.Dispose();
+            _client.Close();
+        }
+        
     }
 }

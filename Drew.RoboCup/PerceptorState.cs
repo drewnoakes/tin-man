@@ -28,7 +28,7 @@ namespace Drew.RoboCup
 		public IEnumerable<AccelerometerState> AccelerometerStates { get; private set; }
 		
 		public IEnumerable<LandmarkPosition> LandmarkPositions { get; private set; }
-		public RadialPosition? BallPosition { get; private set; }
+		public Polar? BallPosition { get; private set; }
 		public IEnumerable<PlayerPosition> TeamMatePositions { get; private set; }
 		public IEnumerable<PlayerPosition> OppositionPositions { get; private set; }
 		
@@ -44,7 +44,7 @@ namespace Drew.RoboCup
 							  IEnumerable<TouchState> touchStates, IEnumerable<ForceState> forceStates, IEnumerable<AccelerometerState> accelerometerStates,
 							  IEnumerable<LandmarkPosition> landmarkPositions,
 							  IEnumerable<PlayerPosition> teamMatePositions, IEnumerable<PlayerPosition> oppositionPositions,
-							  RadialPosition? ballPosition,
+							  Polar? ballPosition,
 							  double? agentBattery, double? agentTemperature, IEnumerable<Message> heardMessages) {
 			SimulationTime = simulationTime;
 			GameTime = gameTime;
@@ -66,7 +66,7 @@ namespace Drew.RoboCup
 			Messages = heardMessages;
 		}
 		
-		public double GetHingeJointAngle(string hingePerceptorLabel) {
+		public Angle GetHingeJointAngle(string hingePerceptorLabel) {
             Debug.Assert(HingeJointStates!=null, "HingeJointStates should not be null.");
             foreach (var hj in HingeJointStates) {
 		        if (hj.Label==hingePerceptorLabel)
@@ -78,8 +78,8 @@ namespace Drew.RoboCup
 	    public override string ToString() {
 	        var sb = new StringBuilder();
 	        
-            sb.AppendFormat("SimulationTime = {0}", SimulationTime);
-            sb.AppendFormat("GameTime = {0}", GameTime);
+            sb.AppendFormat(  "SimulationTime = {0}", SimulationTime);
+            sb.AppendFormat("\nGameTime = {0}", GameTime);
             sb.AppendFormat("\nPlayMode = {0}", PlayMode);
             sb.AppendFormat("\nAgentBattery = {0}", AgentBattery);
             sb.AppendFormat("\nAgentTemperature = {0}", AgentTemperature);
@@ -109,7 +109,7 @@ namespace Drew.RoboCup
             }
             if (LandmarkPositions != null) {
                 foreach (var l in LandmarkPositions)
-                    sb.AppendFormat("\n{0} -> pos {1}", l.Landmark, l.RadialPosition);
+                    sb.AppendFormat("\n{0} -> pos {1}", l.Landmark, l.PolarPosition);
             }
             if (BallPosition != null) {
                 sb.AppendFormat("\nBall -> '{0}'", BallPosition);
@@ -199,7 +199,7 @@ namespace Drew.RoboCup
                     sb.Append(", ");
                     first = false;
                 }
-                sb.AppendFormat("{0} @ {1}", p.Label, p.RadialPosition);
+                sb.AppendFormat("{0} @ {1}", p.Label, p.PolarPosition);
             }
             return sb.ToString();
         }
@@ -207,20 +207,20 @@ namespace Drew.RoboCup
 	
 	public struct LandmarkPosition {
 		public Landmark Landmark { get; private set; }
-		public RadialPosition RadialPosition { get; private set; }
+		public Polar PolarPosition { get; private set; }
 		
-		public LandmarkPosition(Landmark landmark, RadialPosition radialPosition) : this() {
+		public LandmarkPosition(Landmark landmark, Polar radialPosition) : this() {
 			Landmark = landmark;
-			RadialPosition = radialPosition;
+			PolarPosition = radialPosition;
 		}
 	}
 	
     [DebuggerDisplay("HingeJoint {Label}={Angle}")]
     public struct HingeJointState {
 		public string Label { get; private set; }
-		public double Angle { get; private set; }
+		public Angle Angle { get; private set; }
 		
-		public HingeJointState(string label, double angle) : this() {
+		public HingeJointState(string label, Angle angle) : this() {
 			Label = label;
 			Angle = angle;
 		}
@@ -229,10 +229,10 @@ namespace Drew.RoboCup
     [DebuggerDisplay("UniversalJoint {Label}={Angle1},{Angle2}")]
 	public struct UniversalJointState {
 		public string Label { get; private set; }
-		public double Angle1 { get; private set; }
-		public double Angle2 { get; private set; }
+		public Angle Angle1 { get; private set; }
+		public Angle Angle2 { get; private set; }
 		
-		public UniversalJointState(string label, double angle1, double angle2) : this() {
+		public UniversalJointState(string label, Angle angle1, Angle angle2) : this() {
 			Label = label;
 			Angle1 = angle1;
 			Angle2 = angle2;
@@ -240,12 +240,12 @@ namespace Drew.RoboCup
 	}
 
 	public struct Message {
-	    public bool IsFromSelf { get { return RelativeDirection == -1; } }
+	    public bool IsFromSelf { get { return RelativeDirection.IsNaN; } }
 	    public TimeSpan HeardAtTime { get; private set; }
-	    public double RelativeDirection { get; private set; }
+	    public Angle RelativeDirection { get; private set; }
 	    public string MessageText { get; private set; }
 	    
-	    public Message(TimeSpan time, double direction, string message) : this() {
+	    public Message(TimeSpan time, Angle direction, string message) : this() {
 	        HeardAtTime = time;
 	        RelativeDirection = direction;
 	        MessageText = message;
@@ -254,15 +254,15 @@ namespace Drew.RoboCup
 	
 	public struct BodyPartPosition {
 	    public string Label { get; private set; }
-	    public RadialPosition RadialPosition { get; private set; }
+	    public Polar PolarPosition { get; private set; }
 	    
-	    public BodyPartPosition(string label, RadialPosition position) : this() {
+	    public BodyPartPosition(string label, Polar position) : this() {
 	        Label = label;
-	        RadialPosition = position;
+	        PolarPosition = position;
 	    }
 	    
 	    public override string ToString() {
-	        return string.Format("{0} {1}", Label, RadialPosition);
+	        return string.Format("{0} {1}", Label, PolarPosition);
 	    }
 	}
 	

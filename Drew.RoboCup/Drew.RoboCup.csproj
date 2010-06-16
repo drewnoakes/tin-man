@@ -43,8 +43,9 @@
     <Compile Include="EasingFunctions.cs" />
     <Compile Include="FieldGeometry.cs">
     </Compile>
+    <Compile Include="Geometry\Angle.cs" />
     <Compile Include="Geometry\GeometryUtil.cs" />
-    <Compile Include="Geometry\RadialPosition.cs" />
+    <Compile Include="Geometry\Polar.cs" />
     <Compile Include="Geometry\TransformationMatrix.cs" />
     <Compile Include="Geometry\Vector3.cs" />
     <Compile Include="HingeController.cs" />

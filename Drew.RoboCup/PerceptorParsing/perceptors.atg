@@ -92,7 +92,7 @@ COMPILER Perceptors
     private List<LandmarkPosition> LandmarkPositions;
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
-    private RadialPosition? BallPosition;
+    private Polar? BallPosition;
     private List<Message> Messages;
     
     public PerceptorState State { get; private set; }
@@ -104,7 +104,7 @@ COMPILER Perceptors
         return d;
     }
 
-    private void SeeLandmark(RadialPosition pos, Landmark landmark) {
+    private void SeeLandmark(Polar pos, Landmark landmark) {
         if (LandmarkPositions==null)
             LandmarkPositions = new List<LandmarkPosition>(4);
         LandmarkPositions.Add(new LandmarkPosition(landmark, pos));
@@ -129,6 +129,9 @@ PRODUCTIONS
 Double<out double d> = double               (. d = AsDouble(t.val); .)
     .
     
+AngleInDegrees<out Angle a> = double        (. a = Angle.FromDegrees(AsDouble(t.val)); .)
+    .
+    
 Ident<out string s> = ident                 (. s = t.val; .)
     .
 
@@ -140,17 +143,17 @@ Vector3<out Vector3 v> =                        (. double x, y, z; .)
     Double<out x> Double<out y> Double<out z>   (. v = new Vector3(x, y, z); .)
     .
 
-RadialPosition<out RadialPosition pos> =        (. double distance, angle1, angle2; .)
+Polar<out Polar pos> =                          (. double distance, angle1, angle2; .)
     Double<out distance> Double<out angle1> Double<out angle2>   
-                                                (. pos = new RadialPosition(distance, angle1, angle2); .)
+                                                (. pos = new Polar(distance, Angle.FromDegrees(angle1), Angle.FromDegrees(angle2)); .)
     .
 
 IntFlag<out bool isSet> =                       (. double d; .)
     Double<out d>                               (. isSet = d != 0; .)
     .
 
-PolarPosExpr<out RadialPosition pos> =
-    "(pol" RadialPosition<out pos> ')'
+PolarPosExpr<out Polar pos> =
+    "(pol" Polar<out pos> ')'
     .
 
 MessageText<out string m> =
@@ -199,16 +202,16 @@ AccelerometerStateExpr<out AccelerometerState accState> = (. string label; Vecto
     .
 
 // (HJ (n hj1) (ax 0.00))
-HingeJointExpr<out HingeJointState hj> =        (. string label; double angle; .)
+HingeJointExpr<out HingeJointState hj> =                (. string label; Angle angle; .)
     "(HJ" '(' 'n' Ident<out label> ')'
-          '(' "ax" Double<out angle> ')' ')'    (. hj = new HingeJointState(label, angle); .)
+          '(' "ax" AngleInDegrees<out angle> ')' ')'    (. hj = new HingeJointState(label, angle); .)
     .
 
 // (UJ (n laj1 2) (ax1 -1.32) (ax2 2.00))
-UniversalJointExpr<out UniversalJointState uj> =    (. string label; double angle1, angle2; .)
+UniversalJointExpr<out UniversalJointState uj> =        (. string label; Angle angle1, angle2; .)
     "(UJ" '(' 'n' Ident<out label> ')'
-          '(' "ax1" Double<out angle1> ')'
-          '(' "ax2" Double<out angle2> ')' ')'      (. uj = new UniversalJointState(label, angle1, angle2); .)
+          '(' "ax1" AngleInDegrees<out angle1> ')'
+          '(' "ax2" AngleInDegrees<out angle2> ')' ')'  (. uj = new UniversalJointState(label, angle1, angle2); .)
     .
 
 // (TCH n bumper val 1)
@@ -244,7 +247,7 @@ SeeExpr =
     ')'
     .
 
-VisibleItemExpr =                           (. string label = la.val; RadialPosition pos; .)
+VisibleItemExpr =                           (. string label = la.val; Polar pos; .)
         { "F1L" | "F2L" | "F1R" | "F2R" | "G1L" | "G2L" | "G1R" | "G2R" | "B" }
         PolarPosExpr<out pos>
                                              (. switch (label) {
@@ -273,7 +276,7 @@ PlayerExpr =
         "(team" Ident<out teamName> ')'
         "(id" Double<out playerId> ')'
         {
-                                            (. string partLabel; RadialPosition pos; .)
+                                            (. string partLabel; Polar pos; .)
             '(' Ident<out partLabel>            
             PolarPosExpr<out pos> ')'       (. parts.Add(new BodyPartPosition(partLabel, pos)); .)
         }
@@ -297,12 +300,12 @@ PlayerExpr =
 //    operators can be found for example. Three characters from this range are, however, excluded:
 //    the white space character and the normal brackets ( and ).
 //    Messages are restricted to a maximal length (currently 20 bytes).
-HearExpr<out Message message> =                     (. TimeSpan time; double direction = -1; string messageText; .)
+HearExpr<out Message message> =                     (. TimeSpan time; Angle direction = Angle.NaN; string messageText; .)
     "(hear" 
         TimeSpan<out time>
         [
-            "self"                                  // (. direction = -1; .)
-          | Double<out direction>
+            "self"
+          | AngleInDegrees<out direction>
         ]
         MessageText<out messageText>
     ')'                                             (. message = new Message(time, direction, messageText.Trim('\'')); .)
