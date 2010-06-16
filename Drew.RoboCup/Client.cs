@@ -22,7 +22,11 @@ namespace Drew.RoboCup
         public Client(string hostName, int port)
         {
             Console.WriteLine("Connecting via TCP to {0}:{1}", hostName, port);
+            try {
             _client = new TcpClient(hostName, port);
+            } catch (SocketException ex) {
+                Console.Error.WriteLine("Unable to connect to {0}:{1}.  Exiting.", hostName, port);
+            }
         }
         
         public void Run(IRobot robot)

@@ -14,25 +14,22 @@ namespace Drew.RoboCup
     
     public sealed class MoveHingeJointAction : IAction {
         private readonly string _effectorLabel;
-        private readonly double _radiansPerSecond;
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="effectorLabel">The label of the hinge joint to move.</param>
-        /// <param name="radiansPerSecond">The angular velocity at which to move the hinge, in radians per second.</param>
-        public MoveHingeJointAction(string effectorLabel, double radiansPerSecond) {
+        // TODO work out what the _move represents. Docs say 'change in angle of the joint', some code says 'angular velocity in radians per second'
+        private readonly double _move;
+        public MoveHingeJointAction(string effectorLabel, double move) {
             _effectorLabel = effectorLabel;
-            _radiansPerSecond = radiansPerSecond;
+            _move = move;
         }
         
         public void AppendCommand(StringBuilder s) {
-            s.AppendFormat("({0} {1:0.######})", _effectorLabel, _radiansPerSecond);
+            s.AppendFormat("({0} {1:0.######})", _effectorLabel, _move);
         }
     }
     
+    /// <summary>
+    /// Allows a player to position itself on the field before the game starts.
+    /// </summary>
     public sealed class BeamAction : IAction {
-        // TODO document at which points of the game you are allowed to beam
         private readonly double _x;
         private readonly double _y;
         private readonly double _rotation;
@@ -41,7 +38,8 @@ namespace Drew.RoboCup
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
-        /// <param name="rotation">Defines the rotation angle of the player. Zero degrees points to positive x axis, 90 degrees to positive y axis.</param>
+        /// <param name="rotation">Defines the rotation angle of the player. Zero degrees points to positive x axis (to
+        /// the right of the field), 90 degrees to positive y axis (to the top of the field).</param>
         public BeamAction(double x, double y, double rotation) {
             _x = x;
             _y = y;
