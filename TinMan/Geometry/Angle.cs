@@ -8,6 +8,7 @@ namespace TinMan
     /// <summary>
     /// Represents an angle as a double-precision floating point value.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{Degrees} deg")]
     public struct Angle : IEquatable<Angle>
     {
         public static readonly Angle Zero = new Angle(0);

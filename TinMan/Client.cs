@@ -57,7 +57,7 @@ namespace TinMan {
         /// This call blocks 
         /// </summary>
         /// <param name="robot"></param>
-        public void Run(IAgent robot) {
+        public void Run(IAgent agent) {
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
             // Try to make a TCP connection.
@@ -78,18 +78,18 @@ namespace TinMan {
                 // Initialise with server.  We must first send the scene command, to specify which robot we'll be using.
                 // NOTE We read between sends, even though no reponse will be received.  If we don't then we appear in middle, white.
                 // TODO maybe just a pause is enough (rather than a read)
-                SendCommands(stream, new [] { new SceneSpecificationCommand(robot.RsgPath) });
+                SendCommands(stream, new [] { new SceneSpecificationCommand(agent.Body.RsgPath) });
                 ReadResponseString(stream);
                 // Specify which player on which team.
                 SendCommands(stream, new [] { new InitialisePlayerCommand(UniformNumber, TeamName) });
                 ReadResponseString(stream);
                 
-                _log.Info("Press 'Q' to exit, 'P' to print next percepts, 'E' to print next effectors . . . ");
+                _log.Info("Press 'Q' to exit . . . ");
                 
-                bool printNextPerceptors = true;
-                bool printNextEffectors = true;
-                
+                var context = new SimulationContext();
+                var commands = new List<IEffectorCommand>();
                 while (!_stopRequested) {
+                    commands.Clear();
                     string data = ReadResponseString(stream);
                     if (data!=null) {
                         // TODO try and reuse these parsing objects (custom s-expression parser)
@@ -99,37 +99,36 @@ namespace TinMan {
                         if (parser.errors.HasError)
                             _log.Error("PARSE ERROR: {0}\nDATA: {1}", parser.errors.ErrorMessages, data);
                         
-                        if (printNextPerceptors) {
-                            printNextPerceptors = false;
-                            _log.Info(parser.State.ToString());
-                        }
+                        // Update the body's hinges with current angular positions
+                        foreach (var hinge in agent.Body.AllHinges)
+                            hinge.Angle = parser.State.GetHingeAngle(hinge);
 
-                        var commands = robot.Step(parser.State);
+                        // Let the agent perform its magic
+                        agent.Step(context, parser.State);
                         
-                        if (commands!=null && commands.Any()) {
-                            if (printNextEffectors) {
-                                printNextEffectors = false;
-                                _log.Info(ConcatCommandStrings(commands));
-                            }
-                            SendCommands(stream, commands);
+                        // Collate list of commands to send
+                        context.FlushCommands(commands);
+                        foreach (var hinge in agent.Body.AllHinges) {
+                            if (hinge.IsSpeedChanged)
+                                commands.Add(hinge.GetCommand());
                         }
                     }
                     
+                    // TODO don't assume that the user of a Client wants this thing listening to the console... that should be an ancillary function
                     if (Console.KeyAvailable) {
                         var key = char.ToUpper(Console.ReadKey(true).KeyChar);
                         if (key=='Q')
                             _stopRequested = true;
-                        else if (key=='P')
-                            printNextPerceptors = true;
-                        else if (key=='E')
-                            printNextEffectors = true;
-                        else if (robot is IUserInteractiveAgent)
-                            ((IUserInteractiveAgent)robot).HandleUserInput(key);
+                        else if (agent is IUserInteractiveAgent)
+                            ((IUserInteractiveAgent)agent).HandleUserInput(key, context);
                     }
+
+                    if (commands.Count!=0)
+                        SendCommands(stream, commands);
                 }
                 
-                if (robot is IDisposable)
-                    ((IDisposable)robot).Dispose();
+                if (agent is IDisposable)
+                    ((IDisposable)agent).Dispose();
             }
         }
         
@@ -170,7 +169,6 @@ namespace TinMan {
         }
         
         private static void SendCommands(NetworkStream stream, IEnumerable<IEffectorCommand> commands) {
-
             string commandStr = ConcatCommandStrings(commands);
             // Server uses 1-byte-per-character ASCII
             byte[] bytes = Encoding.ASCII.GetBytes(commandStr);
@@ -185,7 +183,6 @@ namespace TinMan {
             stream.Write(numBytes, 0, numBytes.Length);
             stream.Write(bytes, 0, bytes.Length);
         }
-
 
         private static string ConcatCommandStrings(IEnumerable<IEffectorCommand> commands) {
             var sb = new StringBuilder();

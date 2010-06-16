@@ -67,7 +67,13 @@ namespace TinMan
 			Messages = heardMessages;
 		}
 		
-		public Angle GetHingeAngle(Hinge hinge) {
+		/// <summary>Looks up the current angle for the given hinge.</summary>
+		/// <remarks>Note that this method is marked with internal visibility as agent code
+		/// should not need to use it.  Instead, access <see cref="Hinge.Angle"/> directly
+		/// and avoid the O(N) lookup cost.</remarks>
+		/// <param name="hinge"></param>
+		/// <returns></returns>
+		internal Angle GetHingeAngle(Hinge hinge) {
             Debug.Assert(HingeStates!=null, "HingeStates should not be null.");
             foreach (var hj in HingeStates) {
 		        if (hj.Label==hinge.PerceptorLabel)

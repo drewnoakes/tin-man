@@ -20,16 +20,16 @@ namespace TinMan
     }
     
     /// <summary>
-    /// HingeJoint Effector
+    /// Commands a HingeJointEffector to set the speed of rotation to a new value.
     /// </summary>
     /// <remarks>
     /// Format:  ({name} {ax})<br/>
     /// Example: (lae3 5.3)
     /// </remarks>
-    public sealed class MoveHingeCommand : IEffectorCommand {
+    internal sealed class HingeSpeedCommand : IEffectorCommand {
         private readonly Hinge _hinge;
         private readonly AngularSpeed _angularSpeed;
-        public MoveHingeCommand(Hinge hinge, AngularSpeed angularSpeed) {
+        public HingeSpeedCommand(Hinge hinge, AngularSpeed angularSpeed) {
             _hinge = hinge;
             _angularSpeed = angularSpeed;
         }
@@ -46,17 +46,10 @@ namespace TinMan
     /// Format:  (beam {x} {y} {rot})<br/>
     /// Example: (beam 10.0 -10.0 0.0)
     /// </remarks>
-    public sealed class BeamCommand : IEffectorCommand {
+    internal sealed class BeamCommand : IEffectorCommand {
         private readonly double _x;
         private readonly double _y;
         private readonly Angle _rotation;
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="rotation">Defines the rotation angle of the player. Zero degrees points to positive x axis (to
-        /// the right of the field), 90 degrees to positive y axis (to the top of the field).</param>
         public BeamCommand(double x, double y, Angle rotation) {
             _x = x;
             _y = y;
@@ -75,7 +68,7 @@ namespace TinMan
     /// Format:  (scene {filename})<br/>
     /// Message: (scene rsg/agent/nao/nao.rsg)
     /// </remarks>
-    public sealed class SceneSpecificationCommand : IEffectorCommand {
+    internal sealed class SceneSpecificationCommand : IEffectorCommand {
         private readonly string _rsgPath;
         public SceneSpecificationCommand(string rsgPath) {
             _rsgPath = rsgPath;
@@ -97,7 +90,7 @@ namespace TinMan
     /// Format:  (init (unum {playernumber})(teamname {yourteamname}))<br/>
     /// Example: (init (unum 1)(teamname FHO))
     /// </remarks>
-    public sealed class InitialisePlayerCommand : IEffectorCommand {
+    internal sealed class InitialisePlayerCommand : IEffectorCommand {
         private readonly int _uniformNumber;
         private readonly string _teamName;
         /// <summary>
@@ -124,12 +117,13 @@ namespace TinMan
     /// Format:  (say {message})<br/>
     /// Example: (say ``helloworld'')
     /// </remarks>
-    public sealed class SayCommand : IEffectorCommand {
+    internal sealed class SayCommand : IEffectorCommand {
         /// <summary>
         /// Message may consist of 20 characters, which may be taken from the ASCII printing character
         /// subset [0x20; 0x7E] except the white space character ' ' and the normal brackets '(' and ')'.
         /// </summary>
         public static bool IsValidMessage(string message) {
+            // TODO now that this type is internal, provide a public IsValidMessage method somewhere
             if (message==null)
                 return false;
             if (message.Length==0 || message.Length>20)

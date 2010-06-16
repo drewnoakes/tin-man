@@ -7,7 +7,8 @@ using System.Collections.Generic;
 namespace TinMan.SampleBot
 {
     internal sealed class SampleAgent : IAgent, IUserInteractiveAgent {
-        public string RsgPath { get { return Nao.RsgPath; }}
+        private readonly NaoBody _body = new NaoBody();
+        public IBody Body { get { return _body; } }
         // TODO what happens if we send 0
         // TODO what happens if we send negative while inertia moving positive
         
@@ -17,21 +18,21 @@ namespace TinMan.SampleBot
         private AngularSpeed _impulseSpeed = AngularSpeed.FromDegreesPerSecond(5) ;
         private Angle _lastAngle;
         private TimeSpan _lastSimulationTime;
-        private Hinge _hinge = NaoHinge.HJ1;
-        public IEnumerable<IEffectorCommand> Step(PerceptorState state) {
+        public void Step(ISimulationContext context, PerceptorState state) {
             if (_beamToGoal) {
                 _beamToGoal = false;
-                return new[] { new BeamCommand(-FieldGeometry.FieldXLength/2, 0, Angle.Zero) };
+                context.Beam(-FieldGeometry.FieldXLength/2, 0, Angle.Zero);
             }
-            Angle currentAngle = state.GetHingeAngle(_hinge);
+
+            var hinge = _body.HJ1;
+            Angle currentAngle = hinge.Angle;
             AngularSpeed speedLastCycle = (currentAngle - _lastAngle) / (state.SimulationTime - _lastSimulationTime);
-            AngularSpeed speedToRequest;
             if (_moveCount>0) {
-                speedToRequest = _impulseSpeed;
+                hinge.Speed = _impulseSpeed;
                 _stableCount = 3;
                 _moveCount--;
             } else {
-                speedToRequest = AngularSpeed.Zero;
+                hinge.Speed = AngularSpeed.Zero;
                 if (speedLastCycle==AngularSpeed.Zero && _stableCount>0)
                     _stableCount--;
             }
@@ -43,13 +44,11 @@ namespace TinMan.SampleBot
                                   state.SimulationTime.TotalSeconds,
                                   currentAngle.Degrees, 
                                   speedLastCycle.DegreesPerSecond, 
-                                  speedToRequest.DegreesPerSecond);
+                                  hinge.Speed.DegreesPerSecond);
             }
-            
-            return new [] { new MoveHingeCommand(_hinge, speedToRequest) };
         }
         
-        public void HandleUserInput(char key) {
+        public void HandleUserInput(char key, ISimulationContext context) {
             if (key=='B') {
                 _beamToGoal = true;
                 Console.WriteLine("Beaming to goal");

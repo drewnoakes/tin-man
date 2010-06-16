@@ -4,18 +4,26 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
-    <RootNamespace>RoboCup3D.TinMan</RootNamespace>
-    <AssemblyName>RoboCup3D.TinMan</AssemblyName>
+    <RootNamespace>TinMan</RootNamespace>
+    <AssemblyName>TinMan</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Users\Drew\AppData\Roaming\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Platform)' == 'x86' ">
     <PlatformTarget>x86</PlatformTarget>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <OutputPath>bin\Debug\</OutputPath>
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
@@ -23,11 +31,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
-    <DebugSymbols>False</DebugSymbols>
+    <DebugSymbols>false</DebugSymbols>
     <DebugType>None</DebugType>
     <Optimize>True</Optimize>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\TinMan.xml</DocumentationFile>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
@@ -50,11 +59,13 @@
     <Compile Include="Hinge.cs" />
     <Compile Include="HingeController.cs" />
     <Compile Include="IAgent.cs" />
+    <Compile Include="IBody.cs" />
     <Compile Include="IStateObserver.cs" />
-    <Compile Include="Nao\NaoHinge.cs" />
-    <Compile Include="TinManLog.cs" />
-    <Compile Include="Nao\Nao.cs" />
+    <Compile Include="Nao\NaoBody.cs" />
+    <Compile Include="Nao\NaoBodyController.cs" />
     <Compile Include="PerceptorParsing\Parser.cs" />
+    <Compile Include="SimulationContext.cs" />
+    <Compile Include="TinManLog.cs" />
     <Compile Include="PerceptorParsing\Scanner.cs" />
     <Compile Include="PerceptorState.cs" />
     <Compile Include="PlayMode.cs" />
@@ -66,8 +77,8 @@
     <None Include="PerceptorParsing\Scanner.frame" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Nao" />
     <Folder Include="Geometry" />
+    <Folder Include="Nao" />
     <Folder Include="PerceptorParsing" />
   </ItemGroup>
 </Project>

@@ -7,22 +7,18 @@ using System.Collections.Generic;
 namespace TinMan
 {
     public interface IAgent {
-        /// <summary>
-        /// Gets a string that indicates the path to the Ruby Scene Graph (RSG) file on the server
-        /// that the simulator should load for this agent.  A common choice is <see cref="Nao.RsgFilePath"/>.
-        /// </summary>
-        string RsgPath { get; }
+        IBody Body { get; }
         
         /// <summary>
-        /// Updates the agent with the latest perceptor state, returning zero or more commands
-        /// for the agent's effectors.
+        /// Gives the agent a chance to process the latest body state and
+        /// perform any necessary actions.
         /// </summary>
+        /// <param name="context"></param>
         /// <param name="state"></param>
-        /// <returns></returns>
-        IEnumerable<IEffectorCommand> Step(PerceptorState state);
+        void Step(ISimulationContext context, PerceptorState state);
     }
     
     public interface IUserInteractiveAgent {
-        void HandleUserInput(char key);
+        void HandleUserInput(char key, ISimulationContext context);
     }
 }

@@ -8,6 +8,7 @@ namespace TinMan
     /// <summary>
     /// Represents an angular speed as a double-precision floating point value.
     /// </summary>
+    [System.Diagnostics.DebuggerDisplay("{DegreesPerSecond} deg/sec")]
     public struct AngularSpeed : IEquatable<AngularSpeed>
     {
         public static readonly AngularSpeed Zero = new AngularSpeed(0);
