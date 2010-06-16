@@ -77,7 +77,7 @@
  *    Format:  (AgentState (temp <degree>) (battery <percentile>))
  *    Example: (AgentState (temp 48) (battery 75))
  * Hear Perceptor
- * 	  Format:  (hear <time> 'self'|<direction> <message>)
+ *       Format:  (hear <time> 'self'|<direction> <message>)
  *    Example: (hear 12.3 self ``helloworld'')
  *    Message may consist of characters from the ASCII printing
  *    character subset [0x20; 0x7E], among which the alphanumerical symbols and mathematical
@@ -201,7 +201,7 @@ GameStateExpr<out TimeSpan time, out PlayMode playMode, out int? playerId, out F
         ]
           '(' 't' TimeSpan<out time> ')'
           '(' "pm" Ident<out pmStr> ')'          (. if (!PlayModeUtil.TryParse(pmStr, out playMode))
-                                            	        SemErr("Unable to parse play mode '" + pmStr +"'.");;
+                                                        SemErr("Unable to parse play mode '" + pmStr +"'.");;
                                                   .)
     ')'
     .
@@ -312,7 +312,7 @@ PlayerExpr =
     .
     
 // (hear <time> 'self'|<direction> <message>)
-// 	  Format:  (hear <time> 'self'|<direction> <message>)
+//       Format:  (hear <time> 'self'|<direction> <message>)
 //    Example: (hear 12.3 self ``helloworld'')
 //    Message may consist of characters from the ASCII printing
 //    character subset [0x20; 0x7E], among which the alphanumerical symbols and mathematical
@@ -361,9 +361,9 @@ Perceptors =
         State = new PerceptorState(
                               SimulationTime, GameTime, PlayMode, TeamSide, PlayerId, 
                               GyroStates, HingeStates, UniversalJointStates,
-							  TouchStates, ForceStates, AccelerometerStates,
-							  LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
-							  AgentBattery, AgentTemperature, Messages);
+                              TouchStates, ForceStates, AccelerometerStates,
+                              LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
+                              AgentBattery, AgentTemperature, Messages);
      .)
     .
 

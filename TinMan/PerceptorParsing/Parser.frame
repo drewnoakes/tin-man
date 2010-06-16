@@ -31,87 +31,87 @@ using System;
 
 public sealed class Parser {
 -->constants
-	private const bool T = true;
-	private const bool x = false;
-	private const int minErrDist = 2;
-	
-	public Scanner scanner;
-	public Errors  errors;
+    private const bool T = true;
+    private const bool x = false;
+    private const int minErrDist = 2;
+    
+    public Scanner scanner;
+    public Errors  errors;
 
-	public Token t;    // last recognized token
-	public Token la;   // lookahead token
-	private int errDist = minErrDist;
+    public Token t;    // last recognized token
+    public Token la;   // lookahead token
+    private int errDist = minErrDist;
 
 -->declarations
 
-	public Parser(Scanner scanner) {
-		this.scanner = scanner;
-		errors = new Errors();
-	}
+    public Parser(Scanner scanner) {
+        this.scanner = scanner;
+        errors = new Errors();
+    }
 
-	private void SynErr (int n) {
-		if (errDist >= minErrDist) errors.SynErr(la.line, la.col, n);
-		errDist = 0;
-	}
+    private void SynErr (int n) {
+        if (errDist >= minErrDist) errors.SynErr(la.line, la.col, n);
+        errDist = 0;
+    }
 
-	public void SemErr (string msg) {
-		if (errDist >= minErrDist) errors.SemErr(t.line, t.col, msg);
-		errDist = 0;
-	}
-	
-	private void Get () {
-		for (;;) {
-			t = la;
-			la = scanner.Scan();
-			if (la.kind <= maxT) { ++errDist; break; }
+    public void SemErr (string msg) {
+        if (errDist >= minErrDist) errors.SemErr(t.line, t.col, msg);
+        errDist = 0;
+    }
+    
+    private void Get () {
+        for (;;) {
+            t = la;
+            la = scanner.Scan();
+            if (la.kind <= maxT) { ++errDist; break; }
 -->pragmas
-			la = t;
-		}
-	}
-	
-	private void Expect (int n) {
-		if (la.kind==n) Get(); else { SynErr(n); }
-	}
-	
-	private bool StartOf (int s) {
-		return set[s, la.kind];
-	}
-	
-	private void ExpectWeak (int n, int follow) {
-		if (la.kind == n) Get();
-		else {
-			SynErr(n);
-			while (!StartOf(follow)) Get();
-		}
-	}
+            la = t;
+        }
+    }
+    
+    private void Expect (int n) {
+        if (la.kind==n) Get(); else { SynErr(n); }
+    }
+    
+    private bool StartOf (int s) {
+        return set[s, la.kind];
+    }
+    
+    private void ExpectWeak (int n, int follow) {
+        if (la.kind == n) Get();
+        else {
+            SynErr(n);
+            while (!StartOf(follow)) Get();
+        }
+    }
 
-	private bool WeakSeparator(int n, int syFol, int repFol) {
-		int kind = la.kind;
-		if (kind == n) {Get(); return true;}
-		else if (StartOf(repFol)) {return false;}
-		else {
-			SynErr(n);
-			while (!(set[syFol, kind] || set[repFol, kind] || set[0, kind])) {
-				Get();
-				kind = la.kind;
-			}
-			return StartOf(syFol);
-		}
-	}
+    private bool WeakSeparator(int n, int syFol, int repFol) {
+        int kind = la.kind;
+        if (kind == n) {Get(); return true;}
+        else if (StartOf(repFol)) {return false;}
+        else {
+            SynErr(n);
+            while (!(set[syFol, kind] || set[repFol, kind] || set[0, kind])) {
+                Get();
+                kind = la.kind;
+            }
+            return StartOf(syFol);
+        }
+    }
 
 -->productions
 
-	public void Parse() {
-		la = new Token();
-		la.val = "";		
-		Get();
+    public void Parse() {
+        la = new Token();
+        la.val = "";        
+        Get();
 -->parseRoot
     Expect(0);
-	}
-	
-	static readonly bool[,] set = {
+    }
+    
+    static readonly bool[,] set = {
 -->initialization
-	};
+    };
 } // end Parser
 
 public struct ParseError {
@@ -155,57 +155,57 @@ public struct ParseError {
 }
 
 public sealed class Errors {
-	public List<ParseError> Items;
-	public bool HasError { get { return Items!=null; } }
-	public string ErrorMessages {
-	    get {
-	        if (Items==null) return null;
-	        var s = new System.Text.StringBuilder();
-	        foreach (var item in Items)
-	            s.AppendLine(item.ToString());
-	        return s.ToString();
-	    }
-	}
+    public List<ParseError> Items;
+    public bool HasError { get { return Items!=null; } }
+    public string ErrorMessages {
+        get {
+            if (Items==null) return null;
+            var s = new System.Text.StringBuilder();
+            foreach (var item in Items)
+                s.AppendLine(item.ToString());
+            return s.ToString();
+        }
+    }
 
-	public void SynErr(int line, int col, int n) {
-		string s;
-		switch (n) {
+    public void SynErr(int line, int col, int n) {
+        string s;
+        switch (n) {
 -->errors
-			default: s = "error code " + n; break;
-		}
-		
-		AddError(line, col, n, s);
+            default: s = "error code " + n; break;
+        }
+        
+        AddError(line, col, n, s);
     }
 
     private void AddError(int line, int col, int code, string message) {
-		if (Items==null)
-		    Items = new List<ParseError>();
-		
-		Items.Add(new ParseError(line, col, code, message));
-	}
+        if (Items==null)
+            Items = new List<ParseError>();
+        
+        Items.Add(new ParseError(line, col, code, message));
+    }
 
-	public void SemErr(int line, int col, string s) {
-		AddError(line, col, -1, s);
-	}
-	
-	public void SemErr(string s) {
-		AddError(-1, -1, -1, s);
-	}
-	
-	public void Warning(int line, int col, string s) {
-	    // TODO should we record that this was a warning, and not an error?
-		AddError(line, col, -1, s);
-	}
-	
-	public void Warning(string s) {
-	    // TODO should we record that this was a warning, and not an error?
-		AddError(-1, -1, -1, s);
-	}
+    public void SemErr(int line, int col, string s) {
+        AddError(line, col, -1, s);
+    }
+    
+    public void SemErr(string s) {
+        AddError(-1, -1, -1, s);
+    }
+    
+    public void Warning(int line, int col, string s) {
+        // TODO should we record that this was a warning, and not an error?
+        AddError(line, col, -1, s);
+    }
+    
+    public void Warning(string s) {
+        // TODO should we record that this was a warning, and not an error?
+        AddError(-1, -1, -1, s);
+    }
 }
 
 
 public sealed class FatalError: Exception {
-	public FatalError(string m): base(m) {}
+    public FatalError(string m): base(m) {}
 }
 
 $$$

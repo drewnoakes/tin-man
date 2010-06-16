@@ -51,15 +51,15 @@ namespace TinMan
         
         #region Static utility methods
         
-	    public static double DegreesToRadians(double degrees) {
-	        const double degToRadFactor = Math.PI/180;
-	        return degrees * degToRadFactor;
-	    }
-	    
-	    public static double RadiansToDegrees(double radians) {
-	        const double radToDegFactor = 180/Math.PI;
-	        return radians * radToDegFactor;
-	    }
+        public static double DegreesToRadians(double degrees) {
+            const double degToRadFactor = Math.PI/180;
+            return degrees * degToRadFactor;
+        }
+        
+        public static double RadiansToDegrees(double radians) {
+            const double radToDegFactor = 180/Math.PI;
+            return radians * radToDegFactor;
+        }
         
         #endregion
 
@@ -80,14 +80,14 @@ namespace TinMan
         #endregion
 
         public Angle Normalise() {
-	        // TODO can this be done this with mod division? check with unit test.
-	        var radians = Radians;
-	        while (radians < 0)
-	            radians += Math.PI*2;
-	        while (radians >= Math.PI*2)
-	            radians -= Math.PI*2;
-	        return Angle.FromRadians(radians);
-	    }
+            // TODO can this be done this with mod division? check with unit test.
+            var radians = Radians;
+            while (radians < 0)
+                radians += Math.PI*2;
+            while (radians >= Math.PI*2)
+                radians -= Math.PI*2;
+            return Angle.FromRadians(radians);
+        }
         
         public Angle Limit(Angle lowerLimit, Angle upperLimit) {
             if (lowerLimit > upperLimit)

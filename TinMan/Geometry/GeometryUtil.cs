@@ -24,7 +24,7 @@ using System;
 
 namespace TinMan
 {
-	public static class GeometryUtil {
+    public static class GeometryUtil {
         /// <summary>
         /// Calculates the distance along a line that is closest to <paramref name="point"/>.
         /// </summary>
@@ -41,5 +41,5 @@ namespace TinMan
                 / (v.X - (s.X/s.Y)*v.Y);
             return (origin + v*u - point).GetLength();
         }
-	}
+    }
 }

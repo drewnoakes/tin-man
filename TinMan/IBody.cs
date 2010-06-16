@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 namespace TinMan
 {
-	public interface IBody {
+    public interface IBody {
         /// <summary>
         /// Gets a well-known path of the Ruby Scene Graph (RSG) file in the RCSS3D server package
         /// for the model to be loaded for this agent's body.
@@ -37,10 +37,10 @@ namespace TinMan
         /// </summary>
         /// <param name="effectorLabel"></param>
         /// <returns></returns>
-		Hinge GetHingeForEffectorLabel(string effectorLabel);
-		
-		IEnumerable<Hinge> AllHinges { get; }
-		
-		Vector3 ConvertCameraPolarToLocalVector(Polar cameraView);
-	}
+        Hinge GetHingeForEffectorLabel(string effectorLabel);
+        
+        IEnumerable<Hinge> AllHinges { get; }
+        
+        Vector3 ConvertCameraPolarToLocalVector(Polar cameraView);
+    }
 }

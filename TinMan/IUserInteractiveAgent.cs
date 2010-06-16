@@ -25,7 +25,7 @@ using System;
 namespace TinMan
 {
     // TODO lose this interface
-	public interface IUserInteractiveAgent {
-	    void HandleUserInput(char key, ISimulationContext context);
-	}
+    public interface IUserInteractiveAgent {
+        void HandleUserInput(char key, ISimulationContext context);
+    }
 }
