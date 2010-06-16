@@ -87,9 +87,9 @@ namespace TinMan {
         /// <summary>
         /// Connects to the RoboCup3D server and runs a simulation with <paramref name="agent"/>.
         /// This call blocks until either <see cref="Stop"/> is called, or <see cref="IAgent.IsAlive"/>
-        /// becomes false (usually because an agent calls <see cref="AgentBase.StopSimulation"/>.
+        /// becomes false (usually because an agent calls <see cref="AgentBase{TBody}.StopSimulation"/>.
         /// </summary>
-        /// <param name="robot"></param>
+        /// <param name="agent"></param>
         public void Run<TBody>(AgentBase<TBody> agent) where TBody : IBody {
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 

@@ -29,6 +29,10 @@ namespace TinMan
 {
     /// <summary>
     /// Models the body of the Soccerbot robot.
+    /// </summary>
+    /// <remarks>
+    /// Note that the Soccerbot model has been replaced by <see cref="NaoBody"/> for RoboCup
+    /// competitions.
     /// </remarks>
     public sealed class SoccerbotBody : IBody {
         /// <summary>Well-known path of the Ruby Scene Graph (RSG) file for the NAO model in the RCSS3D server package.</summary>

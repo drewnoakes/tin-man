@@ -26,9 +26,9 @@ using System.Text;
 namespace TinMan
 {
     // TODO implement MoveUniversalJointCommand, even though it's not used by Nao
-    /// UniversalJoint Effector
-    /// Format:  ({name} {ax1} {ax2})<br/>
-    /// Message: (lae1 -2.3 1.2)
+    // UniversalJoint Effector
+    // Format:  ({name} {ax1} {ax2})<br/>
+    // Message: (lae1 -2.3 1.2)
 
     /// <summary>
     /// Defines the interface that all effector commands sent to the server
