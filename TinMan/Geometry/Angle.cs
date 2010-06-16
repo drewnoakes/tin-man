@@ -80,12 +80,11 @@ namespace TinMan
         #endregion
 
         public Angle Normalise() {
-            // TODO can this be done this with mod division? check with unit test.
             var radians = Radians;
             while (radians < 0)
                 radians += Math.PI*2;
-            while (radians >= Math.PI*2)
-                radians -= Math.PI*2;
+            if (radians >= Math.PI*2)
+                radians = radians % (Math.PI*2);
             return Angle.FromRadians(radians);
         }
         
@@ -161,5 +160,9 @@ namespace TinMan
             return !left.Equals(right);
         }
         #endregion
+        
+        public override string ToString() {
+            return string.Format("{0:0.##} degrees", Degrees);
+        }
     }
 }

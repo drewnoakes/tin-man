@@ -25,7 +25,8 @@ using System.Collections.Generic;
 
 namespace TinMan.SampleBot
 {
-    internal sealed class SampleAgent : AgentBase<NaoBody>, IUserInteractiveAgent {
+    // TODO what happens if we send negative while inertia moving positively, that is, can we apply a brake to slow down faster than we would from friction alone?
+    internal sealed class HingeCharacterisationAgent : AgentBase<NaoBody> {
         private bool _beamToGoal = true;
         private int _stableCount = 0;
         private int _moveCount = 0;
@@ -33,13 +34,13 @@ namespace TinMan.SampleBot
         private Angle _lastAngle;
         private TimeSpan _lastSimulationTime;
 
-        public SampleAgent()
+        public HingeCharacterisationAgent()
             : base(new NaoBody()) {}
         
-        public override void Step(ISimulationContext context, PerceptorState state) {
-            // TODO what happens if we send 0
-            // TODO what happens if we send negative while inertia moving positive
-
+        public override void Think(ISimulationContext context, PerceptorState state) {
+            if (Console.KeyAvailable)
+                HandleUserInput(Console.ReadKey(true).KeyChar, context);
+            
             if (_beamToGoal) {
                 _beamToGoal = false;
                 context.Beam(-FieldGeometry.FieldXLength/2, 0, Angle.Zero);
@@ -49,11 +50,11 @@ namespace TinMan.SampleBot
             Angle currentAngle = hinge.Angle;
             AngularSpeed speedLastCycle = (currentAngle - _lastAngle) / (state.SimulationTime - _lastSimulationTime);
             if (_moveCount>0) {
-                hinge.Speed = _impulseSpeed;
+                hinge.DesiredSpeed = _impulseSpeed;
                 _stableCount = 3;
                 _moveCount--;
             } else {
-                hinge.Speed = AngularSpeed.Zero;
+                hinge.DesiredSpeed = AngularSpeed.Zero;
                 if (speedLastCycle==AngularSpeed.Zero && _stableCount>0)
                     _stableCount--;
             }
@@ -65,11 +66,11 @@ namespace TinMan.SampleBot
                                   state.SimulationTime.TotalSeconds,
                                   currentAngle.Degrees, 
                                   speedLastCycle.DegreesPerSecond, 
-                                  hinge.Speed.DegreesPerSecond);
+                                  hinge.DesiredSpeed.DegreesPerSecond);
             }
         }
         
-        public void HandleUserInput(char key, ISimulationContext context) {
+        private void HandleUserInput(char key, ISimulationContext context) {
             if (key=='B') {
                 _beamToGoal = true;
                 Console.WriteLine("Beaming to goal");
@@ -92,11 +93,9 @@ namespace TinMan.SampleBot
                 _lastAngle = Angle.NaN;
             }
         }
-    }
-    
-//    internal static class Program {
+        
 //        public static void Main() {
 //            new Client().Run(new SampleAgent());
 //        }
-//    }
+    }
 }

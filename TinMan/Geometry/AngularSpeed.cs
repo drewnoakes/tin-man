@@ -70,7 +70,7 @@ namespace TinMan
                 return upperLimit;
             return this;
         }
-
+        
         #region Operators, Equality and Hashing
         
         public override bool Equals(object obj) {
@@ -133,5 +133,9 @@ namespace TinMan
             return !left.Equals(right);
         }
         #endregion
+        
+        public override string ToString() {
+            return string.Format("{0:0.##} degrees/second", DegreesPerSecond);
+        }
     }
 }

@@ -24,12 +24,14 @@ using System;
 
 namespace TinMan
 {
+    /// <summary>
+    /// General interface for any object that wishes to be notified of new perceptor state.
+    /// </summary>
     public interface IStateObserver {
         /// <summary>
-        /// Processes a step in the simulation.  Any side effects of this step are made to effector controllers
-        /// such as <see cref="HingeController"/>.
+        /// Called with updated perceptor state.
         /// </summary>
-        /// <param name="simulationTime"></param>
+        /// <param name="state">The updated perceptor state.</param>
         void Observe(PerceptorState state);
     }
 }

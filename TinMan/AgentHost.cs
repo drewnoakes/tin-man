@@ -32,7 +32,14 @@ using System.Threading;
 using TinMan.PerceptorParsing;
 
 namespace TinMan {
-    public sealed class Client {
+    /// <summary>
+    /// Hosts an implementation of <see cref="IAgent"/>, handling all communication with the server and
+    /// managing the lifecycle of the TinMan framework with respect to the simulation.
+    /// </summary>
+    public sealed class AgentHost {
+        public const int DefaultTcpPort = 3100;
+        public static readonly TimeSpan CyclePeriod = TimeSpan.FromMilliseconds(20);
+        
         private static readonly Log _log = Log.Create();
         
         /// <summary>
@@ -40,9 +47,9 @@ namespace TinMan {
         /// <see cref="TeamName"/> to <tt>TinManBots</tt>.  Change these explicitly after
         /// construction, but before calling <see cref="Run"/>.
         /// </summary>
-        public Client() {
+        public AgentHost() {
             HostName = "localhost";
-            PortNumber = 3100;
+            PortNumber = DefaultTcpPort;
             TeamName = "TinManBots";
             UniformNumber = 0;
         }
@@ -69,13 +76,18 @@ namespace TinMan {
         /// </summary>
         public int PortNumber { get; set; }
         
+        /// <summary>
+        /// Gets the simulation context used by this host.  The context provides appropriately
+        /// scoped access to resources provided by the TinMan framework for use by an agent.
+        /// </summary>
         public ISimulationContext Context { get; private set; }
         
         private bool _stopRequested = false;
         
         /// <summary>
-        /// Connects to the RoboCup3D server and runs a simulation with <paramref name="robot"/>.
-        /// This call blocks 
+        /// Connects to the RoboCup3D server and runs a simulation with <paramref name="agent"/>.
+        /// This call blocks until either <see cref="Stop"/> is called, or <see cref="IAgent.IsAlive"/>
+        /// becomes false (usually because an agent calls <see cref="AgentBase.StopSimulation"/>.
         /// </summary>
         /// <param name="robot"></param>
         public void Run<TBody>(AgentBase<TBody> agent) where TBody : IBody {
@@ -99,13 +111,12 @@ namespace TinMan {
                 // Initialise with server.  We must first send the scene command, to specify which robot we'll be using.
                 // NOTE We read between sends, even though no reponse will be received.  If we don't then we appear in middle, white.
                 // TODO maybe just a pause is enough (rather than a read)
+                // TODO at startup, don't log warnings about listen timeouts until after the first message has been received from the server
                 SendCommands(stream, new [] { new SceneSpecificationCommand(agent.Body.RsgPath) });
                 ReadResponseString(stream);
                 // Specify which player on which team.
                 SendCommands(stream, new [] { new InitialisePlayerCommand(UniformNumber, TeamName) });
                 ReadResponseString(stream);
-                
-                _log.Info("Press 'Q' to exit . . . ");
                 
                 var context = new SimulationContext(this);
                 Context = context;
@@ -115,24 +126,30 @@ namespace TinMan {
                     commands.Clear();
                     string data = ReadResponseString(stream);
                     if (data!=null) {
-                        // TODO try and reuse these parsing objects (custom s-expression parser)
+                        // Parse message
                         var parser = new Parser(new Scanner(new StringBuffer(data)));
                         parser.Parse();
-                        
                         if (parser.errors.HasError)
                             _log.Error("PARSE ERROR: {0}\nDATA: {1}", parser.errors.ErrorMessages, data);
                         
                         // Update the body's hinges with current angular positions
-                        foreach (var hinge in agent.Body.AllHinges)
-                            hinge.Angle = parser.State.GetHingeAngle(hinge);
-
+                        foreach (var hinge in agent.Body.AllHinges) {
+                            Angle angle;
+                            if (parser.State.TryGetHingeAngle(hinge, out angle))
+                                hinge.Angle = angle;
+                        }
+                        
                         // Let the agent perform its magic
-                        agent.Step(Context, parser.State);
+                        agent.Think(Context, parser.State);
+                        
+                        // Visit all hinges again to compute any control functions
+                        foreach (var hinge in agent.Body.AllHinges)
+                            hinge.ComputeControlFunction(context);
                         
                         // Collate list of commands to send
                         context.FlushCommands(commands);
                         foreach (var hinge in agent.Body.AllHinges) {
-                            if (hinge.IsSpeedChanged)
+                            if (hinge.IsDesiredSpeedChanged)
                                 commands.Add(hinge.GetCommand());
                         }
                     }
@@ -203,18 +220,6 @@ namespace TinMan {
             foreach (var command in commands)
                 command.AppendSExpression(sb);
             return sb.ToString();
-        }
-    }
-    
-    public sealed class ConsoleInputHelper {
-        public ConsoleInputHelper(Client client, IAgent agent) {
-            if (Console.KeyAvailable) {
-                var key = char.ToUpper(Console.ReadKey(true).KeyChar);
-                if (key=='Q')
-                    client.Stop();
-                else if (agent is IUserInteractiveAgent)
-                    ((IUserInteractiveAgent)agent).HandleUserInput(key, client.Context);
-            }
         }
     }
 }

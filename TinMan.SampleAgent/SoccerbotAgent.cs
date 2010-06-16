@@ -18,14 +18,22 @@
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
-// Created 10/05/2010 12:43
+// Created 15/06/2010 03:44
 
-using System;
+using TinMan;
 
-namespace TinMan
+class SoccerbotAgent : AgentBase<SoccerbotBody>
 {
-    // TODO lose this interface
-    public interface IUserInteractiveAgent {
-        void HandleUserInput(char key, ISimulationContext context);
+    public SoccerbotAgent()
+      : base(new SoccerbotBody()) {}
+
+    public override void Think(ISimulationContext context, PerceptorState state)
+    {
+        // TODO kick goal
     }
+
+//    static void Main() {
+//        // This call blocks while your agent runs
+//        new AgentHost { HostName = "yoda" }.Run(new SoccerbotAgent());
+//    }
 }

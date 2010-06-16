@@ -205,20 +205,20 @@ namespace TinMan.PerceptorParsing
         
         [Test] public void ShouldParseMessageFromSelf() {
             // (hear 0.00 self ComeOn!)
-            var parser = Parse("(hear 12.3 self ''helloworld'')");
+            var parser = Parse("(hear 12.3 self helloworld)");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
-            var message = parser.State.Messages.Single();
+            var message = parser.State.HeardMessages.Single();
             Assert.IsTrue(message.IsFromSelf);
-            Assert.AreEqual("helloworld", message.MessageText);
+            Assert.AreEqual("helloworld", message.Text);
             Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
         
         [Test] public void ShouldParseMessageFromDirection() {
-            var parser = Parse("(hear 12.3 12.34 ''overhere'')");
+            var parser = Parse("(hear 12.3 12.34 overhere)");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
-            var message = parser.State.Messages.Single();
+            var message = parser.State.HeardMessages.Single();
             Assert.IsFalse(message.IsFromSelf);
-            Assert.AreEqual("overhere", message.MessageText);
+            Assert.AreEqual("overhere", message.Text);
             Assert.AreEqual(Angle.FromDegrees(12.34), message.RelativeDirection);
             Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
@@ -239,8 +239,8 @@ namespace TinMan.PerceptorParsing
         [Test] public void ShouldParsePlayerId() {
             var parser = Parse("(GS (unum 1) (team left) (t 0.00) (pm BeforeKickOff))");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
-            Assert.IsNotNull(parser.State.PlayerId);
-            Assert.AreEqual(1, parser.State.PlayerId);
+            Assert.IsNotNull(parser.State.UniformNumber);
+            Assert.AreEqual(1, parser.State.UniformNumber);
         }
 
         [Test] public void ShouldFailOnUnknownExpression() {

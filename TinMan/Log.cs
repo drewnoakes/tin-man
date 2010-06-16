@@ -25,10 +25,10 @@ using System;
 namespace TinMan
 {
     public sealed class Log {
-        public static Action<string,object[]> InfoAction { get; set; }
-        public static Action<string,object[]> VerboseAction { get; set; }
-        public static Action<string,object[]> WarnAction { get; set; }
-        public static Action<string,object[],Exception> ErrorAction { get; set; }
+        public static Action<string> InfoAction { get; set; }
+        public static Action<string> VerboseAction { get; set; }
+        public static Action<string> WarnAction { get; set; }
+        public static Action<string,Exception> ErrorAction { get; set; }
         
         private static readonly Log _instance = new Log();
         
@@ -39,10 +39,10 @@ namespace TinMan
         }
         
         static Log() {
-            VerboseAction = (m,i) => WriteConsole(string.Format(m,i), ConsoleColor.Gray, ConsoleColor.Black);
-            InfoAction = (m,i) => WriteConsole(string.Format(m,i), ConsoleColor.White, ConsoleColor.Black);
-            WarnAction = (m,i) => WriteConsole(string.Format(m,i), ConsoleColor.Magenta, ConsoleColor.Black);
-            ErrorAction = (m,i,ex) => WriteConsole(string.Format(m,i)+Environment.NewLine+ex, ConsoleColor.White, ConsoleColor.Red);
+            VerboseAction = (m) => WriteConsole(m, ConsoleColor.Gray, ConsoleColor.Black);
+            InfoAction = (m) => WriteConsole(m, ConsoleColor.White, ConsoleColor.Black);
+            WarnAction = (m) => WriteConsole(m, ConsoleColor.Magenta, ConsoleColor.Black);
+            ErrorAction = (m,ex) => WriteConsole(m+Environment.NewLine+ex, ConsoleColor.White, ConsoleColor.Red);
         }
         
         private static object _consoleLock = new object();
@@ -62,23 +62,23 @@ namespace TinMan
         {}
         
         public void Verbose(string format, params object[] items) {
-            VerboseAction(format, items);
+            VerboseAction(string.Format(format, items));
         }
         
         public void Info(string format, params object[] items) {
-            InfoAction(format, items);
+            InfoAction(string.Format(format, items));
         }
         
         public void Warn(string format, params object[] items) {
-            WarnAction(format, items);
+            WarnAction(string.Format(format, items));
         }
         
         public void Error(string format, params object[] items) {
-            ErrorAction(format, items, null);
+            ErrorAction(string.Format(format, items), null);
         }
         
         public void Error(Exception exception, string format, params object[] items) {
-            ErrorAction(format, items, exception);
+            ErrorAction(string.Format(format, items), exception);
         }
     }
 }

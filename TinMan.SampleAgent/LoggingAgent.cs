@@ -20,23 +20,31 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 10/06/2010 03:01
 
+using System;
 using TinMan;
 
-class MinimalAgent : AgentBase<NaoBody>
+class LoggingAgent : AgentBase<NaoBody>
 {
-    public MinimalAgent()
-      : base(new NaoBody()) {}
+    static LoggingAgent()
+    {
+        Log.InfoAction = delegate(string message) { /* Call alternative logging framework here */ };
+        Log.VerboseAction = delegate(string message) { /* Call alternative logging framework here */ };
+        Log.WarnAction = delegate(string message) { /* Call alternative logging framework here */ };
+        Log.ErrorAction = delegate(string message, Exception exception) { /* Call alternative logging framework here */ };
+    }
+    
+    public LoggingAgent() : base(new NaoBody())
+    {
+        Log.Info("Creating agent.");
+    }
 
     public override void Think(ISimulationContext context, PerceptorState state)
     {
-        // TODO kick goal
+        Log.Verbose("Simulation time = {0}", state.SimulationTime);
     }
 
 //    static void Main()
 //    {
-//        // This call blocks while your agent runs
-//        new AgentHost().Run(new SampleAgent());
+//        new AgentHost().Run(new LoggingAgent());
 //    }
 }
-
-

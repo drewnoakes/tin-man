@@ -26,31 +26,37 @@ using TinMan;
 
 class HerdAgent : AgentBase<NaoBody>
 {
-  public HerdAgent()
-    : base(new NaoBody()) {}
-
-  public override void Step(ISimulationContext context, PerceptorState state)
-  {
-    if (context.TeamName=="Team1") {
-      Body.LAJ1.Speed = AngularSpeed.FromDegreesPerSecond(0.01);
-      Body.RAJ1.Speed = AngularSpeed.FromDegreesPerSecond(0.01);
+    public HerdAgent()
+        : base(new NaoBody()) {}
+    
+    public override void Think(ISimulationContext context, PerceptorState state)
+    {
+        if (context.TeamName=="Team1") {
+            Body.LAJ1.DesiredSpeed = AngularSpeed.FromDegreesPerSecond(0.01);
+            Body.RAJ1.DesiredSpeed = AngularSpeed.FromDegreesPerSecond(0.01);
+        }
     }
-  }
 }
 
 class FullHouse
 {
-  static void Main()
-  {
-    CreateTeam(1, "Team1");
-    CreateTeam(1, "Team2");
-  }
+//    static void Main()
+//    {
+//        CreateTeam(1, "Team1");
+//        CreateTeam(1, "Team2");
+//    }
   
-  public static void CreateTeam(int agentCount, string teamName) {
-    for (int i=0; i<agentCount; i++) {
-      new Thread(() => new Client{TeamName=teamName}.Run(new HerdAgent())).Start();
-      // give the server a chance to catch its breath
-      Thread.Sleep(2000);
+    public static void CreateTeam(int agentCount, string teamName)
+    {
+        for (int i=0; i < agentCount; i++)
+        {
+            var host = new AgentHost { TeamName = teamName };
+            
+            // Run the host in a new thread
+            new Thread(() => host.Run(new HerdAgent())).Start();
+            
+            // Give the server a chance to catch its breath
+            Thread.Sleep(2000);
+        }
     }
-  }
 }

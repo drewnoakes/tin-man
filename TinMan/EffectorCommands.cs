@@ -54,7 +54,10 @@ namespace TinMan
         }
         
         public void AppendSExpression(StringBuilder s) {
-            s.AppendFormat("({0} {1:0.######})", _hinge.EffectorLabel, _angularSpeed.DegreesPerSecond);
+            // Note that the simulator expects the argument for the HingeJointEffector to
+            // be in degrees per simulation cycle.
+            var anglePerCycle = _angularSpeed * AgentHost.CyclePeriod;
+            s.AppendFormat("({0} {1:0.######})", _hinge.EffectorLabel, anglePerCycle.Degrees);
         }
     }
     
@@ -137,32 +140,49 @@ namespace TinMan
     /// Example: (say ``helloworld'')
     /// </remarks>
     internal sealed class SayCommand : IEffectorCommand {
+        private readonly Message _message;
+        public SayCommand(Message message) {
+            if (message==null)
+                throw new ArgumentNullException("message");
+            _message = message;
+        }
+        public void AppendSExpression(StringBuilder s) {
+            s.AppendFormat("(say {0})", _message.Text);
+        }
+    }
+    
+    /// <summary>
+    /// Represents a validated message according to the rules specified by the server on what strings
+    /// are allowed to be sent between agents on the field.
+    /// </summary>
+    public sealed class Message {
+        // TODO represent the validation via a regular expression and allow it to be specified in config so that a recompile isn't necessary in case it changes
         /// <summary>
         /// Message may consist of 20 characters, which may be taken from the ASCII printing character
         /// subset [0x20; 0x7E] except the white space character ' ' and the normal brackets '(' and ')'.
         /// </summary>
-        public static bool IsValidMessage(string message) {
+        public static bool IsValid(string messageString) {
             // TODO now that this type is internal, provide a public IsValidMessage method somewhere
-            if (message==null)
+            if (messageString==null)
                 return false;
-            if (message.Length==0 || message.Length>20)
+            if (messageString.Length==0 || messageString.Length>20)
                 return false;
-            if (message.IndexOfAny(new[] {' ', '(', ')'})!=-1)
+            if (messageString.IndexOfAny(new[] {' ', '(', ')'})!=-1)
                 return false;
-            foreach (var c in message) {
+            foreach (var c in messageString) {
                 if (c < 0x20 || c > 0x7E)
                     return false;
             }
             return true;
         }
-        private readonly string _messageToSay;
-        public SayCommand(string messageToSay) {
-            if (!IsValidMessage(messageToSay))
-                throw new ArgumentException("Message is invalid.", "messageToSay");
-            _messageToSay = messageToSay;
+        public Message(string messageString) {
+            if (!IsValid(messageString))
+                throw new ArgumentException("Invalid string.", "messageString");
+            Text = messageString;
         }
-        public void AppendSExpression(StringBuilder s) {
-            s.AppendFormat("(say {0})", _messageToSay);
+        public string Text { get; private set; }
+        public override string ToString() {
+            return Text;
         }
     }
 }

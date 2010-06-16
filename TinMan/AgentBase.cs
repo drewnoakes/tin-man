@@ -25,10 +25,30 @@ using System.Collections.Generic;
 
 namespace TinMan
 {
+    /// <summary>
+    /// A base class for agents in the TinMan framework.  Use instances of subclasses of this type in
+    /// conjunction with an <see cref="AgentHost"/> to execute your agent within the simulation.
+    /// </summary>
     public abstract class AgentBase<TBody> : IAgent where TBody : IBody {
-        
+        /// <summary>Gets the agent's body.</summary>
+        /// <remarks>Will not be <c>null</c>.</remarks>
         public TBody Body { get; private set; }
+        
+        /// <summary>Gets the agent's body.</summary>
+        /// <remarks>
+        /// Exposes the body as an <see cref="IBody"/> as required by the base interface.  This property
+        /// is an explicit interface implementation, meaning it's hidden on an instance unless it's declared
+        /// as the interface.  The alternative property provides strongly typed access which is more convenient.
+        /// </remarks>
         IBody IAgent.Body { get { return ((AgentBase<TBody>)this).Body; } }
+        
+        /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
+        public bool IsAlive { get; private set; }
+        
+        /// <summary>
+        /// Gets a logger used by the agent.
+        /// </summary>
+        protected Log Log { get; private set; }
         
         /// <summary>
         /// Initialises AgentBase with a body instance.
@@ -47,18 +67,31 @@ namespace TinMan
         /// </summary>
         /// <param name="context"></param>
         /// <param name="state"></param>
-        public abstract void Step(ISimulationContext context, PerceptorState state);
+        public abstract void Think(ISimulationContext context, PerceptorState state);
+        
+        /// <summary>
+        /// Causes the <see cref="AgentHost"/> to stop hosting this agent.  This action cannot be
+        /// undone.
+        /// </summary>
+        protected void StopSimulation() {
+            Log.Info("Agent requested that the simulation stops.");
+            IsAlive = false;
+        }
     }
     
     public interface IAgent {
+        /// <summary>Gets the agent's body.</summary>
+        /// <remarks>Must not be <c>null</c>.</remarks>
         IBody Body { get; }
         
+        /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
+        bool IsAlive { get; }
+        
         /// <summary>
-        /// Gives the agent a chance to process the latest body state and
-        /// perform any necessary actions.
+        /// Gives the agent a chance to process the latest body state and perform any necessary actions.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="state"></param>
-        void Step(ISimulationContext context, PerceptorState state);
+        void Think(ISimulationContext context, PerceptorState state);
     }
 }

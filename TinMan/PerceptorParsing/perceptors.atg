@@ -133,13 +133,13 @@ CHARACTERS
 
     letter = 'A'..'Z' + 'a'..'z' .
     digit = "0123456789" .
-    messageChar = '\u0020'..'\u007e' - ' ' - '(' - ')' .
+    messageChar = '\u0020'..'\u007e' - ' ' - '(' - ')' - digit - letter .
 
 TOKENS
 
     double = ['-'] digit { digit } [ '.' digit { digit } ] .
     ident = letter { letter | digit | '_' } .
-    message = "''" messageChar { messageChar } "''" .
+    message = '\'' messageChar { messageChar } '\'' .
 
 PRODUCTIONS
 
@@ -175,8 +175,7 @@ PolarPosExpr<out Polar pos> =
     "(pol" Polar<out pos> ')'
     .
 
-MessageText<out string m> =
-    message                                     (. m = t.val; .)
+MessageText<out string m> = ident               (. m = t.val; .)
     .
 
 //////////////////////// SERVER PERCEPTOR EXPRESSIONS
@@ -322,12 +321,9 @@ PlayerExpr =
 HearExpr<out HeardMessage message> =                (. TimeSpan time; Angle direction = Angle.NaN; string messageText; .)
     "(hear" 
         TimeSpan<out time>
-        [
-            "self"
-          | AngleInDegrees<out direction>
-        ]
+        ( "self" | AngleInDegrees<out direction> )
         MessageText<out messageText>
-    ')'                                             (. message = new HeardMessage(time, direction, messageText.Trim('\'')); .)
+    ')'                                             (. message = new HeardMessage(time, direction, new Message(messageText.Trim('\''))); .)
     .
 
 Perceptors =
