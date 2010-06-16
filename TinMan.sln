@@ -1,0 +1,47 @@
+﻿Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+# SharpDevelop 3.2.0.5505
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan", "TinMan\TinMan.csproj", "{30BE9710-1121-4383-B908-A5CB5EB4C1BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan.Tests", "TinMan.Tests\TinMan.Tests.csproj", "{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drew.RoboCup.AntiGravityBot", "Drew.RoboCup.AntiGravityBot\Drew.RoboCup.AntiGravityBot.csproj", "{0B4041F8-9A1F-4E65-A63C-14D15D167E84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drew.Genetic", "Drew.Genetic\Drew.Genetic.csproj", "{D5593274-C66A-4B55-BADB-B3F786E405E9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Drew.Genetic.Tests", "Drew.Genetic.Tests\Drew.Genetic.Tests.csproj", "{448C9985-9CF0-4276-B555-DC155D36F3AF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan.SampleAgent", "TinMan.SampleAgent\TinMan.SampleAgent.csproj", "{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{30BE9710-1121-4383-B908-A5CB5EB4C1BF}.Debug|x86.Build.0 = Debug|x86
+		{30BE9710-1121-4383-B908-A5CB5EB4C1BF}.Debug|x86.ActiveCfg = Debug|x86
+		{30BE9710-1121-4383-B908-A5CB5EB4C1BF}.Release|x86.Build.0 = Release|x86
+		{30BE9710-1121-4383-B908-A5CB5EB4C1BF}.Release|x86.ActiveCfg = Release|x86
+		{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}.Debug|x86.Build.0 = Debug|x86
+		{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}.Debug|x86.ActiveCfg = Debug|x86
+		{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}.Release|x86.Build.0 = Release|x86
+		{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}.Release|x86.ActiveCfg = Release|x86
+		{0B4041F8-9A1F-4E65-A63C-14D15D167E84}.Debug|x86.Build.0 = Debug|x86
+		{0B4041F8-9A1F-4E65-A63C-14D15D167E84}.Debug|x86.ActiveCfg = Debug|x86
+		{0B4041F8-9A1F-4E65-A63C-14D15D167E84}.Release|x86.Build.0 = Release|x86
+		{0B4041F8-9A1F-4E65-A63C-14D15D167E84}.Release|x86.ActiveCfg = Release|x86
+		{D5593274-C66A-4B55-BADB-B3F786E405E9}.Debug|x86.Build.0 = Debug|x86
+		{D5593274-C66A-4B55-BADB-B3F786E405E9}.Debug|x86.ActiveCfg = Debug|x86
+		{D5593274-C66A-4B55-BADB-B3F786E405E9}.Release|x86.Build.0 = Release|x86
+		{D5593274-C66A-4B55-BADB-B3F786E405E9}.Release|x86.ActiveCfg = Release|x86
+		{448C9985-9CF0-4276-B555-DC155D36F3AF}.Debug|x86.Build.0 = Debug|x86
+		{448C9985-9CF0-4276-B555-DC155D36F3AF}.Debug|x86.ActiveCfg = Debug|x86
+		{448C9985-9CF0-4276-B555-DC155D36F3AF}.Release|x86.Build.0 = Release|x86
+		{448C9985-9CF0-4276-B555-DC155D36F3AF}.Release|x86.ActiveCfg = Release|x86
+		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Debug|x86.Build.0 = Debug|x86
+		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Debug|x86.ActiveCfg = Debug|x86
+		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Release|x86.Build.0 = Release|x86
+		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Release|x86.ActiveCfg = Release|x86
+	EndGlobalSection
+EndGlobal

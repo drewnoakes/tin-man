@@ -1,3 +1,6 @@
 *.pcap
 "Screen Captures/"
 "Screen Captures/*"
+
+/TinMan.SampleAgent/bin
+/TinMan.SampleAgent/obj
