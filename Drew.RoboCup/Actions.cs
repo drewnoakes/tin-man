@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Drew.RoboCup
 {
-    // TODO implement SayAction and MoveUniversalJointAction
+    // TODO implement MoveUniversalJointAction, even though it's not used by Nao
     
     public interface IAction {
         void AppendCommand(StringBuilder s);
@@ -32,13 +32,24 @@ namespace Drew.RoboCup
     }
     
     public sealed class BeamAction : IAction {
-        private readonly Vector3 _beamToLocation;
-        public BeamAction(Vector3 beamToLocation) {
-            _beamToLocation = beamToLocation;
+        // TODO document at which points of the game you are allowed to beam
+        private readonly double _x;
+        private readonly double _y;
+        private readonly double _rotation;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="rotation">Defines the rotation angle of the player. Zero degrees points to positive x axis, 90 degrees to positive y axis.</param>
+        public BeamAction(double x, double y, double rotation) {
+            _x = x;
+            _y = y;
+            _rotation = rotation;
         }
         
         public void AppendCommand(StringBuilder s) {
-            s.AppendFormat("(beam {0:0.####} {1:0.####} {2:0.####})", _beamToLocation.X, _beamToLocation.Y, _beamToLocation.Z);
+            s.AppendFormat("(beam {0:0.####} {1:0.####} {2:0.####})", _x, _y, _rotation);
         }
     }
     
@@ -56,6 +67,13 @@ namespace Drew.RoboCup
     public sealed class InitialisePlayerAction : IAction {
         private readonly int _uniformNumber;
         private readonly string _teamName;
+        /// <summary>
+        /// </summary>
+        /// <remarks>
+        /// If an agent sends 0 as uniformNumber, the number is assigned automatically by the server to the next free number.
+        /// </remarks>
+        /// <param name="uniformNumber"></param>
+        /// <param name="teamName"></param>
         public InitialisePlayerAction(int uniformNumber, string teamName) {
             _uniformNumber = uniformNumber;
             _teamName = teamName;
