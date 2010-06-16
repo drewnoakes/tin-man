@@ -13,6 +13,11 @@ namespace TinMan
         /// </summary>
         string RsgPath { get; }
 
+        /// <summary>
+        /// Performs a lookup to find the hinge with specified effector label.
+        /// </summary>
+        /// <param name="effectorLabel"></param>
+        /// <returns></returns>
 		Hinge GetHingeForEffectorLabel(string effectorLabel);
 		
 		IEnumerable<Hinge> AllHinges { get; }

@@ -58,9 +58,10 @@
     <Compile Include="Geometry\Vector3.cs" />
     <Compile Include="Hinge.cs" />
     <Compile Include="HingeController.cs" />
-    <Compile Include="IAgent.cs" />
+    <Compile Include="AgentBase.cs" />
     <Compile Include="IBody.cs" />
     <Compile Include="IStateObserver.cs" />
+    <Compile Include="IUserInteractiveAgent.cs" />
     <Compile Include="Nao\NaoBody.cs" />
     <Compile Include="Nao\NaoBodyController.cs" />
     <Compile Include="PerceptorParsing\Parser.cs" />

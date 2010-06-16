@@ -6,25 +6,27 @@ using System.Collections.Generic;
 
 namespace TinMan.SampleBot
 {
-    internal sealed class SampleAgent : IAgent, IUserInteractiveAgent {
-        private readonly NaoBody _body = new NaoBody();
-        public IBody Body { get { return _body; } }
-        // TODO what happens if we send 0
-        // TODO what happens if we send negative while inertia moving positive
-        
+    internal sealed class SampleAgent : AgentBase<NaoBody>, IUserInteractiveAgent {
         private bool _beamToGoal = true;
         private int _stableCount = 0;
         private int _moveCount = 0;
         private AngularSpeed _impulseSpeed = AngularSpeed.FromDegreesPerSecond(5) ;
         private Angle _lastAngle;
         private TimeSpan _lastSimulationTime;
-        public void Step(ISimulationContext context, PerceptorState state) {
+
+        public SampleAgent()
+            : base(new NaoBody()) {}
+        
+        public override void Step(ISimulationContext context, PerceptorState state) {
+            // TODO what happens if we send 0
+            // TODO what happens if we send negative while inertia moving positive
+
             if (_beamToGoal) {
                 _beamToGoal = false;
                 context.Beam(-FieldGeometry.FieldXLength/2, 0, Angle.Zero);
             }
 
-            var hinge = _body.HJ1;
+            var hinge = Body.HJ1;
             Angle currentAngle = hinge.Angle;
             AngularSpeed speedLastCycle = (currentAngle - _lastAngle) / (state.SimulationTime - _lastSimulationTime);
             if (_moveCount>0) {
@@ -73,9 +75,9 @@ namespace TinMan.SampleBot
         }
     }
     
-    internal static class Program {
-        public static void Main() {
-            new Client().Run(new SampleAgent());
-        }
-    }
+//    internal static class Program {
+//        public static void Main() {
+//            new Client().Run(new SampleAgent());
+//        }
+//    }
 }

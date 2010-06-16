@@ -50,6 +50,8 @@ namespace TinMan {
         /// </summary>
         public int PortNumber { get; set; }
         
+        public ISimulationContext Context { get; private set; }
+        
         private bool _stopRequested = false;
         
         /// <summary>
@@ -57,7 +59,7 @@ namespace TinMan {
         /// This call blocks 
         /// </summary>
         /// <param name="robot"></param>
-        public void Run(IAgent agent) {
+        public void Run<TBody>(AgentBase<TBody> agent) where TBody : IBody {
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
             // Try to make a TCP connection.
@@ -86,7 +88,9 @@ namespace TinMan {
                 
                 _log.Info("Press 'Q' to exit . . . ");
                 
-                var context = new SimulationContext();
+                var context = new SimulationContext(this);
+                Context = context;
+                
                 var commands = new List<IEffectorCommand>();
                 while (!_stopRequested) {
                     commands.Clear();
@@ -104,7 +108,7 @@ namespace TinMan {
                             hinge.Angle = parser.State.GetHingeAngle(hinge);
 
                         // Let the agent perform its magic
-                        agent.Step(context, parser.State);
+                        agent.Step(Context, parser.State);
                         
                         // Collate list of commands to send
                         context.FlushCommands(commands);
@@ -114,15 +118,6 @@ namespace TinMan {
                         }
                     }
                     
-                    // TODO don't assume that the user of a Client wants this thing listening to the console... that should be an ancillary function
-                    if (Console.KeyAvailable) {
-                        var key = char.ToUpper(Console.ReadKey(true).KeyChar);
-                        if (key=='Q')
-                            _stopRequested = true;
-                        else if (agent is IUserInteractiveAgent)
-                            ((IUserInteractiveAgent)agent).HandleUserInput(key, context);
-                    }
-
                     if (commands.Count!=0)
                         SendCommands(stream, commands);
                 }
@@ -189,6 +184,18 @@ namespace TinMan {
             foreach (var command in commands)
                 command.AppendSExpression(sb);
             return sb.ToString();
+        }
+    }
+    
+    public sealed class ConsoleInputHelper {
+        public ConsoleInputHelper(Client client, IAgent agent) {
+            if (Console.KeyAvailable) {
+                var key = char.ToUpper(Console.ReadKey(true).KeyChar);
+                if (key=='Q')
+                    client.Stop();
+                else if (agent is IUserInteractiveAgent)
+                    ((IUserInteractiveAgent)agent).HandleUserInput(key, client.Context);
+            }
         }
     }
 }

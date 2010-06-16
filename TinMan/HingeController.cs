@@ -38,7 +38,7 @@ namespace TinMan
         /// <summary>The hinge being controlled.</summary>
         public Hinge Hinge { get; private set; }
         
-        private int _correctionCount;
+//        private int _correctionCount;
 
         public HingeController(Hinge hinge) {
             if (hinge==null)
@@ -64,12 +64,12 @@ namespace TinMan
                         _state = HingeControllerState.Moving;
                         // TODO review whether we need 'correcting' state
 //                        _state = HingeControllerState.Correcting;
-                        _correctionCount = 0;
+//                        _correctionCount = 0;
                         Step(simulationTime);
                     }
                     break;
                 }
-                case HingeControllerState.Correcting: {
+//                case HingeControllerState.Correcting: {
 //                    var error = TargetAngle - LastAngle;
 //                    if (error.Abs < EpsilonAngle) {
 //                        _state = HingeControllerState.Resting;
@@ -84,8 +84,8 @@ namespace TinMan
 //                    else
 //                        Hinge.Speed = error/TimeSpan.FromMilliseconds(800);// * 0.05;
 //                    _correctionCount++;
-                    break;
-                }
+//                    break;
+//                }
                 case HingeControllerState.MovePending: {
                     _state = HingeControllerState.Moving;
                     Step(simulationTime);
@@ -123,6 +123,6 @@ namespace TinMan
         Resting,
         MovePending,
         Moving,
-        Correcting
+//        Correcting
     }
 }
