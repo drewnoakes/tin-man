@@ -1,0 +1,6 @@
+﻿In order to get up and running quickly, I'm using the Coco/R lib for C#.  However, because it needs the ability
+to track backwards through the input stream (and a NetworkStream isn't seekable) it needs to load the entire message
+into a single string to operate upon it.  This creates undue memory pressure (GC churn) and CPU load.
+
+The messages being received are general purpose S-expressions that could be more efficiently parsed as they
+have a simplified structure.  Ultimately I wish to replace this parsing code with such an implementation.
