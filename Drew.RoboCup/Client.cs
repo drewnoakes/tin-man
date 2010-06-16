@@ -21,6 +21,7 @@ namespace Drew.RoboCup {
             Console.WriteLine("Connecting via TCP to {0}:{1}", hostName, port);
             try {
                 _client = new TcpClient(hostName, port);
+                Console.WriteLine("Connected.");
             } catch (SocketException) {
                 Console.Error.WriteLine("Unable to connect to {0}:{1}.  Exiting.", hostName, port);
                 throw;

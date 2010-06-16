@@ -46,11 +46,18 @@ namespace Drew.RoboCup
 	public static class FieldGeometry
 	{
 	    // TODO field dimensions may be variable, depending upon simulator
-	    private const double FieldYLength = 12.0;
-	    private const double FieldXLength = 18.0;
-	    private const double GoalWidth = 2.1;
-	    private const double GoalHeight = 0.8;
-	    
+	    public const double FieldYLength = 12.0;
+	    public const double FieldXLength = 18.0;
+	    public const double FieldZHeight = 40.0;
+	    public const double GoalWidth = 2.1;
+	    public const double GoalHeight = 0.8;
+	    public const double GoalDepth = 0.6;
+	    public const double PenaltyAreaLength = 1.8;
+	    public const double PenaltyAreaWidth = 3.9;
+	    public const double FreeKickDistance = 1.3;
+	    public const double FreeKickMoveDistance = 1.5;
+	    public const double GoalKickDistance = 1.0;
+
 	    public static readonly Vector3 FlagLeftTopPosition;
 	    public static readonly Vector3 FlagLeftBottomPosition;
 	    public static readonly Vector3 FlagRightTopPosition;

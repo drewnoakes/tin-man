@@ -12,26 +12,15 @@ namespace Drew.RoboCup.PerceptorParsing
     [TestFixture]
     public sealed class PerceptorParserTest
 	{
-        #region Test data
-        
-        private const string _sample1 = "(time (now 417.65))(GS (t 0.00) (pm BeforeKickOff))(GYR (n torso) (rt 0.00 0.00 0.00))(ACC (n torso) (a 0.00 0.00 9.81))(HJ (n hj1) (ax -0.00))(HJ (n hj2) (ax -0.00))(HJ (n raj1) (ax -0.00))(HJ (n raj2) (ax -0.00))(HJ (n raj3) (ax -0.00))(HJ (n raj4) (ax -0.00))(HJ (n laj1) (ax -0.00))(HJ (n laj2) (ax -0.00))(HJ (n laj3) (ax -0.00))(HJ (n laj4) (ax -0.00))(HJ (n rlj1) (ax -0.00))(HJ (n rlj2) (ax -0.00))(HJ (n rlj3) (ax -0.00))(HJ (n rlj4) (ax -0.00))(HJ (n rlj5) (ax -0.00))(HJ (n rlj6) (ax -0.00))(HJ (n llj1) (ax -0.00))(HJ (n llj2) (ax -0.00))(HJ (n llj3) (ax -0.00))(HJ (n llj4) (ax -0.00))(HJ (n llj5) (ax -0.00))(HJ (n llj6) (ax -0.00))";
-        
-        #endregion
-        
-        private const string TeamName = "MyHappyTeam";
-
-        private Parser Parse(string s)
-        {
+        private Parser Parse(string s) {
         	var parser = new Parser(new Scanner(new StringBuffer(s)));
 		    parser.Parse();
 		    return parser;
         }
         
-        [Test]
-        public void ShouldParseLongStringWithoutError()
-        {
+        [Test] public void ShouldParseLongStringWithoutError() {
             var strings = new[] {
-                _sample1,
+                "(time (now 417.65))(GS (t 0.00) (pm BeforeKickOff))(GYR (n torso) (rt 0.00 0.00 0.00))(ACC (n torso) (a 0.00 0.00 9.81))(HJ (n hj1) (ax -0.00))(HJ (n hj2) (ax -0.00))(HJ (n raj1) (ax -0.00))(HJ (n raj2) (ax -0.00))(HJ (n raj3) (ax -0.00))(HJ (n raj4) (ax -0.00))(HJ (n laj1) (ax -0.00))(HJ (n laj2) (ax -0.00))(HJ (n laj3) (ax -0.00))(HJ (n laj4) (ax -0.00))(HJ (n rlj1) (ax -0.00))(HJ (n rlj2) (ax -0.00))(HJ (n rlj3) (ax -0.00))(HJ (n rlj4) (ax -0.00))(HJ (n rlj5) (ax -0.00))(HJ (n rlj6) (ax -0.00))(HJ (n llj1) (ax -0.00))(HJ (n llj2) (ax -0.00))(HJ (n llj3) (ax -0.00))(HJ (n llj4) (ax -0.00))(HJ (n llj5) (ax -0.00))(HJ (n llj6) (ax -0.00))",
                 "(time (now 203.83))(GS (t 0.02) (pm KickOff_Left))(GYR (n torso) (rt 15.33 -21.37 -97.40))(ACC (n torso) (a 2.13 8.56 0.00))(HJ (n hj1) (ax -120.00))(HJ (n hj2) (ax -45.00))(HJ (n raj1) (ax -120.01))(HJ (n raj2) (ax -95.04))(HJ (n raj3) (ax -120.00))(HJ (n raj4) (ax 1.49))(HJ (n laj1) (ax -124.53))(HJ (n laj2) (ax -7.27))(HJ (n laj3) (ax -120.03))(HJ (n laj4) (ax -90.01))(HJ (n rlj1) (ax -95.88))(HJ (n rlj2) (ax -44.98))(HJ (n rlj3) (ax -24.97))(HJ (n rlj4) (ax -133.55))(HJ (n rlj5) (ax -44.97))(FRP (n rf) (c 0.06 0.08 -0.02) (f 15.81 6.81 24.96))(HJ (n rlj6) (ax -28.14))(HJ (n llj1) (ax -86.22))(HJ (n llj2) (ax -21.97))(HJ (n llj3) (ax -20.53))(HJ (n llj4) (ax -127.43))(HJ (n llj5) (ax -52.01))(FRP (n lf) (c -0.04 0.08 -0.01) (f 26.77 5.28 18.93))(HJ (n llj6) (ax -45.00))"
             };
             
@@ -41,33 +30,25 @@ namespace Drew.RoboCup.PerceptorParsing
             }
         }
         
-        [Test]
-        public void ShouldParseSimulationTime()
-        {
+        [Test] public void ShouldParseSimulationTime() {
         	var parser = Parse("(time (now 417.65))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
 		    Assert.AreEqual(TimeSpan.FromSeconds(417.65), parser.State.SimulationTime);
         }
         
-        [Test]
-        public void ShouldParsePlayMode()
-        {
+        [Test] public void ShouldParsePlayMode() {
         	var parser = Parse("(GS (t 0.00) (pm KickOff_Left))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             Assert.AreEqual(PlayMode.KickOffLeft, parser.State.PlayMode);
         }
         
-        [Test]
-        public void ShouldParseGameTime()
-        {
+        [Test] public void ShouldParseGameTime() {
         	var parser = Parse("(GS (t 3.14) (pm PlayOn))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
 		    Assert.AreEqual(TimeSpan.FromSeconds(3.14), parser.State.GameTime);
         }
         
-        [Test]
-        public void ShouldParseGyro()
-        {
+        [Test] public void ShouldParseGyro() {
         	var parser = Parse("(GYR (n torso) (rt 1.23 2.34 3.45))");
         	Assert.IsNotNull(parser.State.GyroStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -78,9 +59,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(3.45, state.ZOrientation, 0.0001);
         }
         
-        [Test]
-        public void ShouldParseAccelerometer()
-        {
+        [Test] public void ShouldParseAccelerometer() {
         	var parser = Parse("(ACC (n torso) (a 0.00 -0.05 8.83))");
         	Assert.IsNotNull(parser.State.AccelerometerStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -91,9 +70,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(8.83,  state.AccelerationVector.Z, 0.0001);
         }
         
-        [Test]
-        public void ShouldParseHingeJoint()
-        {
+        [Test] public void ShouldParseHingeJoint() {
         	var parser = Parse("(HJ (n hj1) (ax 1.5))");
         	Assert.IsNotNull(parser.State.HingeJointStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -102,9 +79,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(1.5), state.Angle);
         }
         
-        [Test]
-        public void ShouldParseUniversalJoint()
-        {
+        [Test] public void ShouldParseUniversalJoint() {
         	var parser = Parse("(UJ (n laj1) (ax1 -1.50) (ax2 2.00))");
         	Assert.IsNotNull(parser.State.UniversalJointStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -114,9 +89,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(2.00),  state.Angle2);
         }
  
-        [Test]
-        public void ShouldParseTouch()
-        {
+        [Test] public void ShouldParseTouch() {
         	var parser = Parse("(TCH n bumper val 1)");
         	Assert.IsNotNull(parser.State.TouchStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -125,9 +98,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.IsTrue(state.IsTouching);
         }
  
-        [Test]
-        public void ShouldParseForce()
-        {
+        [Test] public void ShouldParseForce() {
         	var parser = Parse("(FRP (n lf) (c -0.14 0.08 -0.05) (f 1.12 -0.26 13.07))");
         	Assert.IsNotNull(parser.State.ForceStates);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -141,9 +112,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(13.07, state.ForceVector.Z, 0.0001);
         }
         
-        [Test]
-        public void ShouldParseSeenFlag()
-        {
+        [Test] public void ShouldParseSeenFlag() {
         	var parser = Parse("(See (F2L (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.LandmarkPositions);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -154,9 +123,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(-8.10), state.PolarPosition.Phi);
         }        
         
-        [Test]
-        public void ShouldParseSeenGoal()
-        {
+        [Test] public void ShouldParseSeenGoal() {
         	var parser = Parse("(See (G2R (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.LandmarkPositions);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -167,9 +134,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(-8.10), state.PolarPosition.Phi);
         }
         
-        [Test]
-        public void ShouldParseSeenBall()
-        {
+        [Test] public void ShouldParseSeenBall() {
         	var parser = Parse("(See (B (pol 11.52 52.50 -8.10)))");
         	Assert.IsNotNull(parser.State.BallPosition);
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -179,9 +144,7 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(-8.10), state.Phi);
         }
         
-        [Test]
-        public void ShouldParseSeenPlayer()
-        {
+        [Test] public void ShouldParseSeenPlayer() {
             // Have seen both of these in wireshark...
             // (See (P (team NaoRobot) (id 1) (rlowerarm (pol 0.19 -34.82 -20.73)) (llowerarm (pol 0.19 33.50 -21.28)))
             // (See (P (team NaoRobot) (id 1) (head (pol 9.04 -57.66 -28.25)) 
@@ -214,18 +177,14 @@ namespace Drew.RoboCup.PerceptorParsing
             Assert.AreEqual(-30.45, components[3].PolarPosition.Phi.Degrees, 0.0001);
         }
         
-        [Test]
-        public void ShouldParseAgentState()
-        {
+        [Test] public void ShouldParseAgentState() {
         	var parser = Parse("(AgentState (temp 4) (battery 75))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
 		    Assert.AreEqual(4, parser.State.AgentTemperature);
 		    Assert.AreEqual(75, parser.State.AgentBattery);
         }
         
-        [Test]
-        public void ShouldParseMessageFromSelf()
-        {
+        [Test] public void ShouldParseMessageFromSelf() {
             // (hear 0.00 self ComeOn!)
         	var parser = Parse("(hear 12.3 self ''helloworld'')");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
@@ -235,9 +194,7 @@ namespace Drew.RoboCup.PerceptorParsing
 		    Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
         
-        [Test]
-        public void ShouldParseMessageFromDirection()
-        {
+        [Test] public void ShouldParseMessageFromDirection() {
         	var parser = Parse("(hear 12.3 12.34 ''overhere'')");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
 		    var message = parser.State.Messages.Single();
@@ -247,35 +204,27 @@ namespace Drew.RoboCup.PerceptorParsing
 		    Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
         
-        [Test]
-        public void ShouldParseSingleDigitDouble()
-        {
+        [Test] public void ShouldParseSingleDigitDouble() {
         	var parser = Parse("(AgentState (temp 0) (battery 1))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
 		    Assert.AreEqual(0, parser.State.AgentTemperature);
 		    Assert.AreEqual(1, parser.State.AgentBattery);
         }
         
-        [Test]
-        public void ShouldParseTeamSide()
-        {
+        [Test] public void ShouldParseTeamSide() {
             var parser = Parse("(GS (unum 1) (team left) (t 0.00) (pm BeforeKickOff))");
             Assert.IsNotNull(parser.State.TeamSide);
             Assert.AreEqual(FieldSide.Left, parser.State.TeamSide.Value);
         }
         
-        [Test]
-        public void ShouldParsePlayerId()
-        {
+        [Test] public void ShouldParsePlayerId() {
             var parser = Parse("(GS (unum 1) (team left) (t 0.00) (pm BeforeKickOff))");
 		    Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             Assert.IsNotNull(parser.State.PlayerId);
             Assert.AreEqual(1, parser.State.PlayerId);
         }
 
-        [Test]
-        public void ShouldFailOnUnknownExpression()
-        {
+        [Test] public void ShouldFailOnUnknownExpression() {
         	var parser = Parse("gibberish");
 		    Assert.IsTrue(parser.errors.HasError);
         }

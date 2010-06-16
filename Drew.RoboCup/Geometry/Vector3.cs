@@ -37,6 +37,10 @@ namespace Drew.RoboCup
 			Z = z;
 		}
 	    
+	    public bool IsZero {
+	        get { return X==0 && Y==0 && Z==0; }
+	    }
+	    
 	    public Vector3 Normalize() {
             // norm2 = sqrt(xax[0] * xax[0] + xax[1] * xax[1] + xax[2] * xax[2]);
             // for(i=0; i<3; i++) xax[i] /= norm2;

@@ -93,7 +93,7 @@ COMPILER Perceptors
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
-    private List<Message> Messages;
+    private List<HeardMessage> Messages;
     
     public PerceptorState State { get; private set; }
 
@@ -300,7 +300,7 @@ PlayerExpr =
 //    operators can be found for example. Three characters from this range are, however, excluded:
 //    the white space character and the normal brackets ( and ).
 //    Messages are restricted to a maximal length (currently 20 bytes).
-HearExpr<out Message message> =                     (. TimeSpan time; Angle direction = Angle.NaN; string messageText; .)
+HearExpr<out HeardMessage message> =                (. TimeSpan time; Angle direction = Angle.NaN; string messageText; .)
     "(hear" 
         TimeSpan<out time>
         [
@@ -308,7 +308,7 @@ HearExpr<out Message message> =                     (. TimeSpan time; Angle dire
           | AngleInDegrees<out direction>
         ]
         MessageText<out messageText>
-    ')'                                             (. message = new Message(time, direction, messageText.Trim('\'')); .)
+    ')'                                             (. message = new HeardMessage(time, direction, messageText.Trim('\'')); .)
     .
 
 Perceptors =
@@ -333,7 +333,7 @@ Perceptors =
       |                                         (. if (ForceStates==null) ForceStates = new List<ForceState>(1); ForceState fState; .)
         ForceStateExpr<out fState>              (. ForceStates.Add(fState); .)
       | SeeExpr
-      |                                         (. if (Messages==null) Messages = new List<Message>(1); Message message; .)
+      |                                         (. if (Messages==null) Messages = new List<HeardMessage>(1); HeardMessage message; .)
         HearExpr<out message>                   (. Messages.Add(message); .)
     }
 

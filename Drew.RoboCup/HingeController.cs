@@ -7,7 +7,7 @@ using System.Diagnostics;
 namespace Drew.RoboCup
 {
     /// <summary>
-    /// Responsible for the control logic of a single hinge joint.  Designed to allow for maximum power and control.
+    /// Responsible for the control logic of a single hinge joint.  Designed to allow for maximum speed and control.
     /// </summary>
     /// <remarks>
     /// <list type="bullet">
@@ -98,7 +98,6 @@ namespace Drew.RoboCup
                         return null;            
                     }
                     Angle MaxDegreesPerCycle = Angle.FromDegrees(10);
-//                    double move = Math.Max(-MaxDegreesPerCycle, Angle.Min(MaxDegreesPerCycle, targetFromRequested));
                     Angle move = targetFromRequested.Limit(-MaxDegreesPerCycle, MaxDegreesPerCycle);
                     // Remember what we've requested so that next step we don't re-request the same
                     // range of motion and end up with double the move.

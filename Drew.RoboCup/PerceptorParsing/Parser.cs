@@ -45,7 +45,7 @@ public string TeamName;
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
-    private List<Message> Messages;
+    private List<HeardMessage> Messages;
     
     public PerceptorState State { get; private set; }
 
@@ -433,7 +433,7 @@ public string TeamName;
 		
 	}
 
-	void HearExpr(out Message message) {
+	void HearExpr(out HeardMessage message) {
 		TimeSpan time; Angle direction = Angle.NaN; string messageText; 
 		Expect(46);
 		TimeSpan(out time);
@@ -446,7 +446,7 @@ public string TeamName;
 		}
 		MessageText(out messageText);
 		Expect(5);
-		message = new Message(time, direction, messageText.Trim('\'')); 
+		message = new HeardMessage(time, direction, messageText.Trim('\'')); 
 	}
 
 	void Perceptors() {
@@ -512,7 +512,7 @@ out id, out side);
 				break;
 			}
 			case 46: {
-				if (Messages==null) Messages = new List<Message>(1); Message message; 
+				if (Messages==null) Messages = new List<HeardMessage>(1); HeardMessage message; 
 				HearExpr(out message);
 				Messages.Add(message); 
 				break;

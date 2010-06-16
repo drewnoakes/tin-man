@@ -37,12 +37,6 @@ namespace Drew.RoboCup
 	            xAxis.Z, yAxis.Z, zAxis.Z, 0,
 	            0, 0, 0, 1
 	        });
-//            Eigen::Matrix4d mat;
-//            mat <<  xAxis.transpose(), 0,
-//                    yAxis.transpose(), 0,
-//                    zAxis.transpose(), 0,
-//                    0, 0, 0, 1;
-//            return Eigen::Transform3d(mat.transpose());
 	    }
 	    
 	    private readonly double[] _values;
@@ -124,6 +118,31 @@ namespace Drew.RoboCup
 	            return Vector3.Origin;
             return new Vector3(x/s, y/s, z/s);
 	    }
+	    
+	    #region Untested utility methods
+	    // TODO write unit tests for these, esp when combinations exist
+	    
+	    /// <summary>Get the direction of the x-axis of this transformation.</summary>
+	    public Vector3 GetXAxis() {
+	        return new Vector3(_values[0], _values[1], _values[2]);
+	    }
+	    
+	    /// <summary>Get the direction of the y-axis of this transformation.</summary>
+	    public Vector3 GetYAxis() {
+	        return new Vector3(_values[4], _values[5], _values[6]);
+	    }
+	    
+	    /// <summary>Get the direction of the z-axis of this transformation.</summary>
+	    public Vector3 GetZAxis() {
+	        return new Vector3(_values[8], _values[9], _values[10]);
+	    }
+	    
+	    /// <summary>Get the translation part of this transformation.</summary>
+	    public Vector3 GetTranslation() {
+	        return new Vector3(_values[12], _values[13], _values[14]);
+	    }
+	    
+	    #endregion
 	    
 	    #region ToString, Equality and Hashing
 	    

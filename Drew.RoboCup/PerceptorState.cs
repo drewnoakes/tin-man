@@ -35,7 +35,7 @@ namespace Drew.RoboCup
 		public double? AgentBattery { get; private set; }
 		public double? AgentTemperature { get; private set; }
 		
-		public IEnumerable<Message> Messages { get; private set; }
+		public IEnumerable<HeardMessage> Messages { get; private set; }
 
 		// TODO observe the server and see whether some of these 'nullable' values are actually never null in practice
 		
@@ -45,7 +45,7 @@ namespace Drew.RoboCup
 							  IEnumerable<LandmarkPosition> landmarkPositions,
 							  IEnumerable<PlayerPosition> teamMatePositions, IEnumerable<PlayerPosition> oppositionPositions,
 							  Polar? ballPosition,
-							  double? agentBattery, double? agentTemperature, IEnumerable<Message> heardMessages) {
+							  double? agentBattery, double? agentTemperature, IEnumerable<HeardMessage> heardMessages) {
 			SimulationTime = simulationTime;
 			GameTime = gameTime;
 			PlayMode = playMode;
@@ -81,15 +81,17 @@ namespace Drew.RoboCup
             sb.AppendFormat(  "SimulationTime = {0}", SimulationTime);
             sb.AppendFormat("\nGameTime = {0}", GameTime);
             sb.AppendFormat("\nPlayMode = {0}", PlayMode);
-            sb.AppendFormat("\nAgentBattery = {0}", AgentBattery);
-            sb.AppendFormat("\nAgentTemperature = {0}", AgentTemperature);
+            if (AgentBattery.HasValue)
+                sb.AppendFormat("\nAgentBattery = {0}", AgentBattery);
+            if (AgentTemperature.HasValue)
+                sb.AppendFormat("\nAgentTemperature = {0}", AgentTemperature);
             if (HingeJointStates != null) {
                 foreach (var j in HingeJointStates)
-                    sb.AppendFormat("\nHinge Joint '{0}' -> {1}", j.Label, j.Angle);
+                    sb.AppendFormat("\nHinge Joint '{0}' -> {1}", j.Label, j.Angle.Degrees);
             }
             if (UniversalJointStates != null) {
                 foreach (var j in UniversalJointStates)
-                    sb.AppendFormat("\nBall Joint '{0}' -> {1} / {2}", j.Label, j.Angle1, j.Angle2);
+                    sb.AppendFormat("\nBall Joint '{0}' -> {1} / {2}", j.Label, j.Angle1.Degrees, j.Angle2.Degrees);
             }
             if (AccelerometerStates != null) {
                 foreach (var a in AccelerometerStates)
@@ -124,7 +126,7 @@ namespace Drew.RoboCup
             }
             if (Messages != null) {
                 foreach (var m in Messages)
-                    sb.AppendFormat("\nMessage at {1} from {2} text '{3}'", m.HeardAtTime, m.IsFromSelf ? "self" : m.RelativeDirection.ToString(), m.MessageText);
+                    sb.AppendFormat("\nMessage at {1} from {2} text '{3}'", m.HeardAtTime, m.IsFromSelf ? "self" : m.RelativeDirection.Degrees.ToString(), m.MessageText);
             }
             return sb.ToString();
         }
@@ -132,6 +134,7 @@ namespace Drew.RoboCup
 	
     [DebuggerDisplay("Gyro {Label}={XOrientation},{YOrientation},{ZOrientation}")]
 	public struct GyroState {
+        // TODO work out what units these gyro rates are in and potentially change to Angle instances
 	    public string Label { get; private set; }
 	    public double XOrientation { get; private set; }
 	    public double YOrientation { get; private set; }
@@ -239,13 +242,13 @@ namespace Drew.RoboCup
 		}
 	}
 
-	public struct Message {
+	public struct HeardMessage {
 	    public bool IsFromSelf { get { return RelativeDirection.IsNaN; } }
 	    public TimeSpan HeardAtTime { get; private set; }
 	    public Angle RelativeDirection { get; private set; }
 	    public string MessageText { get; private set; }
 	    
-	    public Message(TimeSpan time, Angle direction, string message) : this() {
+	    public HeardMessage(TimeSpan time, Angle direction, string message) : this() {
 	        HeardAtTime = time;
 	        RelativeDirection = direction;
 	        MessageText = message;
