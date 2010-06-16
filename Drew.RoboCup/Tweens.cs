@@ -9,8 +9,146 @@ using System.Collections.Generic;
 
 namespace Drew.RoboCup
 {
-    // TODO allow for other types of non-linear tweening to smooth motion, for example
     // TODO write unit tests for these
+    public sealed class WaitMotion : IBodyManipulator {
+        public bool IsFinished { get; private set; }
+        public TimeSpan WaitTime { get; private set; }
+        private TimeSpan _startTime = TimeSpan.Zero;
+        public WaitMotion(TimeSpan waitTime) {
+            WaitTime = waitTime;
+        }
+        public void Step(TimeSpan simulationTime)
+        {
+            if (_startTime==TimeSpan.Zero) {
+                _startTime = simulationTime;
+            } else {
+                if (simulationTime - _startTime > WaitTime)
+                    IsFinished = true;
+            }
+        }
+    }
+    
+    public sealed class HingeMotionTween : IBodyManipulator {
+        private readonly HingeController _hinge;
+        private readonly double _finalAngle;
+        private readonly TimeSpan _moveDuration;
+        private readonly EasingFunction _easingFunction;
+        private TimeSpan _moveStartTime = TimeSpan.MinValue;
+        private double _moveStartAngle = double.NaN;
+        
+        public HingeMotionTween(HingeController hinge, double finalAngle, TimeSpan moveDuration, EaseType easeType) {
+            if (moveDuration<=TimeSpan.Zero)
+                throw new ArgumentOutOfRangeException("moveDuration", "Must be greater than zero.");
+            hinge.ValidateAngle(finalAngle);
+            _hinge = hinge;
+            _finalAngle = finalAngle;
+            _moveDuration = moveDuration;
+            _easingFunction = Easing.GetFunction(easeType);
+        }
+        
+        public bool IsFinished { get; private set; }
+        
+        public void Step(TimeSpan simulationTime) {
+            Debug.Assert(simulationTime >= _moveStartTime, "SimulationTime should be equal to or after _moveStartTime.");
+            Debug.Assert(!IsFinished, "IsFinished should be false.");
+            
+            if (_moveStartTime==TimeSpan.MinValue) {
+                _moveStartTime = simulationTime;
+                _moveStartAngle = _hinge.TargetAngle;
+            }
+            
+            var elapsed = simulationTime - _moveStartTime;
+            
+            if (elapsed >= _moveDuration) {
+                // Ensure we set the correct target
+                _hinge.MoveTo(_finalAngle);
+                // This motion is finished
+                IsFinished = true;
+                return;
+            }
+                        
+            var moveTotalAngle = _finalAngle - _moveStartAngle;
+            var moveTimeRatio = elapsed.Ticks / (double)_moveDuration.Ticks;
+            var expectedAngle = _easingFunction(elapsed.TotalMilliseconds,
+                                                _moveStartAngle, 
+                                                moveTotalAngle, 
+                                                _moveDuration.TotalMilliseconds);
+            
+            _hinge.MoveTo(expectedAngle);
+        }
+    }
+    
+    public sealed class TweenQueue : IBodyManipulator, IEnumerable<IBodyManipulator> {
+        private readonly Queue<IBodyManipulator> _queue = new Queue<IBodyManipulator>();
+        public bool IsFinished { get; private set; }
+        public string Name { get; set; }
+
+        public void Add(IBodyManipulator tween) {
+            _queue.Enqueue(tween);
+            IsFinished = false;
+        }
+
+        public void Step(TimeSpan simulationTime) {
+            // TODO test this
+            IBodyManipulator tween = null;
+            while (_queue.Count>0 && (tween=_queue.Peek()).IsFinished)
+                _queue.Dequeue();
+            
+            if (_queue.Count==0) {
+                IsFinished = true;
+                return;
+            }
+            
+            tween.Step(simulationTime);
+        }
+        
+        IEnumerator<IBodyManipulator> IEnumerable<IBodyManipulator>.GetEnumerator() {
+            return _queue.GetEnumerator();
+        }
+        
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+            return ((IEnumerable<IBodyManipulator>)this).GetEnumerator();
+        }
+    }
+    
+    public sealed class TweenGroup : IBodyManipulator, IEnumerable<IBodyManipulator> {
+        private readonly LinkedList<IBodyManipulator> _list = new LinkedList<IBodyManipulator>();
+        public bool IsFinished { get; private set; }
+        
+        public void Add(IBodyManipulator tween) {
+            _list.AddLast(tween);
+            IsFinished = false;
+        }
+        
+        public void Clear() {
+            _list.Clear();
+            IsFinished = true;
+        }
+        
+        public void Step(TimeSpan simulationTime) {
+            var node = _list.First;
+            while (node!=null) {
+                if (node.Value.IsFinished) {
+                    _list.Remove(node);
+                } else {
+                    node.Value.Step(simulationTime);
+                }
+                node = node.Next;
+            }
+            
+            if (_list.First==null)
+                IsFinished = true;
+        }
+    
+        IEnumerator<IBodyManipulator> IEnumerable<IBodyManipulator>.GetEnumerator() {
+            return _list.GetEnumerator();
+        }
+        
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
+            return ((IEnumerable<IBodyManipulator>)this).GetEnumerator();
+        }
+    }
+
 /*    
     /// <summary>
     /// Oscillates between two values consistently.
@@ -75,135 +213,5 @@ namespace Drew.RoboCup
 //            return string.Format("({0} {1:0.########})", _effectorLabel, angleDelta);
         }
     }
-    
-    public sealed class HingeMotionTween : IBodyManipulator {
-        public event Action Finished;
-        private readonly HingeController _hinge;
-        private readonly double _fromAngle;
-        private readonly double _toAngle;
-        private readonly TimeSpan _duration;
-        private TimeSpan _startTime = TimeSpan.MinValue;
-        
-        public HingeMotionTween(HingeController hinge, double fromAngle, double toAngle, TimeSpan duration) {
-            if (duration<=TimeSpan.Zero)
-                throw new ArgumentOutOfRangeException("duration", "Must be greater than zero.");
-            _hinge = hinge;
-            _fromAngle = fromAngle;
-            _toAngle = toAngle;
-            _duration = duration;
-        }
-        
-        public bool IsFinished { get; private set; }
-        
-        public void Step(TimeSpan simulationTime) {
-            Debug.Assert(simulationTime >= _startTime, "SimulationTime should be equal to or after StartTime.");
-            
-            if (_startTime==TimeSpan.MinValue)
-                _startTime = simulationTime;
-            
-//            var hingeAngle = state.GetHingeJointAngle(_perceptorLabel);
-            
-            var isAngleIncreasing = _toAngle > _fromAngle;
-            
-            if (( isAngleIncreasing && _hinge.RequestedAngle >= _toAngle) ||
-                (!isAngleIncreasing && _hinge.RequestedAngle <= _toAngle)) {
-                IsFinished = true;
-                if (Finished!=null)
-                    Finished();
-                return;
-            }
-            
-            if (simulationTime > _startTime + _duration)
-                Console.WriteLine("HingeMotionTween has run beyond requested duration.");
-            
-            var elapsed = simulationTime - _startTime;
-            var progressRatio = Math.Min(1, elapsed.TotalSeconds / _duration.TotalSeconds);
-            var totalArc = _toAngle - _fromAngle;
-            var expectedPosition = (progressRatio * totalArc) + _fromAngle;
-            
-//            if (( isAngleIncreasing && hingeAngle >= expectedPosition) ||
-//                (!isAngleIncreasing && hingeAngle <= expectedPosition)) {
-//                // TODO this might not work with HingeController...
-//                // for whatever reason, the hinge is ahead of where we expect it to be right now
-//                // so just return null and wait until the next cycle
-//                return;
-//            }
-            
-            _hinge.MoveTo(expectedPosition);
-//            return string.Format("({0} {1:0.########})", _effectorLabel, expectedPosition - hingeAngle);
-        }
-    }
-*/
-    
-    public sealed class TweenQueue : IBodyManipulator, IEnumerable<IBodyManipulator> {
-        private readonly Queue<IBodyManipulator> _queue = new Queue<IBodyManipulator>();
-        public bool IsFinished { get; private set; }
-
-        public void Add(IBodyManipulator tween) {
-            _queue.Enqueue(tween);
-            IsFinished = false;
-        }
-
-        public void Step(TimeSpan simulationTime) {
-            // TODO test this
-            var sb = new System.Text.StringBuilder();
-
-            IBodyManipulator tween = null;
-            while (_queue.Count>0 && (tween=_queue.Peek()).IsFinished)
-                _queue.Dequeue();
-            
-            if (_queue.Count==0) {
-                IsFinished = true;
-                return;
-            }
-            
-            tween.Step(simulationTime);
-        }
-        
-        IEnumerator<IBodyManipulator> IEnumerable<IBodyManipulator>.GetEnumerator() {
-            return _queue.GetEnumerator();
-        }
-        
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            return ((IEnumerable<IBodyManipulator>)this).GetEnumerator();
-        }
-    }
-    
-    public sealed class TweenGroup : IBodyManipulator, IEnumerable<IBodyManipulator> {
-        private readonly LinkedList<IBodyManipulator> _list = new LinkedList<IBodyManipulator>();
-        public bool IsFinished { get; private set; }
-        
-        public void Add(IBodyManipulator tween) {
-            _list.AddLast(tween);
-            IsFinished = false;
-        }
-        
-        public void Clear() {
-            _list.Clear();
-            IsFinished = true;
-        }
-        
-        public void Step(TimeSpan simulationTime) {
-            var node = _list.First;
-            while (node!=null) {
-                if (node.Value.IsFinished) {
-                    _list.Remove(node);
-                } else {
-                    node.Value.Step(simulationTime);
-                }
-                node = node.Next;
-            }
-            
-            if (_list.First==null)
-                IsFinished = true;
-        }
-    
-        IEnumerator<IBodyManipulator> IEnumerable<IBodyManipulator>.GetEnumerator() {
-            return _list.GetEnumerator();
-        }
-        
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            return ((IEnumerable<IBodyManipulator>)this).GetEnumerator();
-        }
-    }
+*/    
 }

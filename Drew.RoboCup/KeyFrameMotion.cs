@@ -2,14 +2,13 @@
  * Created by Drew, 17/05/2010 11:15.
  */
 using System;
+using System.Linq;
 using System.Xml;
 using System.Collections.Generic;
 
 namespace Drew.RoboCup
 {
-    /// <summary>
-    /// 
-    /// </summary>
+/*
     public sealed class KeyFrameSequence : IBodyManipulator {
         private readonly List<KeyFrame> _frames = new List<KeyFrame>();
         private TimeSpan _currentFrameUntilTime;
@@ -96,7 +95,7 @@ namespace Drew.RoboCup
             public TimeSpan Duration { get; set; }
         }
     }
-    
+*/    
     public sealed class KeyFrameMotionSequenceParser {
         /*
          * <sequence name="Crouch">
@@ -105,31 +104,43 @@ namespace Drew.RoboCup
          * 	</frame>
          * </sequence>
          */
-        public List<KeyFrameSequence> Parse(XmlNode doc, IBody body) {
-            var sequences = new List<KeyFrameSequence>();
+        public List<TweenQueue> Parse(XmlNode doc, IBody body) {
+            var sequences = new List<TweenQueue>();
             foreach (XmlNode sequenceNode in doc.SelectNodes(@"sequence")) {
-                var sequence = new KeyFrameSequence();
+//                var sequence = new KeyFrameSequence();
+                var sequence = new TweenQueue();
                 sequences.Add(sequence);
-                sequence.Name = sequenceNode.GetAttributeValue("name");
+                var sequenceName = sequenceNode.GetAttributeValue("name");
+                sequence.Name = sequenceName;
                 foreach (XmlNode frameNode in sequenceNode.SelectNodes("frame")) {
                     var frameDuration = TimeSpan.FromSeconds(double.Parse(frameNode.GetAttributeValue("durationSeconds")));
-                    var frame = sequence.AddFrame(frameDuration);
+//                    var frame = sequence.AddFrame(frameDuration);
+                    var frame = new TweenGroup();
+                    sequence.Add(frame);
+                    frame.Add(new WaitMotion(frameDuration));
                     foreach (XmlNode hingeNode in frameNode.SelectNodes("hinge")) {
                         var label = hingeNode.GetAttributeValue("label");
                         var angle = double.Parse(hingeNode.GetAttributeValue("angle"));
                         var hinge = body.GetHingeControllerForLabel(label);
                         if (hinge==null) {
-                            Console.WriteLine("{0}: No hinge with label '{1}' was found.  Skipping.", sequence.Name, label);
+                            Console.WriteLine("{0}: No hinge with label '{1}' was found.  Skipping.", sequenceName, label);
                             continue;
                         }
                         if (!hinge.IsAngleValid(angle)) {
-                            Console.WriteLine("{0}: Hinge '{1}' cannot be set to {2}.  Min={3}, Max={4}.", sequence.Name, label, angle, hinge.MinAngle, hinge.MaxAngle);
+                            Console.WriteLine("{0}: Hinge '{1}' cannot be set to {2}.  Min={3}, Max={4}.", sequenceName, label, angle, hinge.MinAngle, hinge.MaxAngle);
                             continue;
                         }
                         var durationMillis = int.Parse(hingeNode.GetAttributeValueOrDefault("durationMillis", "1000"));
-                        string easingFunction = hingeNode.GetAttributeValueOrDefault("easingFunction", "linear");
-                        
-                        frame.Move(hinge, angle, TimeSpan.FromMilliseconds(durationMillis));
+                        string easeTypeName = hingeNode.GetAttributeValueOrDefault("easeType", null);
+                        EaseType easeType = EaseType.CubicEaseInOut;
+                        if (easeTypeName!=null) {
+                            var matches = Enum.GetValues(typeof(EaseType)).Cast<EaseType>().Where(s => string.Equals(s.ToString(), easeTypeName, StringComparison.OrdinalIgnoreCase));
+                            if (matches.Any())
+                                easeType = matches.Single();
+                            else
+                                Console.WriteLine("{0}: Unrecognised 'easeType' value: {1}", sequenceName, easeTypeName);
+                        }
+                        frame.Add(new HingeMotionTween(hinge, angle, TimeSpan.FromMilliseconds(durationMillis), easeType));
                     }
                 }
             }

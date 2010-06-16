@@ -33,8 +33,10 @@ namespace Drew.RoboCup
                 
                 Console.WriteLine("Sending initialisation messages");
                 
-                foreach (var initMessage in robot.GetInitialisationMessages()) {
-                    SendMessage(initMessage);
+                foreach (var initMessage in robot.GetInitialisationActions()) {
+                    var sb = new StringBuilder();
+                    initMessage.AppendCommand(sb);
+                    SendMessage(sb.ToString());
                     string responseMessage = ReadResponse();
                     // TODO if we receive these messages, process them properly, otherwise try removing this read
                     // if we don't read, we appear in middle, white.  maybe just a pause is enough...
@@ -78,12 +80,16 @@ namespace Drew.RoboCup
                         
                         var actions = robot.Step(parser.State);
                         
-                        if (actions!=null) {
+                        if (actions!=null && actions.Any()) {
+                            var message = new StringBuilder();
+                            foreach (var action in actions)
+                                action.AppendCommand(message);
+                            
                             if (printNextEffectors) {
                                 printNextEffectors = false;
-                                Console.WriteLine(actions.ToString());
+                                Console.WriteLine(message.ToString());
                             }
-                            SendMessage(actions);
+                            SendMessage(message.ToString());
                         }
                     }
                     
