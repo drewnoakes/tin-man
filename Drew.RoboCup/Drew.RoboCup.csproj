@@ -39,6 +39,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Client.cs" />
+    <Compile Include="EasingFunctions.cs" />
     <Compile Include="FieldGeometry.cs">
     </Compile>
     <Compile Include="Geometry.cs" />
@@ -54,6 +55,8 @@
     <Compile Include="PlayMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tweens.cs" />
+    <Compile Include="XmlUtil.cs" />
+    <None Include="Nao\Nao Body Structure %28Labelled%29.png" />
     <None Include="PerceptorParsing\build-parser.cmd" />
     <None Include="PerceptorParsing\Parser Notes.txt" />
     <None Include="PerceptorParsing\Parser.frame" />

@@ -95,8 +95,8 @@ namespace Drew.RoboCup
                             printNextPerceptors = true;
                         else if (key=='E')
                             printNextEffectors = true;
-                        else
-                            robot.HandleUserInput(key);
+                        else if (robot is IInteractiveRobot)
+                            ((IInteractiveRobot)robot).HandleUserInput(key);
                     }
                 }
                 

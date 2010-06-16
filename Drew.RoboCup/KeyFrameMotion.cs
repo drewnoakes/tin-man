@@ -77,19 +77,23 @@ namespace Drew.RoboCup
     }
     
     public sealed class KeyFrame {
-        private readonly Dictionary<HingeController, double> _angleByHinge = new Dictionary<HingeController, double>();
+        private readonly List<HingeMovement> _moves = new List<HingeMovement>();
         public TimeSpan Duration { get; private set; }
         public KeyFrame(TimeSpan duration) {
             Duration = duration;
-        }
-        
-        public void Move(HingeController hinge, double angle) {
+        }        
+        public void Move(HingeController hinge, double angle, TimeSpan duration) {
             hinge.ValidateAngle(angle);
-            _angleByHinge[hinge] = angle;
+            _moves.Add(new HingeMovement { Hinge = hinge, TargetAngle = angle, Duration = duration });
         }
         internal void Play() {
-            foreach (var pair in _angleByHinge)
-                pair.Key.MoveTo(pair.Value);
+            foreach (var move in _moves)
+                move.Hinge.MoveTo(move.TargetAngle, move.Duration);
+        }
+        private struct HingeMovement {
+            public HingeController Hinge { get; set; }
+            public double TargetAngle { get; set; }
+            public TimeSpan Duration { get; set; }
         }
     }
     
@@ -106,13 +110,13 @@ namespace Drew.RoboCup
             foreach (XmlNode sequenceNode in doc.SelectNodes(@"sequence")) {
                 var sequence = new KeyFrameSequence();
                 sequences.Add(sequence);
-                sequence.Name = sequenceNode.Attributes["name"].Value;
+                sequence.Name = sequenceNode.GetAttributeValue("name");
                 foreach (XmlNode frameNode in sequenceNode.SelectNodes("frame")) {
-                    var frameDuration = TimeSpan.FromSeconds(double.Parse(frameNode.Attributes["durationSeconds"].Value));
+                    var frameDuration = TimeSpan.FromSeconds(double.Parse(frameNode.GetAttributeValue("durationSeconds")));
                     var frame = sequence.AddFrame(frameDuration);
                     foreach (XmlNode hingeNode in frameNode.SelectNodes("hinge")) {
-                        var label = hingeNode.Attributes["label"].Value;
-                        var angle = double.Parse(hingeNode.Attributes["angle"].Value);
+                        var label = hingeNode.GetAttributeValue("label");
+                        var angle = double.Parse(hingeNode.GetAttributeValue("angle"));
                         var hinge = body.GetHingeControllerForLabel(label);
                         if (hinge==null) {
                             Console.WriteLine("{0}: No hinge with label '{1}' was found.  Skipping.", sequence.Name, label);
@@ -122,11 +126,16 @@ namespace Drew.RoboCup
                             Console.WriteLine("{0}: Hinge '{1}' cannot be set to {2}.  Min={3}, Max={4}.", sequence.Name, label, angle, hinge.MinAngle, hinge.MaxAngle);
                             continue;
                         }
-                        frame.Move(hinge, angle);
+                        var durationMillis = int.Parse(hingeNode.GetAttributeValueOrDefault("durationMillis", "1000"));
+                        string easingFunction = hingeNode.GetAttributeValueOrDefault("easingFunction", "linear");
+                        
+                        frame.Move(hinge, angle, TimeSpan.FromMilliseconds(durationMillis));
                     }
                 }
             }
             return sequences;
         }
     }
+    
+
 }

@@ -11,7 +11,7 @@ namespace Drew.RoboCup
 {
     // TODO allow for other types of non-linear tweening to smooth motion, for example
     // TODO write unit tests for these
-    
+/*    
     /// <summary>
     /// Oscillates between two values consistently.
     /// </summary>
@@ -133,6 +133,7 @@ namespace Drew.RoboCup
 //            return string.Format("({0} {1:0.########})", _effectorLabel, expectedPosition - hingeAngle);
         }
     }
+*/
     
     public sealed class TweenQueue : IBodyManipulator, IEnumerable<IBodyManipulator> {
         private readonly Queue<IBodyManipulator> _queue = new Queue<IBodyManipulator>();

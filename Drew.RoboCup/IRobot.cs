@@ -6,11 +6,7 @@ using System.Collections.Generic;
 
 namespace Drew.RoboCup
 {
-    /// <summary>
-    /// 
-    /// </summary>
-    public interface IRobot
-    {
+    public interface IRobot {
         // TODO separate out soccer from non-soccer items
         
         IEnumerable<string> GetInitialisationMessages();
@@ -22,7 +18,9 @@ namespace Drew.RoboCup
         
         // TODO rather than returning a string, how about a set of actions that the caller would serialise?
         string Step(PerceptorState state);
-        
+    }
+    
+    public interface IInteractiveRobot {
         void HandleUserInput(char key);
     }
 }
