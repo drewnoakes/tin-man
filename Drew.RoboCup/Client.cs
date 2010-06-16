@@ -33,16 +33,19 @@ namespace Drew.RoboCup
                 
                 Console.WriteLine("Sending initialisation messages");
                 
-                foreach (var initMessage in robot.GetInitialisationActions()) {
-                    var sb = new StringBuilder();
-                    initMessage.AppendCommand(sb);
-                    SendMessage(sb.ToString());
-                    string responseMessage = ReadResponse();
-                    // TODO if we receive these messages, process them properly, otherwise try removing this read
-                    // if we don't read, we appear in middle, white.  maybe just a pause is enough...
-                    if (responseMessage!=null) 
-                        Console.WriteLine("RECEIVED RESPONSE {0}: {1}", 0, responseMessage);
-                }
+                // Initialise with server.  We must first send the scene command, to specify which robot we'll be using.
+                // NOTE We read between sends, even though no reponse will be received.  If we don't then we appear in middle, white.
+                // TODO maybe just a pause is enough (rather than a read)
+                // TODO make this programming model a bit nicer
+                var sb = new StringBuilder();
+                new SceneSpecificationAction(robot.RsgPath).AppendCommand(sb);
+                SendMessage(sb.ToString());
+                ReadResponse();
+                sb.Length = 0;
+                // Specify which player on which team.
+                new InitialisePlayerAction(robot.UniformNumber, robot.TeamName).AppendCommand(sb);
+                SendMessage(sb.ToString());
+                ReadResponse();
                 
                 Console.WriteLine("Press 'Q' to exit, 'P' to print next percepts, 'E' to print next effectors . . . ");
                 

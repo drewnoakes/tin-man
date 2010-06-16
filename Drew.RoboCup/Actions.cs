@@ -64,6 +64,13 @@ namespace Drew.RoboCup
         }
     }
     
+    /// <summary>
+    /// This action must be sent once for player after <see cref="SceneSpecificationAction"/>.
+    /// It registers this agent as a member of the specified team with the specified uniform number.
+    /// All players of a team must use the same team name and different numbers. Sending a uniform number
+    /// of 0 assigns the next free number automatically.
+    /// Note that the side on which a team starts to play depends on which team connected first.
+    /// </summary>
     public sealed class InitialisePlayerAction : IAction {
         private readonly int _uniformNumber;
         private readonly string _teamName;

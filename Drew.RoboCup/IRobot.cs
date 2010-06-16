@@ -7,14 +7,12 @@ using System.Collections.Generic;
 namespace Drew.RoboCup
 {
     public interface IRobot {
-        // TODO separate out soccer from non-soccer items
-        
-        IEnumerable<IAction> GetInitialisationActions();
-        
-        int PlayerId { get; }
+        string RsgPath { get; }
+        string TeamName { get; }
+        int UniformNumber { get; }
+
         FieldSide TeamSide { get; }
         PlayMode PlayMode { get; }
-        string TeamName { get; }
         
         IEnumerable<IAction> Step(PerceptorState state);
     }
