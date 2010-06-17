@@ -52,11 +52,16 @@ namespace TinMan
             get { return _desiredSpeed; }
             set {
                 _controlFunction = null;
-            	if (_desiredSpeed == value)
-            		return;
-            	_desiredSpeed = value;
-            	IsDesiredSpeedChanged = true;
+                SetDesiredSpeedInternal(value);
             }
+        }
+
+        private void SetDesiredSpeedInternal(AngularSpeed desiredSpeed)
+        {
+        	if (_desiredSpeed == desiredSpeed)
+        		return;
+        	_desiredSpeed = desiredSpeed;
+        	IsDesiredSpeedChanged = true;
         }
         
         #region Control function
@@ -101,7 +106,7 @@ namespace TinMan
             // Copy the reference for multi-threading safety
             var fun = _controlFunction;
             if (fun!=null)
-                DesiredSpeed = fun(this, context);
+                SetDesiredSpeedInternal(fun(this, context));
         }
         
         #endregion
