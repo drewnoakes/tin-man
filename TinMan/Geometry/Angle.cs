@@ -64,7 +64,7 @@ namespace TinMan
         
         /// <summary>
         /// Converts a number of degrees into a number of radians.  Generally speaking,
-        /// the use of the <see cref="Anlge"/> type obviates the need for these methods.
+        /// the use of the <see cref="Angle"/> type obviates the need for these methods.
         /// </summary>
         /// <param name="degrees"></param>
         /// <returns></returns>
@@ -75,7 +75,7 @@ namespace TinMan
         
         /// <summary>
         /// Converts a number of radians into a number of degrees.  Generally speaking,
-        /// the use of the <see cref="Anlge"/> type obviates the need for these methods.
+        /// the use of the <see cref="Angle"/> type obviates the need for these methods.
         /// </summary>
         /// <param name="radians"></param>
         /// <returns></returns>
@@ -180,7 +180,7 @@ namespace TinMan
         }
 
         public static AngularSpeed operator /(Angle a, TimeSpan time) {
-            return AngularSpeed.radiansPerSecond(a.Radians / time.TotalSeconds);
+            return AngularSpeed.FromRadiansPerSecond(a.Radians / time.TotalSeconds);
         }
 
         public static bool operator >(Angle left, Angle right) {
