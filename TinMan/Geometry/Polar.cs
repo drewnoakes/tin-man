@@ -23,7 +23,11 @@
 using System;
 
 namespace TinMan {
+    /// <summary>
+    /// Represents a vector in polar coordinates.  This type is immutable.
+    /// </summary>
     public struct Polar {
+        /// <summary>A constant polar value of zero.</summary>
         public static readonly Polar Zero = new Polar();
         
         /// <summary>The distance from the origin.</summary>
@@ -80,17 +84,17 @@ namespace TinMan {
              *   cartesian.z() = (sin(polar.phi()) * polar.dist());
              */
             
-            //double thetaRadians = Angle.DegreesToRadians(Theta);
-            //double phiRadians = Angle.DegreesToRadians(Phi);
-            
-            double t = Distance * Phi.Cos;// Math.Cos(phiRadians);
-            double x = t * Theta.Cos; // Math.Cos(thetaRadians);
-            double y = t * Theta.Sin; // Math.Sin(thetaRadians);
-            double z = Distance * Phi.Sin; // Math.Sin(phiRadians);
+            double t = Distance * Phi.Cos;
+            double x = t * Theta.Cos;
+            double y = t * Theta.Sin;
+            double z = Distance * Phi.Sin;
 
             return new Vector3(x, y, z);
         }
         
+        /// <summary>
+        /// Gets a value indicating whether the distance and both angles are equal to zero.
+        /// </summary>
         public bool IsZero {
             get { return Distance==0 && Theta==Angle.Zero && Phi==Angle.Zero; }
         }

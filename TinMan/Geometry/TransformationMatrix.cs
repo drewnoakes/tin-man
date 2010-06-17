@@ -27,6 +27,7 @@ namespace TinMan
 {
     /// <summary>
     /// Represents a 4x4 matrix used to transform <see cref="Vector3"/> instances.
+    /// This type is immutable.
     /// </summary>
     public sealed class TransformationMatrix {
         static TransformationMatrix() {
@@ -49,6 +50,14 @@ namespace TinMan
         /// </remarks>
         public static TransformationMatrix Identity { get; private set; }
         
+        /// <summary>
+        /// Gets a transformation matrix to transform to the coordinate system specified by the provided
+        /// axes.
+        /// </summary>
+        /// <param name="xAxis"></param>
+        /// <param name="yAxis"></param>
+        /// <param name="zAxis"></param>
+        /// <returns></returns>
         public static TransformationMatrix GetTransformForCoordinateAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis) {
             return new TransformationMatrix(new double[] {
                 xAxis.X, yAxis.X, zAxis.X, 0,
@@ -58,8 +67,26 @@ namespace TinMan
             });
         }
         
+        /// <summary>
+        /// The array of 16 double values that backs this matrix.  This array is assigned in the constructor
+        /// and MUST NOT be changed after that time in order to maintain the immutability of this type.
+        /// </summary>
         private readonly double[] _values;
         
+        /// <summary>
+        /// Initialises a new transformation matrix from an array of 16 double values.
+        /// Note that the array is specified in column-major order:
+        /// <code>
+        /// [00, 01, 02, 03,
+        ///  04, 05, 06, 07,
+        ///  08, 09, 10, 11,
+        ///  12, 13, 14, 15]
+        /// </code>
+        /// </summary>
+        /// <remarks>Note that the array passed into this method is not copied.  The caller must ensure
+        /// that the array will not be modified after calling this constructor, otherwise the matrix will
+        /// reflect that change.</remarks>
+        /// <param name="values"></param>
         public TransformationMatrix(double[] values) {
             if (values==null)
                 throw new ArgumentNullException("values");
@@ -68,6 +95,14 @@ namespace TinMan
             _values = values;
         }
         
+        /// <summary>
+        /// Returns a transformation matrix which is the equivalent of this instance, only
+        /// translated by the specified amount.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
+        /// <returns></returns>
         public TransformationMatrix Translate(double x, double y, double z) {
             return Multiply(new TransformationMatrix(new double[] {
                                                          1, 0, 0, 0,
@@ -77,6 +112,12 @@ namespace TinMan
                                                      }));
         }
         
+        /// <summary>
+        /// Returns a transformation matrix which is the equivalent of this instance, only
+        /// rotated by the specified amount around the X axis.
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         public TransformationMatrix RotateX(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
@@ -88,6 +129,12 @@ namespace TinMan
                                                      }));
         }
         
+        /// <summary>
+        /// Returns a transformation matrix which is the equivalent of this instance, only
+        /// rotated by the specified amount around the Y axis.
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         public TransformationMatrix RotateY(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
@@ -99,6 +146,12 @@ namespace TinMan
                                                      }));
         }
         
+        /// <summary>
+        /// Returns a transformation matrix which is the equivalent of this instance, only
+        /// rotated by the specified amount around the Z axis.
+        /// </summary>
+        /// <param name="angle"></param>
+        /// <returns></returns>
         public TransformationMatrix RotateZ(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
@@ -110,6 +163,12 @@ namespace TinMan
                                                      }));
         }
         
+        /// <summary>
+        /// Returns a transformation matrix which is the product of this instance with the specified
+        /// matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
         public TransformationMatrix Multiply(TransformationMatrix matrix) {
             var newValues = new double[16];
             for (int i = 0; i < 16; i += 4) {

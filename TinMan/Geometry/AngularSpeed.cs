@@ -28,17 +28,28 @@ namespace TinMan
     /// Represents an angular speed as a double-precision floating point value.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{DegreesPerSecond} deg/sec")]
-    public struct AngularSpeed : IEquatable<AngularSpeed>
-    {
+    public struct AngularSpeed : IEquatable<AngularSpeed> {
+        
+        /// <summary>A constant angular speed of zero.</summary>
         public static readonly AngularSpeed Zero = new AngularSpeed(0);
+        /// <summary>
+        /// Gets an anglular speed whose value in degrees/sec and radians/sec is <see cref="double.NaN"/>.
+        /// Returns <see cref="IsNaN"/> as <c>true</c>.
+        /// </summary>
         public static readonly AngularSpeed NaN = new AngularSpeed(double.NaN);
         
         #region Static factory methods and private constructor
 
-        public static AngularSpeed FromRadiansPerSecond(double degreesPerSecond) {
-            return new AngularSpeed(degreesPerSecond);
+        /// <summary>Creates an angular speed for the specified number of radians per second.</summary>
+        /// <param name="radiansPerSecond"></param>
+        /// <returns></returns>
+        public static AngularSpeed FromRadiansPerSecond(double radiansPerSecond) {
+            return new AngularSpeed(radiansPerSecond);
         }
         
+        /// <summary>Creates an angular speed for the specified number of degrees per second.</summary>
+        /// <param name="degreesPerSecond"></param>
+        /// <returns></returns>
         public static AngularSpeed FromDegreesPerSecond(double degreesPerSecond) {
             return new AngularSpeed(Angle.DegreesToRadians(degreesPerSecond));
         }
@@ -51,16 +62,34 @@ namespace TinMan
 
         #region Properties
         
+        /// <summary>Gets the angular speed as a double value in radians per second.</summary>
         public double RadiansPerSecond { get; private set; }
+        /// <summary>Gets the angular speed as a double value in degrees per second.</summary>
         public double DegreesPerSecond {
             get { return Angle.RadiansToDegrees(RadiansPerSecond); }
         }
         
+        /// <summary>
+        /// Gets a value indicating whether this angular speed's value is <see cref="double.NaN"/>
+        /// in both radians/sec and degrees/sec.
+        /// </summary>
         public bool IsNaN { get { return double.IsNaN(RadiansPerSecond); } }
+        
+        /// <summary>
+        /// Gets the absolute value.  If this angular speed is negative, it returns the value
+        /// multiplied by negative one.
+        /// </summary>
         public AngularSpeed Abs { get { return new AngularSpeed(Math.Abs(RadiansPerSecond)); } }
         
         #endregion
         
+        /// <summary>
+        /// Returns the angular speed nearest to this that is within the range from <paramref name="lowerLimit"/>
+        /// and <paramref name="upperLimit"/>.  The returned value is clamped within the specified limits.
+        /// </summary>
+        /// <param name="lowerLimit"></param>
+        /// <param name="upperLimit"></param>
+        /// <returns></returns>
         public AngularSpeed Limit(AngularSpeed lowerLimit, AngularSpeed upperLimit) {
             if (lowerLimit > upperLimit)
                 throw new ArgumentException("The lower limit must be less than the upper limit.");

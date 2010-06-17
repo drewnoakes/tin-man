@@ -24,6 +24,9 @@ using System;
 
 namespace TinMan
 {
+    /// <summary>
+    /// A collection of static geometry-related utility methods.
+    /// </summary>
     public static class GeometryUtil {
         /// <summary>
         /// Calculates the distance along a line that is closest to <paramref name="point"/>.

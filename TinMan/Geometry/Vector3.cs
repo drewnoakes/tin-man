@@ -24,9 +24,12 @@ using System;
 
 namespace TinMan
 {
-    public struct Vector3
-    {
-        public static readonly Vector3 Origin = new Vector3(0,0,0);
+    /// <summary>
+    /// Represents a 3-dimensional vector using double-precision values for all three dimensions.
+    /// </summary>
+    public struct Vector3 {
+        /// <summary>A constant Vector3 of zero, equivalent to the origin or cartesian coordinates.</summary>
+        public static readonly Vector3 Origin = new Vector3(0, 0, 0);
         
         /// <summary>
         /// Returns a vector which is perpendicular to both <paramref name="a"/> and <paramref name="b" /> and the plane containing them.
@@ -45,24 +48,38 @@ namespace TinMan
                         a.X * b.Y - a.Y * b.X
                         );
         }
-        
+    
+        /// <summary>Gets the X component of this 3D vector.</summary>
         public double X { get; private set; }
+        /// <summary>Gets the Y component of this 3D vector.</summary>
         public double Y { get; private set; }
+        /// <summary>Gets the Z component of this 3D vector.</summary>
         public double Z { get; private set; }
 
+        /// <summary>
+        /// Initialises a new 3D vector with the specified values.
+        /// </summary>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="z"></param>
         public Vector3(double x, double y, double z) : this() {
             X = x;
             Y = y;
             Z = z;
         }
         
+        /// <summary>
+        /// Gets a value indicating whether X, Y and Z are all equal to zero.
+        /// </summary>
         public bool IsZero {
             get { return X==0 && Y==0 && Z==0; }
         }
         
+        /// <summary>
+        /// Returns a vector that has the same direction as this one, but with a length of one (a unit vector).
+        /// </summary>
+        /// <returns></returns>
         public Vector3 Normalize() {
-            // norm2 = sqrt(xax[0] * xax[0] + xax[1] * xax[1] + xax[2] * xax[2]);
-            // for(i=0; i<3; i++) xax[i] /= norm2;
             var length = GetLength();
             
             // avoid DivideByZeroException
@@ -72,10 +89,19 @@ namespace TinMan
             return new Vector3(X/length, Y/length, Z/length);
         }
         
+        /// <summary>Calculates the length of this vector.</summary>
+        /// <returns></returns>
         public double GetLength() {
-             return Math.Sqrt(X * X + Y * Y + Z * Z);
+            // Note that using a property for this was considered, but the calculation is relatively
+            // expensive and making it a method feels more heavyweight for the caller.
+            return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
         
+        /// <summary>
+        /// Gets the 3D vector that is the result of crossing this vector with the specified one.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public Vector3 Cross(Vector3 vector) {
             return GetCrossProduct(this, vector);
         }

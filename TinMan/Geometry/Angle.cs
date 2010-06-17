@@ -26,19 +26,30 @@ namespace TinMan
 {
     /// <summary>
     /// Represents an angle as a double-precision floating point value.
+    /// This type is immutable.
     /// </summary>
     [System.Diagnostics.DebuggerDisplay("{Degrees} deg")]
-    public struct Angle : IEquatable<Angle>
-    {
+    public struct Angle : IEquatable<Angle> {
+        /// <summary>A constant angle of zero.</summary>
         public static readonly Angle Zero = new Angle(0);
+        /// <summary>
+        /// Gets an angle whose value in degrees and radians is <see cref="double.NaN"/>.
+        /// Returns <see cref="IsNaN"/> as <c>true</c>.
+        /// </summary>
         public static readonly Angle NaN = new Angle(double.NaN);
         
         #region Static factory methods and private constructor
 
+        /// <summary>Creates an angle from a source value in radians.</summary>
+        /// <param name="radians"></param>
+        /// <returns></returns>
         public static Angle FromRadians(double radians) {
             return new Angle(radians);
         }
         
+        /// <summary>Creates an angle from a source value in degrees.</summary>
+        /// <param name="degrees"></param>
+        /// <returns></returns>
         public static Angle FromDegrees(double degrees) {
             return new Angle(DegreesToRadians(degrees));
         }
@@ -51,11 +62,23 @@ namespace TinMan
         
         #region Static utility methods
         
+        /// <summary>
+        /// Converts a number of degrees into a number of radians.  Generally speaking,
+        /// the use of the <see cref="Anlge"/> type obviates the need for these methods.
+        /// </summary>
+        /// <param name="degrees"></param>
+        /// <returns></returns>
         public static double DegreesToRadians(double degrees) {
             const double degToRadFactor = Math.PI/180;
             return degrees * degToRadFactor;
         }
         
+        /// <summary>
+        /// Converts a number of radians into a number of degrees.  Generally speaking,
+        /// the use of the <see cref="Anlge"/> type obviates the need for these methods.
+        /// </summary>
+        /// <param name="radians"></param>
+        /// <returns></returns>
         public static double RadiansToDegrees(double radians) {
             const double radToDegFactor = 180/Math.PI;
             return radians * radToDegFactor;
@@ -65,20 +88,37 @@ namespace TinMan
 
         #region Properties
         
+        /// <summary>Gets the angle as a double value in radians per second.</summary>
         public double Radians { get; private set; }
+        /// <summary>Gets the angle as a double value in degrees per second.</summary>
         public double Degrees {
             get { return RadiansToDegrees(Radians); }
         }
         
+        /// <summary>Gets the cosine of this angle.</summary>
         public double Cos { get { return Math.Cos(Radians); } }
+        /// <summary>Gets the sine of this angle.</summary>
         public double Sin { get { return Math.Sin(Radians); } }
+        /// <summary>Gets the tangent of this angle.</summary>
         public double Tan { get { return Math.Tan(Radians); } }
         
+        /// <summary>
+        /// Gets a value indicating whether this angle's value is <see cref="double.NaN"/>
+        /// in both radians and degrees.
+        /// </summary>
         public bool IsNaN { get { return double.IsNaN(Radians); } }
+        /// <summary>
+        /// Gets the absolute value.  If this angle is negative, it returns the value
+        /// multiplied by negative one.
+        /// </summary>
         public Angle Abs { get { return new Angle(Math.Abs(Radians)); } }
         
         #endregion
 
+        /// <summary>
+        /// Returns an equivalent angle within the range of [0,360) degrees.
+        /// </summary>
+        /// <returns></returns>
         public Angle Normalise() {
             var radians = Radians;
             while (radians < 0)
@@ -88,6 +128,13 @@ namespace TinMan
             return Angle.FromRadians(radians);
         }
         
+        /// <summary>
+        /// Returns the angle nearest to this that is within the range from <paramref name="lowerLimit"/>
+        /// and <paramref name="upperLimit"/>.  The returned value is clamped within the specified limits.
+        /// </summary>
+        /// <param name="lowerLimit"></param>
+        /// <param name="upperLimit"></param>
+        /// <returns></returns>
         public Angle Limit(Angle lowerLimit, Angle upperLimit) {
             if (lowerLimit > upperLimit)
                 throw new ArgumentException("The lower limit must be less than the upper limit.");
@@ -133,7 +180,7 @@ namespace TinMan
         }
 
         public static AngularSpeed operator /(Angle a, TimeSpan time) {
-            return AngularSpeed.FromRadiansPerSecond(a.Radians / time.TotalSeconds);
+            return AngularSpeed.radiansPerSecond(a.Radians / time.TotalSeconds);
         }
 
         public static bool operator >(Angle left, Angle right) {
@@ -159,6 +206,7 @@ namespace TinMan
         public static bool operator !=(Angle left, Angle right) {
             return !left.Equals(right);
         }
+        
         #endregion
         
         public override string ToString() {
