@@ -90,7 +90,7 @@ namespace TinMan {
         /// becomes false (usually because an agent calls <see cref="AgentBase{TBody}.StopSimulation"/>.
         /// </summary>
         /// <param name="agent"></param>
-        public void Run<TBody>(AgentBase<TBody> agent) where TBody : IBody {
+        public void Run(IAgent agent) {
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
             // Try to make a TCP connection.
