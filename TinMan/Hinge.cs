@@ -29,6 +29,10 @@ namespace TinMan
     /// Represents a single hinge joint within an agent's body.
     /// </summary>
     public sealed class Hinge {
+        // TODO we could have properties for SpeedLastCycle / MoveLastCycle -- these should be set to 0 or NaN if we're beamed though
+        
+        #region Properties
+
         /// <summary>Gets the minimum angle at which this hinge may be positioned.</summary>
         public Angle MinAngle { get; private set; }
         /// <summary>Gets the maximum angle at which this hinge may be positioned.</summary>
@@ -37,11 +41,16 @@ namespace TinMan
         public string PerceptorLabel { get; private set; }
         /// <summary></summary>
         public string EffectorLabel { get; private set; }
+
+        /// <summary>
+        /// Gets the current anglular position of this hinge.  This value is updated for each
+        /// simulation cycle before any agent code is executed.
+        /// </summary>
+        public Angle Angle { get; internal set; }
+        
         internal bool IsDesiredSpeedChanged { get; private set; }
         
         private AngularSpeed _desiredSpeed = AngularSpeed.NaN;
-        
-        // TODO we could have properties for SpeedLastCycle / MoveLastCycle
         
         /// <summary>
         /// Gets and sets the desired speed of this joint.  Setting this value during the processing
@@ -56,8 +65,49 @@ namespace TinMan
             }
         }
 
-        private void SetDesiredSpeedInternal(AngularSpeed desiredSpeed)
-        {
+        #endregion
+        
+        /// <summary>
+        /// Creates a new hinge.  Note that most users will not need to create their own hinges, instead using
+        /// one of the built-in <see cref="IBody"/> implementations such as <see cref="NaoBody"/> that come with
+        /// prepopulated hinges that match the corresponding simulator models.
+        /// </summary>
+        /// <remarks>
+        /// SimSpark models use different labels for the perceptor and effector of each hinge.
+        /// </remarks>
+        /// <param name="perceptorLabel">The string label used for the hinge's perceptor.</param>
+        /// <param name="effectorLabel">The string label used for the hinge's effector.</param>
+        /// <param name="minAngle">The minimum angle that this hinge may reach.</param>
+        /// <param name="maxAngle">The maximum angle that this hinge may reach.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="perceptorLabel"/> or
+        /// <paramref name="effectorLabel"/> are <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="maxAngle"/> is less than <paramref name="minAngle"/>.</exception>
+        public Hinge(string perceptorLabel, string effectorLabel, Angle minAngle, Angle maxAngle) {
+            if (perceptorLabel==null)
+                throw new ArgumentNullException("perceptorLabel");
+            if (effectorLabel==null)
+                throw new ArgumentNullException("effectorLabel");
+            if (maxAngle < minAngle)
+                throw new ArgumentException("maxAngle cannot be less than minAngle.");
+            PerceptorLabel = perceptorLabel;
+            EffectorLabel = effectorLabel;
+            MinAngle = minAngle;
+            MaxAngle = maxAngle;
+        }
+        
+        internal HingeSpeedCommand GetCommand() {
+            if (!IsDesiredSpeedChanged)
+                throw new InvalidOperationException("The speed value for this hinge was not changed.  Check IsSpeedChanged before calling this method.");
+            IsDesiredSpeedChanged = false;
+            return new HingeSpeedCommand(this, DesiredSpeed);
+        }
+        
+        /// <summary>
+        /// Sets the desired speed without clearing any control function.  Setting <see cref="DesiredSpeed"/>
+        /// directly would clear any control function.
+        /// </summary>
+        /// <param name="desiredSpeed"></param>
+        private void SetDesiredSpeedInternal(AngularSpeed desiredSpeed) {
         	if (_desiredSpeed == desiredSpeed)
         		return;
         	_desiredSpeed = desiredSpeed;
@@ -110,47 +160,6 @@ namespace TinMan
         }
         
         #endregion
-
-        /// <summary>
-        /// Gets the current anglular position of this hinge.  This value is updated for each
-        /// simulation cycle before any agent code is executed.
-        /// </summary>
-        public Angle Angle { get; internal set; }
-        
-        /// <summary>
-        /// Creates a new hinge.  Note that most users will not need to create their own hinges, instead using
-        /// one of the built-in <see cref="IBody"/> implementations such as <see cref="NaoBody"/> that come with
-        /// prepopulated hinges that match the corresponding simulator models.
-        /// </summary>
-        /// <remarks>
-        /// SimSpark models use different labels for the perceptor and effector of each hinge.
-        /// </remarks>
-        /// <param name="perceptorLabel">The string label used for the hinge's perceptor.</param>
-        /// <param name="effectorLabel">The string label used for the hinge's effector.</param>
-        /// <param name="minAngle">The minimum angle that this hinge may reach.</param>
-        /// <param name="maxAngle">The maximum angle that this hinge may reach.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="perceptorLabel"/> or
-        /// <paramref name="effectorLabel"/> are <c>null</c>.</exception>
-        /// <exception cref="ArgumentException"><paramref name="maxAngle"/> is less than <paramref name="minAngle"/>.</exception>
-        public Hinge(string perceptorLabel, string effectorLabel, Angle minAngle, Angle maxAngle) {
-            if (perceptorLabel==null)
-                throw new ArgumentNullException("perceptorLabel");
-            if (effectorLabel==null)
-                throw new ArgumentNullException("effectorLabel");
-            if (maxAngle < minAngle)
-                throw new ArgumentException("maxAngle cannot be less than minAngle.");
-            PerceptorLabel = perceptorLabel;
-            EffectorLabel = effectorLabel;
-            MinAngle = minAngle;
-            MaxAngle = maxAngle;
-        }
-        
-        internal HingeSpeedCommand GetCommand() {
-            if (!IsDesiredSpeedChanged)
-                throw new InvalidOperationException("The speed value for this hinge was not changed.  Check IsSpeedChanged before calling this method.");
-            IsDesiredSpeedChanged = false;
-            return new HingeSpeedCommand(this, DesiredSpeed);
-        }
         
         #region Angular limits
     
