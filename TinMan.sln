@@ -6,7 +6,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan", "TinMan\TinMan.csp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan.Tests", "TinMan.Tests\TinMan.Tests.csproj", "{0ABA9EE0-95EE-4C1E-B53A-B86BB65D0AC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan.SampleAgent", "TinMan.SampleAgent\TinMan.SampleAgent.csproj", "{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TinMan.Samples.CSharp", "TinMan.Samples.CSharp\TinMan.Samples.CSharp.csproj", "{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}"
+EndProject
+Project("{982E8BC1-ACD7-4dbf-96AB-B2CE67D6A008}") = "TinMan.Samples.FSharp", "TinMan.Samples.FSharp\TinMan.Samples.FSharp.fsproj", "{D064437E-CEE1-4087-B592-7E6941C07225}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,5 +28,9 @@ Global
 		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Debug|x86.ActiveCfg = Debug|x86
 		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Release|x86.Build.0 = Release|x86
 		{2BA705D9-FA35-49E0-8D58-9F0F5FF87D3F}.Release|x86.ActiveCfg = Release|x86
+		{D064437E-CEE1-4087-B592-7E6941C07225}.Debug|x86.Build.0 = Debug|x86
+		{D064437E-CEE1-4087-B592-7E6941C07225}.Debug|x86.ActiveCfg = Debug|x86
+		{D064437E-CEE1-4087-B592-7E6941C07225}.Release|x86.Build.0 = Release|x86
+		{D064437E-CEE1-4087-B592-7E6941C07225}.Release|x86.ActiveCfg = Release|x86
 	EndGlobalSection
 EndGlobal
