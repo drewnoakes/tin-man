@@ -31,6 +31,8 @@ namespace TinMan
         /// <summary>A constant Vector3 of zero, equivalent to the origin or cartesian coordinates.</summary>
         public static readonly Vector3 Origin = new Vector3(0, 0, 0);
         
+        #region Static utility methods
+
         /// <summary>
         /// Returns a vector which is perpendicular to both <paramref name="a"/> and <paramref name="b" /> and the plane containing them.
         /// If either of these vectors are zero, or they are parallel, then their cross product is zero.
@@ -49,13 +51,33 @@ namespace TinMan
                         );
         }
     
+        #endregion
+        
+        #region Properties
+        
         /// <summary>Gets the X component of this 3D vector.</summary>
         public double X { get; private set; }
         /// <summary>Gets the Y component of this 3D vector.</summary>
         public double Y { get; private set; }
         /// <summary>Gets the Z component of this 3D vector.</summary>
         public double Z { get; private set; }
+        
+        /// <summary>
+        /// Gets a value indicating whether X, Y and Z are all equal to zero.
+        /// </summary>
+        public bool IsZero {
+            get { return X==0 && Y==0 && Z==0; }
+        }
+        
+        /// <summary>Gets the length of this vector.</summary>
+        /// <remarks>Note that this value is not cached, and so is calculated each time this property is read.</remarks>
+        /// <returns></returns>
+        public double Length {
+            get { return Math.Sqrt(X * X + Y * Y + Z * Z); }
+        }
 
+        #endregion
+        
         /// <summary>
         /// Initialises a new 3D vector with the specified values.
         /// </summary>
@@ -69,32 +91,17 @@ namespace TinMan
         }
         
         /// <summary>
-        /// Gets a value indicating whether X, Y and Z are all equal to zero.
-        /// </summary>
-        public bool IsZero {
-            get { return X==0 && Y==0 && Z==0; }
-        }
-        
-        /// <summary>
         /// Returns a vector that has the same direction as this one, but with a length of one (a unit vector).
         /// </summary>
         /// <returns></returns>
         public Vector3 Normalize() {
-            var length = GetLength();
+            var length = Length;
             
             // avoid DivideByZeroException
             if (length==0)
                 return new Vector3();
             
             return new Vector3(X/length, Y/length, Z/length);
-        }
-        
-        /// <summary>Calculates the length of this vector.</summary>
-        /// <returns></returns>
-        public double GetLength() {
-            // Note that using a property for this was considered, but the calculation is relatively
-            // expensive and making it a method feels more heavyweight for the caller.
-            return Math.Sqrt(X * X + Y * Y + Z * Z);
         }
         
         /// <summary>

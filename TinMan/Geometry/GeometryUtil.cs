@@ -42,7 +42,7 @@ namespace TinMan
             double u 
                 = ((s.X/s.Y) * (origin.Y - point.Y) + (point.X - origin.X))
                 / (v.X - (s.X/s.Y)*v.Y);
-            return (origin + v*u - point).GetLength();
+            return (origin + v*u - point).Length;
         }
     }
 }

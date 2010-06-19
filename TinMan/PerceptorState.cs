@@ -260,6 +260,10 @@ namespace TinMan
             PointOnBody = pointOnBody;
             ForceVector = forceVector;
         }
+        
+        public override string ToString() {
+            return string.Format("Point={0}, Force={1}", PointOnBody, ForceVector);
+        }
     }
     
     public struct PlayerPosition {

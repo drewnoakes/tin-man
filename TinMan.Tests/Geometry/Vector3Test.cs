@@ -57,10 +57,10 @@ namespace TinMan
         }
         
         [Test] public void GetLength() {
-            Assert.AreEqual(0, Vector3.Origin.GetLength());
-            Assert.AreEqual(5, new Vector3(3,4,0).GetLength());
-            Assert.AreEqual(10, new Vector3(10,0,0).GetLength());
-            Assert.AreEqual(10, new Vector3(0,10,0).GetLength());
+            Assert.AreEqual(0, Vector3.Origin.Length);
+            Assert.AreEqual(5, new Vector3(3,4,0).Length);
+            Assert.AreEqual(10, new Vector3(10,0,0).Length);
+            Assert.AreEqual(10, new Vector3(0,10,0).Length);
         }
         
         [Test] public void GetCrossProduct() {
