@@ -28,7 +28,8 @@ using System.Collections.Generic;
 namespace TinMan
 {
     /// <summary>
-    /// 
+    /// Represents the body of the Nao model in the SimSpark simulator.  As of 2010, this model was the standard
+    /// model for RoboCup 3D Simulated Soccer competitions.
     /// </summary>
     /// <remarks>
     /// The Nao humanoid robot manufactured by Aldebaran Robotics.

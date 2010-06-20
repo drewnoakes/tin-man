@@ -25,6 +25,10 @@ using System.Collections.Generic;
 
 namespace TinMan
 {
+    /// <summary>
+    /// Interface for all agent bodies used in TinMan.  Two models that ship with SimSpark are already
+    /// implemented in TimMan, namely <see cref="NaoBody"/> and <see cref="SoccerbotBody"/>.
+    /// </summary>
     public interface IBody {
         /// <summary>
         /// Gets a well-known path of the Ruby Scene Graph (RSG) file in the RCSS3D server package
@@ -33,14 +37,33 @@ namespace TinMan
         string RsgPath { get; }
 
         /// <summary>
-        /// Performs a lookup to find the hinge with specified effector label.
+        /// Performs a lookup to find the hinge with specified effector label.  Returns <c>null</c> if
+        /// no hinge is found.
         /// </summary>
         /// <param name="effectorLabel"></param>
         /// <returns></returns>
         Hinge GetHingeForEffectorLabel(string effectorLabel);
         
+        /// <summary>Gets all hinges in the agent's body.</summary>
         IEnumerable<Hinge> AllHinges { get; }
-        
+/*
+        /// <summary>
+        /// Performs a lookup to find the universal joint with specified effector label.  Returns <c>null</c> if
+        /// no universal joint is found.
+        /// </summary>
+        /// <param name="effectorLabel"></param>
+        /// <returns></returns>
+        UniversalJoint GetUniversalJointForEffectorLabel(string effectorLabel);
+
+        /// <summary>Gets all universal joints in the agent's body.</summary>
+        IEnumerable<UniversalJoint> AllUniversalJoints { get; }
+*/
+        /// <summary>
+        /// Converts a polar coordinate from the agent's view perspective (as is reported by vision
+        /// perceptors) into a vector in the agent's local coordinates.
+        /// </summary>
+        /// <param name="cameraView"></param>
+        /// <returns></returns>
         Vector3 ConvertCameraPolarToLocalVector(Polar cameraView);
     }
 }

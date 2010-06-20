@@ -123,6 +123,11 @@ namespace TinMan
             }
         }
         
+        /// <summary>
+        /// Calculates whether the given point is within the field.  The Z vector component is not considered.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static bool IsInField(Vector3 vector) {
             return vector.X >= -FieldXLength/2 && vector.X <= FieldXLength/2
                 && vector.Y > -FieldYLength/2 && vector.Y < FieldYLength/2;

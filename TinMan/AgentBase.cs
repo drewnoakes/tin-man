@@ -45,9 +45,7 @@ namespace TinMan
         /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
         public bool IsAlive { get; private set; }
         
-        /// <summary>
-        /// Gets a logger used by the agent.
-        /// </summary>
+        /// <summary>Gets a logger used by the agent.</summary>
         protected Log Log { get; private set; }
         
         /// <summary>
@@ -59,6 +57,7 @@ namespace TinMan
             if (body==null)
                 throw new ArgumentNullException("body");
             Body = body;
+            Log = Log.Create();
         }
         
         /// <summary>
@@ -77,21 +76,5 @@ namespace TinMan
             Log.Info("Agent requested that the simulation stops.");
             IsAlive = false;
         }
-    }
-    
-    public interface IAgent {
-        /// <summary>Gets the agent's body.</summary>
-        /// <remarks>Must not be <c>null</c>.</remarks>
-        IBody Body { get; }
-        
-        /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
-        bool IsAlive { get; }
-        
-        /// <summary>
-        /// Gives the agent a chance to process the latest body state and perform any necessary actions.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="state"></param>
-        void Think(ISimulationContext context, PerceptorState state);
     }
 }

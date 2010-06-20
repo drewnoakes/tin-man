@@ -60,15 +60,27 @@
     <Compile Include="Hinge.cs" />
     <Compile Include="AgentBase.cs" />
     <Compile Include="HingeControlFunctions.cs" />
+    <Compile Include="IAgent.cs" />
     <Compile Include="IBody.cs" />
-    <Compile Include="IStateObserver.cs" />
+    <Compile Include="ISimulationContext.cs" />
     <Compile Include="NaoBody.cs" />
+    <Compile Include="PerceptorState\AccelerometerState.cs" />
+    <Compile Include="PerceptorState\FieldSide.cs" />
+    <Compile Include="PerceptorState\ForceState.cs" />
+    <Compile Include="PerceptorState\GyroState.cs" />
+    <Compile Include="PerceptorState\HeardMessage.cs" />
+    <Compile Include="PerceptorState\HingeState.cs" />
+    <Compile Include="PerceptorState\Landmark.cs" />
+    <Compile Include="PerceptorState\LandmarkPosition.cs" />
+    <Compile Include="PerceptorState\PerceptorState.cs" />
+    <Compile Include="PerceptorState\PlayerPosition.cs" />
+    <Compile Include="PerceptorState\TouchState.cs" />
+    <Compile Include="PerceptorState\UniversalJointState.cs" />
     <Compile Include="SoccerbotBody.cs" />
     <Compile Include="PerceptorParsing\Parser.cs" />
     <Compile Include="SimulationContext.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="PerceptorParsing\Scanner.cs" />
-    <Compile Include="PerceptorState.cs" />
     <Compile Include="PlayMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <None Include="PerceptorParsing\build-parser.cmd" />
@@ -79,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Geometry" />
+    <Folder Include="PerceptorState" />
     <Folder Include="PerceptorParsing" />
   </ItemGroup>
 </Project>

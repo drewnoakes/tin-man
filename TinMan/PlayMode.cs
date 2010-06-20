@@ -25,34 +25,58 @@ using System.Collections.Generic;
 
 namespace TinMan
 {
-    public enum PlayMode
-    {
+    /// <summary>
+    /// Enumeration of all possible modes that a simulated game of soccer can be in.
+    /// </summary>
+    public enum PlayMode {
+        
+        // IMPORTANT -- DO NOT REORDER THESE ITEMS
+        
+        /// <summary>
+        /// This value is specific to TinMan and won't be returned by the server.
+        /// TinMan uses it to indicate that no value has been received from the server.
+        /// </summary>
         Unknown = -1,
-        // the order of the first 3 play modes should not be changed.
-        BeforeKickOff = 0,      /*!< before_kick_off:   before the match  */
-        KickOffLeft = 1,       /*!< kick_off_left:     kick off for the left team  */
-        KickOffRight = 2,      /*!< kick_off_right:    kick off for the right team */
-        PlayOn,                 /*!< play_on:           regular game play */
+        /// <summary>Before the match.</summary>
+        BeforeKickOff = 0,
+        /// <summary>Kick off for the left team.</summary>
+        KickOffLeft = 1,
+        /// <summary>Kick off for the right team.</summary>
+        KickOffRight = 2,
+        /// <summary>Regular game play.</summary>
+        PlayOn,
+        /// <summary></summary>
         KickInLeft,
+        /// <summary></summary>
         KickInRight,
-        CornerKickLeft,       /*!< corner_kick_l:     corner kick left team   */
-        CornerKickRight,      /*!< corner_kick_r:     corner kick right team  */
-        GoalKickLeft,         /*!< goal_kick_l:       goal kick for left team */
-        GoalKickRIght,        /*!< goal_kick_r:       goal kick for right team*/
-        OffsideLeft,           /*!< offside_l:         offside for left team   */
-        OffsideRight,          /*!< offside_r:         offside for right team  */
+        /// <summary>Corner kick left team.</summary>
+        CornerKickLeft,
+        /// <summary>Corner kick right team.</summary>
+        CornerKickRight,
+        /// <summary>Goal kick for left team.</summary>
+        GoalKickLeft,
+        /// <summary>Goal kick for right team.</summary>
+        GoalKickRIght,
+        /// <summary>Offside for the left team.</summary>
+        OffsideLeft,
+        /// <summary>Offside for the right team.</summary>
+        OffsideRight,
+        /// <summary></summary>
         GameOver,
+        /// <summary></summary>
         GoalLeft,
+        /// <summary></summary>
         GoalRight,
-        FreeKickLeft,         /*!< free_kick_l:       free kick for left team */
-        FreeKickRight,        /*!< free_kick_r:       free kick for right team*/
-        None                    /*!< no play mode, this must be the last entry */
+        /// <summary>Free kick for the left team.</summary>
+        FreeKickLeft,
+        /// <summary>Free kick for the right team.</summary>
+        FreeKickRight,
+        /// <summary>No play mode exists.</summary>
+        None
     }
     
-    public static class PlayModeUtil
-    {
-            private static readonly Dictionary<string, PlayMode> _playModeByStringCode = new Dictionary<string, PlayMode>
-            {
+    public static class PlayModeUtil {
+            private static readonly Dictionary<string, PlayMode> _playModeByStringCode = new Dictionary<string, PlayMode> {
                 { "BeforeKickOff", PlayMode.BeforeKickOff },
                 { "KickOff_Left", PlayMode.KickOffLeft },
                 { "KickOff_Right", PlayMode.KickOffRight },
@@ -73,8 +97,7 @@ namespace TinMan
                 { "unknown", PlayMode.None }
             };
 
-        public static bool TryParse(string modeStr, out PlayMode playMode)
-        {
+        public static bool TryParse(string modeStr, out PlayMode playMode) {
             return _playModeByStringCode.TryGetValue(modeStr, out playMode);
         }
     }

@@ -162,7 +162,11 @@ namespace TinMan {
                     ((IDisposable)agent).Dispose();
             }
         }
-        
+
+        /// <summary>
+        /// Instructs the host to stop running.  After calling this method, the <see cref="Run"/> method 
+        /// will return.
+        /// </summary>
         public void Stop() {
             _stopRequested = true;
         }

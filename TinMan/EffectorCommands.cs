@@ -25,11 +25,6 @@ using System.Text;
 
 namespace TinMan
 {
-    // TODO implement MoveUniversalJointCommand, even though it's not used by Nao
-    // UniversalJoint Effector
-    // Format:  ({name} {ax1} {ax2})<br/>
-    // Message: (lae1 -2.3 1.2)
-
     /// <summary>
     /// Defines the interface that all effector commands sent to the server
     /// from an agent implement.
@@ -60,7 +55,33 @@ namespace TinMan
             s.AppendFormat("({0} {1:0.######})", _hinge.EffectorLabel, anglePerCycle.Degrees);
         }
     }
-    
+/*
+    /// <summary>
+    /// Commands a UniversalJointEffector to set the speeds of rotation to a new value.
+    /// </summary>
+    /// <remarks>
+    /// Format:  ({name} {ax1} {ax2})<br/>
+    /// Message: (lae1 -2.3 1.2)
+    /// </remarks>
+    internal sealed class UniversalJointSpeedCommand : IEffectorCommand {
+        private readonly UniversalJoint _universalJoint;
+        private readonly AngularSpeed _angularSpeed1;
+        private readonly AngularSpeed _angularSpeed2;
+        public UniversalJointSpeedCommand(UniversalJoint universalJoint, AngularSpeed angularSpeed1, AngularSpeed angularSpeed2) {
+            _universalJoint = universalJoint;
+            _angularSpeed1 = angularSpeed1;
+            _angularSpeed2 = angularSpeed2;
+        }
+        
+        public void AppendSExpression(StringBuilder s) {
+            // Note that the simulator expects the argument for the HingeJointEffector to
+            // be in degrees per simulation cycle.
+            var anglePerCycle1 = _angularSpeed1 * AgentHost.CyclePeriod;
+            var anglePerCycle2 = _angularSpeed2 * AgentHost.CyclePeriod;
+            s.AppendFormat("({0} {1:0.######} {2:0.######})", _universalJoint.EffectorLabel, anglePerCycle1.Degrees, anglePerCycle2.Degrees);
+        }
+    }
+*/
     /// <summary>
     /// Allows a player to position itself on the field before the game starts.
     /// </summary>
