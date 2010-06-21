@@ -75,8 +75,17 @@ namespace TinMan
         None
     }
     
+    /// <summary>
+    /// A collection of utility methods for converting server play modes (strings) to TinMan ones (enums).
+    /// Most users of TinMan won't need to use this type, as TinMan only uses the <see cref="PlayMode"/> enum
+    /// in its APIs.
+    /// </summary>
     public static class PlayModeUtil {
-            private static readonly Dictionary<string, PlayMode> _playModeByStringCode = new Dictionary<string, PlayMode> {
+        private static readonly Dictionary<string, PlayMode> _playModeByStringCode;
+        private static readonly Dictionary<PlayMode, string> _stringCodeByPlayMode;
+        
+        static PlayModeUtil() {
+            _playModeByStringCode = new Dictionary<string, PlayMode> {
                 { "BeforeKickOff", PlayMode.BeforeKickOff },
                 { "KickOff_Left", PlayMode.KickOffLeft },
                 { "KickOff_Right", PlayMode.KickOffRight },
@@ -96,9 +105,28 @@ namespace TinMan
                 { "free_kick_right", PlayMode.FreeKickRight },
                 { "unknown", PlayMode.None }
             };
+            
+            _stringCodeByPlayMode = new Dictionary<PlayMode, string>();
+            foreach (var pair in _playModeByStringCode)
+                _stringCodeByPlayMode[pair.Value] = pair.Key;
+        }
 
+        /// <summary>Gets the enum value for the specified server play mode string.</summary>
+        /// <param name="modeStr"></param>
+        /// <param name="playMode"></param>
+        /// <returns></returns>
         public static bool TryParse(string modeStr, out PlayMode playMode) {
             return _playModeByStringCode.TryGetValue(modeStr, out playMode);
+        }
+        
+        /// <summary>Gets the string used by the server for the specified play mode enum value.</summary>
+        /// <param name="playMode"></param>
+        /// <returns></returns>
+        public static string GetServerString(this PlayMode playMode) {
+            string str;
+            if (!_stringCodeByPlayMode.TryGetValue(playMode, out str))
+                throw new ArgumentException("Unexpected PlayMode enum value: " + playMode);
+            return str;
         }
     }
 }

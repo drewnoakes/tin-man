@@ -64,6 +64,7 @@
     <Compile Include="IBody.cs" />
     <Compile Include="ISimulationContext.cs" />
     <Compile Include="NaoBody.cs" />
+    <Compile Include="NetworkUtil.cs" />
     <Compile Include="PerceptorState\AccelerometerState.cs" />
     <Compile Include="PerceptorState\FieldSide.cs" />
     <Compile Include="PerceptorState\ForceState.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="PerceptorParsing\Scanner.cs" />
     <Compile Include="PlayMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Wizard.cs" />
     <None Include="PerceptorParsing\build-parser.cmd" />
     <None Include="PerceptorParsing\Parser Notes.txt" />
     <None Include="PerceptorParsing\Parser.frame" />

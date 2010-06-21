@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace TinMan.PerceptorParsing {
 
-    public sealed class Token
+    internal sealed class Token
     {
         /// <summary>token kind</summary>
         public int kind { get; set; }
@@ -21,7 +21,7 @@ namespace TinMan.PerceptorParsing {
         public Token next { get; set; }  
     }
     
-    public interface IBuffer
+    internal interface IBuffer
     {
         int Read ();
         int Peek ();
@@ -34,7 +34,7 @@ namespace TinMan.PerceptorParsing {
         public const int EOF = char.MaxValue + 1;
     }
     
-    public sealed class StringBuffer : IBuffer
+    internal sealed class StringBuffer : IBuffer
     {
         public StringBuffer(string str) {
             String = str;
@@ -55,7 +55,7 @@ namespace TinMan.PerceptorParsing {
         public string String { get; private set; }
     }
     
-    public sealed class StreamBuffer : IBuffer
+    internal sealed class StreamBuffer : IBuffer
     {
         // This Buffer supports the following cases:
         // 1) seekable stream (file)
@@ -184,7 +184,7 @@ namespace TinMan.PerceptorParsing {
         }
     }
     /*
-    public class UTF8Buffer: Buffer {
+    internal class UTF8Buffer: Buffer {
         public UTF8Buffer(Buffer b): base(b) {}
     
         public override int Read() {
@@ -220,7 +220,7 @@ namespace TinMan.PerceptorParsing {
     }
     */
     
-    public sealed class Scanner
+    internal sealed class Scanner
     {
         const char EOL = '\n';
         const int eofSym = 0; /* pdt */

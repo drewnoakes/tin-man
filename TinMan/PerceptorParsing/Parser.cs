@@ -8,7 +8,7 @@ namespace TinMan.PerceptorParsing {
 
 
 
-public sealed class Parser {
+internal sealed class Parser {
 	public const int _EOF = 0;
 	public const int _double = 1;
 	public const int _ident = 2;

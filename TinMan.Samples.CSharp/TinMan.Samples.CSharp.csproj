@@ -47,6 +47,7 @@
     <Compile Include="InteractiveAgent.cs" />
     <Compile Include="SoccerbotAgent.cs" />
     <Compile Include="TalkingAgent.cs" />
+    <Compile Include="WizardExample.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TinMan\TinMan.csproj">

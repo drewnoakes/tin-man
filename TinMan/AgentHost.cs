@@ -21,10 +21,7 @@
 // Created 06/05/2010 14:07
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -54,6 +51,8 @@ namespace TinMan {
             UniformNumber = 0;
         }
         
+        #region Properties
+        
         /// <summary>
         /// Gets and sets the name of the team to which this agent belongs.  Once the client is
         /// running, this value should no longer be changed.
@@ -82,6 +81,8 @@ namespace TinMan {
         /// </summary>
         public ISimulationContext Context { get; private set; }
         
+        #endregion
+        
         private bool _stopRequested = false;
         
         /// <summary>
@@ -98,14 +99,14 @@ namespace TinMan {
             try {
                 client = new TcpClient(HostName, PortNumber);
             } catch (SocketException ex) {
-                _log.Error(ex, "Unable to connect to {0}:{1}.  Exiting.", HostName, PortNumber);
+                _log.Error(ex, "Unable to connect to {0}:{1}", HostName, PortNumber);
                 throw;
             }
 
             _log.Info("Connected.");
 
             using (client)
-                using (NetworkStream stream = client.GetStream()) {
+            using (NetworkStream stream = client.GetStream()) {
                 _log.Info("Sending initialisation messages");
                 
                 // Initialise with server.  We must first send the scene command, to specify which robot we'll be using.
@@ -113,10 +114,10 @@ namespace TinMan {
                 // TODO maybe just a pause is enough (rather than a read)
                 // TODO at startup, don't log warnings about listen timeouts until after the first message has been received from the server
                 SendCommands(stream, new [] { new SceneSpecificationCommand(agent.Body.RsgPath) });
-                ReadResponseString(stream);
+                NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
                 // Specify which player on which team.
                 SendCommands(stream, new [] { new InitialisePlayerCommand(UniformNumber, TeamName) });
-                ReadResponseString(stream);
+                NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
                 
                 var context = new SimulationContext(this);
                 Context = context;
@@ -124,7 +125,11 @@ namespace TinMan {
                 var commands = new List<IEffectorCommand>();
                 while (!_stopRequested) {
                     commands.Clear();
-                    string data = ReadResponseString(stream);
+                    // It seems like a good idea to pass the stream to Coco/R rather than loading the whole
+                    // string into memory first, however because Coco/R requires the ability to seek within
+                    // the stream, it would internally load the stream into a buffer anyway.  To avoid this
+                    // memory churn, Coco/R should be replaced.
+                    string data = NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.1));
                     if (data!=null) {
                         // Parse message
                         var parser = new Parser(new Scanner(new StringBuffer(data)));
@@ -171,52 +176,9 @@ namespace TinMan {
             _stopRequested = true;
         }
         
-        private static string ReadResponseString(NetworkStream stream) {
-            // It seems like a good idea to pass the stream to Coco/R rather than loading the whole
-            // string into memory first, however because Coco/R requires the ability to seek within
-            // the stream, it would internally load the stream into a buffer anyway.  To avoid this
-            // memory churn, Coco/R should be replaced.
-            int sleepCount = 0;
-            while (!stream.DataAvailable) {
-                if (++sleepCount > 100) {
-                    _log.Warn("No response received within limit.");
-                    return null;
-                }
-                Thread.Sleep(5);
-            }
-            
-            int length = ReadInt32(stream);
-            var bytes = new byte[length];
-            
-            int totalBytesRead = 0;
-            do {
-                totalBytesRead += stream.Read(bytes, totalBytesRead, length - totalBytesRead);
-            } while (totalBytesRead < length);
-            
-            return Encoding.ASCII.GetString(bytes);
-        }
-
-        private static int ReadInt32(NetworkStream stream) {
-            var lengthBytes = new byte[4];
-            stream.Read(lengthBytes, 0, 4);
-            int length = (lengthBytes[0] << 24) | (lengthBytes[1] << 16) | (lengthBytes[2] << 8) | (lengthBytes[3]);
-            return length;
-        }
-        
         private static void SendCommands(NetworkStream stream, IEnumerable<IEffectorCommand> commands) {
             string commandStr = ConcatCommandStrings(commands);
-            // Server uses 1-byte-per-character ASCII
-            byte[] bytes = Encoding.ASCII.GetBytes(commandStr);
-            uint num = (uint)bytes.Length;
-            // Big endian - MSB first
-            var numBytes = new byte[4];
-            numBytes[3] = (byte)(num & 0xff);
-            numBytes[2] = (byte)(num >> 8 & 0xff);
-            numBytes[1] = (byte)(num >> 16 & 0xff);
-            numBytes[0] = (byte)(num >> 24 & 0xff);
-            // Prefix with the length of the message
-            stream.Write(numBytes, 0, numBytes.Length);
-            stream.Write(bytes, 0, bytes.Length);
+            NetworkUtil.WriteStringWith32BitLengthPrefix(stream, commandStr);
         }
 
         private static string ConcatCommandStrings(IEnumerable<IEffectorCommand> commands) {
