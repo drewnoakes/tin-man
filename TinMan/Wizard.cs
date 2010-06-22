@@ -191,8 +191,8 @@ namespace TinMan
         }
         
         /// <summary>
-        /// Performs a drop ball in accordance with the server's rules.  This command can be used
-        /// when the ball leaves the field, for example.
+        /// Drops the ball at its current position and move all players away by the free kick radius.
+        /// If the ball is off the field, it is brought back within bounds.
         /// </summary>
         public void DropBall() {
             SendCommand("(dropBall)");
