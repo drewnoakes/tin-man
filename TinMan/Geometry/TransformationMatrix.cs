@@ -37,6 +37,12 @@ namespace TinMan
                                                     0, 0, 1, 0,
                                                     0, 0, 0, 1
                                                 });
+            NaN = new TransformationMatrix(new double[] {
+                                               double.NaN, double.NaN, double.NaN, double.NaN,
+                                               double.NaN, double.NaN, double.NaN, double.NaN,
+                                               double.NaN, double.NaN, double.NaN, double.NaN,
+                                               double.NaN, double.NaN, double.NaN, double.NaN
+                                           });
         }
         
         /// <summary>The identity matrix.</summary>
@@ -49,6 +55,11 @@ namespace TinMan
         /// </pre>
         /// </remarks>
         public static TransformationMatrix Identity { get; private set; }
+        
+        /// <summary>
+        /// A transformation matrix in which all 16 values are <see cref="Double.NaN"/>.
+        /// </summary>
+        public static TransformationMatrix NaN { get; private set; }
         
         /// <summary>
         /// Gets a transformation matrix to transform to the coordinate system specified by the provided

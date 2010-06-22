@@ -21,6 +21,7 @@
 // Created 21/06/2010 17:29
 
 using System;
+using System.Threading;
 
 using TinMan;
 
@@ -29,10 +30,13 @@ namespace TinMan.Samples.CSharp
     class WizardExample {
         public WizardExample() {
             var wizard = new Wizard();
-            wizard.Connect();
+//            wizard.HostName = "yoda";
+            wizard.BallTransformUpdated += t => Console.WriteLine("Ball position: " + t.GetTranslation());
+            
+            var wizardThread = new Thread(() => wizard.Run());
+            wizardThread.Start();
             
             bool quit = false;
-            
             while (!quit) {
                 if (Console.KeyAvailable) {
                     switch (Console.ReadKey(true).KeyChar) {
@@ -72,7 +76,7 @@ namespace TinMan.Samples.CSharp
                 System.Threading.Thread.Sleep(100);
             }
             
-            wizard.Disconnect();
+            wizard.Stop();
         }
         
 //        static void Main() {

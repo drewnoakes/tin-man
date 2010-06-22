@@ -21,7 +21,9 @@
 // Created 21/06/2010 15:58
 
 using System;
+using System.IO;
 using System.Net.Sockets;
+using System.Text;
 
 namespace TinMan
 {
@@ -37,10 +39,10 @@ namespace TinMan
         public const int DefaultTcpPort = 3200;
         private static readonly Log _log = Log.Create();
 
-        // TODO what about the server command (getAck) ?
+        public event Action<TransformationMatrix> BallTransformUpdated;
         
-        private TcpClient _client;
         private NetworkStream _stream;
+        private bool _isRunning = false;
         
         /// <summary>Initialises a new wizard for localhost on the default port.</summary>
         public Wizard() {
@@ -54,19 +56,17 @@ namespace TinMan
         public string ReadMessage(TimeSpan timeout) {
             return NetworkUtil.ReadResponseString(_stream, timeout);
         }
-        
-        #region Connection management
 
         /// <summary>
-        /// Creates a TCP collection to the server at <see cref="HostName"/> on port <see cref="PortNumber"/>.
+        /// Opens a TCP connection to the server at <see cref="HostName"/> on port <see cref="PortNumber"/>
+        /// and begins processing server messages.
+        /// <para/>
         /// This method must be called before any actions are taken.
         /// </summary>
-        public void Connect() {
-            if (_client!=null)
-                throw new InvalidOperationException("Already connected.");
-            
+        public void Run() {
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
-            
+        
+            TcpClient _client;
             try {
                 _client = new TcpClient(HostName, PortNumber);
             } catch (SocketException ex) {
@@ -75,21 +75,50 @@ namespace TinMan
             }
             
             _log.Info("Connected.");
+            _isRunning = true;
             
-            _stream = _client.GetStream();
+            using (_client)
+            using (_stream = _client.GetStream()) {
+                while (_isRunning) {
+                    int length = NetworkUtil.ReadInt32(_stream);
+                    var sexp = new SExpressionReader(_stream, length);
+
+                    var ballEvent = BallTransformUpdated;
+                    if (ballEvent!=null) {
+                        // Parse ball location
+                        if (sexp.Skip(2) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1)) {
+                            var values = new double[16];
+                            bool success = true;
+                            for (int i=0; i<16; i++) {
+                                var s = sexp.Take();
+                                if (s==null) {
+                                    success = false;
+                                    break;
+                                }
+                                double d;
+                                if (!double.TryParse(s, out d)) {
+                                    success = false;
+                                    break;
+                                }
+                                values[i] = d;
+                            }
+                            if (success) {
+                                var transform = new TransformationMatrix(values);
+                                ballEvent(transform);
+                            }
+                        }
+                    }
+                    sexp.SkipToEnd();
+                }
+            }
         }
         
-        /// <summary>Disconenects from the server.</summary>
-        public void Disconnect() {
-            if (_client==null)
-                throw new InvalidOperationException("Not connected.");
-            _stream.Dispose();
-            _client.Close();
-            _stream = null;
-            _client = null;
+        /// <summary>
+        /// Causes the wizard to disconnect from the server and the <see cref="Run"/> method to exit.
+        /// </summary>
+        public void Stop() {
+            _isRunning = false;
         }
-        
-        #endregion
         
         #region Properties
 

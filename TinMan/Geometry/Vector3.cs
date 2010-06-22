@@ -30,6 +30,8 @@ namespace TinMan
     public struct Vector3 {
         /// <summary>A constant Vector3 of zero, equivalent to the origin or cartesian coordinates.</summary>
         public static readonly Vector3 Origin = new Vector3(0, 0, 0);
+        /// <summary>A constant Vector3 with a NaN value in all dimensions.</summary>
+        public static readonly Vector3 NaN = new Vector3(double.NaN, double.NaN, double.NaN);
         
         #region Static utility methods
 
@@ -63,10 +65,17 @@ namespace TinMan
         public double Z { get; private set; }
         
         /// <summary>
-        /// Gets a value indicating whether X, Y and Z are all equal to zero.
+        /// Gets a value indicating whether X, Y and Z are all equal to zero (i.e. the origin).
         /// </summary>
         public bool IsZero {
             get { return X==0 && Y==0 && Z==0; }
+        }
+        
+        /// <summary>
+        /// Gets a value indicating whether X, Y and Z are all equal to <see cref="Double.NaN"/>.
+        /// </summary>
+        public bool IsNaN {
+            get { return double.IsNaN(X) && double.IsNaN(Y) && double.IsNaN(Z); }
         }
         
         /// <summary>Gets the length of this vector.</summary>

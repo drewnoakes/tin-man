@@ -71,7 +71,8 @@ namespace TinMan.SampleBot
         }
         
         public static void Main() {
-            new AgentHost{HostName="yoda"}.Run(new InteractiveAgent());
+            // {HostName="yoda"}
+            new AgentHost().Run(new InteractiveAgent());
         }
     }
 }
