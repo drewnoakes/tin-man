@@ -39,7 +39,12 @@ namespace TinMan
         public const int DefaultTcpPort = 3200;
         private static readonly Log _log = Log.Create();
 
-        public event Action<TransformationMatrix> BallTransformUpdated;
+        /// <summary>
+        /// Fires whenever the ball position is updated.  The accompanying time is the game time, and will
+        /// be <see cref="TimeSpan.Zero"/> the first time this event fires (as the data is unavailable on
+        /// the first read).
+        /// </summary>
+        public event Action<TimeSpan, TransformationMatrix> BallTransformUpdated;
         
         private NetworkStream _stream;
         private bool _isRunning = false;
@@ -85,26 +90,38 @@ namespace TinMan
 
                     var ballEvent = BallTransformUpdated;
                     if (ballEvent!=null) {
-                        // Parse ball location
-                        if (sexp.Skip(2) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1)) {
-                            var values = new double[16];
-                            bool success = true;
-                            for (int i=0; i<16; i++) {
-                                var s = sexp.Take();
-                                if (s==null) {
-                                    success = false;
-                                    break;
-                                }
-                                double d;
-                                if (!double.TryParse(s, out d)) {
-                                    success = false;
-                                    break;
-                                }
-                                values[i] = d;
+                        TimeSpan gameTime = TimeSpan.Zero;
+                        // Parse game time
+                        if (sexp.In(2)) {
+                            if (sexp.Take()=="time") {
+                                double secs;
+                                var timeVal = sexp.Take();
+                                if (double.TryParse(timeVal, out secs))
+                                    gameTime = TimeSpan.FromSeconds(secs);
                             }
-                            if (success) {
-                                var transform = new TransformationMatrix(values);
-                                ballEvent(transform);
+                            sexp.Out(2);
+                            
+                            // Parse ball location
+                            if (sexp.Skip(1) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1)) {
+                                var values = new double[16];
+                                bool success = true;
+                                for (int i=0; i<16; i++) {
+                                    var s = sexp.Take();
+                                    if (s==null) {
+                                        success = false;
+                                        break;
+                                    }
+                                    double d;
+                                    if (!double.TryParse(s, out d)) {
+                                        success = false;
+                                        break;
+                                    }
+                                    values[i] = d;
+                                }
+                                if (success) {
+                                    var transform = new TransformationMatrix(values);
+                                    ballEvent(gameTime, transform);
+                                }
                             }
                         }
                     }

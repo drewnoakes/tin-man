@@ -30,8 +30,8 @@ namespace TinMan.Samples.CSharp
     class WizardExample {
         public WizardExample() {
             var wizard = new Wizard();
-//            wizard.HostName = "yoda";
-            wizard.BallTransformUpdated += t => Console.WriteLine("Ball position: " + t.GetTranslation());
+            wizard.HostName = "yoda";
+            wizard.BallTransformUpdated += (time,transform) => Console.WriteLine("Ball position at {0}: {1}", time, transform.GetTranslation());
             
             var wizardThread = new Thread(() => wizard.Run());
             wizardThread.Start();
@@ -42,27 +42,27 @@ namespace TinMan.Samples.CSharp
                     switch (Console.ReadKey(true).KeyChar) {
                         case 'd':
                             wizard.DropBall();
-                            Console.WriteLine("\nDropping ball");
+                            Console.WriteLine("Dropping ball");
                             break;
                         case 'b':
                             wizard.SetBallPosition(new Vector3(3,5,1));
-                            Console.WriteLine("\nSetting ball position");
+                            Console.WriteLine("Setting ball position");
                             break;
                         case 'v':
                             wizard.SetBallVelocity(new Vector3(1,-1,10));
-                            Console.WriteLine("\nSetting ball velocity");
+                            Console.WriteLine("Setting ball velocity");
                             break;
                         case 'k':
                             wizard.KickOff(FieldSide.Left);
-                            Console.WriteLine("\nKick off (left)");
+                            Console.WriteLine("Kick off (left)");
                             break;
                         case 'K':
                             wizard.KickOff(FieldSide.Right);
-                            Console.WriteLine("\nKick off (right)");
+                            Console.WriteLine("Kick off (right)");
                             break;
                         case 'x':
                             wizard.KillAgent(1, FieldSide.Left);
-                            Console.WriteLine("\nKilling agent #1 on left side");
+                            Console.WriteLine("Killing agent #1 on left side");
                             break;
                         case 'q':
                             quit = true;
@@ -79,8 +79,8 @@ namespace TinMan.Samples.CSharp
             wizard.Stop();
         }
         
-//        static void Main() {
-//            new WizardExample();
-//        }
+        static void Main() {
+            new WizardExample();
+        }
     }
 }

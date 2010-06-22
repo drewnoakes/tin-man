@@ -176,6 +176,8 @@ namespace TinMan
 	                return false;
 	            if (c==')')
 	                levelCount--;
+	            else if (c=='(')
+	                levelCount++;
 	        }
 	        return true;
 	    }

@@ -94,6 +94,10 @@ namespace TinMan
             
             Assert.IsFalse(CreateReader("a b c)").Out(2));
             Assert.IsTrue(CreateReader("a b c))").Out(2));
+            
+            reader = CreateReader("a)(b))c");
+            Assert.IsTrue(reader.Out(2));
+            Assert.AreEqual("c", reader.Take());
         }
 
         [Test] public void ParseBallLocation() {
