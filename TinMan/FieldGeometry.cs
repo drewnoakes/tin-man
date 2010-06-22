@@ -28,6 +28,7 @@ using System.Collections.Generic;
 namespace TinMan
 {
     // TODO come up with a better name for north/south goals than 'top' and 'bottom' as we now use top/bottom for goals and flags
+    // TODO field dimensions may be variable, depending upon simulator (true but this information is only available via the monitor port, afaik)
     
     /// <summary>
     /// Holds information about the dimensions and geometry of the soccer field upon which the
@@ -62,35 +63,52 @@ namespace TinMan
     ///                                            (9,6)
     /// </pre>
     /// </remarks>
-    public static class FieldGeometry
-    {
-        // TODO field dimensions may be variable, depending upon simulator
+    public static class FieldGeometry {
+        /// <summary>The size of the field across its narrower dimension.</summary>
         public const double FieldYLength = 12.0;
+        /// <summary>The size of the field across its wider dimension, from goal to goal.</summary>
         public const double FieldXLength = 18.0;
+        /// <summary>The height above ground level of the simulated area of the field.</summary>
         public const double FieldZHeight = 40.0;
-        public const double GoalWidth = 2.1;
-        public const double GoalHeight = 0.8;
-        public const double GoalDepth = 0.6;
-        public const double PenaltyAreaLength = 1.8;
-        public const double PenaltyAreaWidth = 3.9;
+        /// <summary>The width of the goal as a player looks at it.</summary>
+        public const double GoalYLength = 2.1;
+        /// <summary>The height that the goal extends above the ground.</summary>
+        public const double GoalZLength = 0.8;
+        /// <summary>The depth of the goal.  That is, the distance from the opening of the goal on the field's side to the back of the net.</summary>
+        public const double GoalXLength = 0.6;
+        /// <summary></summary>
+        public const double PenaltyAreaXLength = 1.8;
+        /// <summary></summary>
+        public const double PenaltyAreaYLength = 3.9;
+        /// <summary></summary>
         public const double FreeKickDistance = 1.3;
+        /// <summary></summary>
         public const double FreeKickMoveDistance = 1.5;
+        /// <summary></summary>
         public const double GoalKickDistance = 1.0;
 
+        /// <summary>The location, in global coordinates, of the base of the top-left (north-west) flag.</summary>
         public static readonly Vector3 FlagLeftTopPosition;
+        /// <summary>The location, in global coordinates, of the base of the bottom-left (south-west) flag.</summary>
         public static readonly Vector3 FlagLeftBottomPosition;
+        /// <summary>The location, in global coordinates, of the base of the top-right (north-east) flag.</summary>
         public static readonly Vector3 FlagRightTopPosition;
+        /// <summary>The location, in global coordinates, of the base of the bottom-right (south-east) flag.</summary>
         public static readonly Vector3 FlagRightBottomPosition;
-            
+
+        /// <summary>The location, in global coordinates, of the top of the top-left (north-west) goal post.</summary>
         public static readonly Vector3 GoalLeftTopPosition;
+        /// <summary>The location, in global coordinates, of the top of the bottom-left (south-west) goal post.</summary>
         public static readonly Vector3 GoalLeftBottomPosition;
+        /// <summary>The location, in global coordinates, of the top of the top-right (north-east) goal post.</summary>
         public static readonly Vector3 GoalRightTopPosition;
+        /// <summary>The location, in global coordinates, of the top of the bottom-right (south-east) goal post.</summary>
         public static readonly Vector3 GoalRightBottomPosition;
         
         static FieldGeometry() {
-            const double flagHeight = 0; // 0.375f;     // TODO verify that the spotted point of the flag is at ground level (Z==0)
-            const double goalFlagX = FieldXLength/2;    // TODO verify that the flag is exactly on the corner of the field
-            const double goalFlagHeight = GoalHeight/2; // TODO verify this -- the height of the point spotted on the goal is halfway up it?
+            const double flagHeight = 0; // 0.375f;  // TODO verify that the spotted point of the flag is at ground level (Z==0)
+            const double goalPostX = FieldXLength/2; // TODO verify that the flag is exactly on the corner of the field
+            const double goalPostY = GoalYLength/2;  // TODO verify this -- the height of the point spotted on the goal is halfway up it?
         
             // Using global coordinate system.  (0,0) is the exact center of the field.
             
@@ -98,15 +116,13 @@ namespace TinMan
             FlagRightTopPosition    = new Vector3(+FieldXLength/2, +FieldYLength/2, flagHeight);
             FlagLeftBottomPosition  = new Vector3(-FieldXLength/2, -FieldYLength/2, flagHeight);
             FlagRightBottomPosition = new Vector3(+FieldXLength/2, -FieldYLength/2, flagHeight);
-            GoalLeftTopPosition     = new Vector3(-goalFlagX, +GoalWidth/2, goalFlagHeight);
-            GoalRightTopPosition    = new Vector3(+goalFlagX, +GoalWidth/2, goalFlagHeight);
-            GoalLeftBottomPosition  = new Vector3(-goalFlagX, -GoalWidth/2, goalFlagHeight);
-            GoalRightBottomPosition = new Vector3(+goalFlagX, -GoalWidth/2, goalFlagHeight);
+            GoalLeftTopPosition     = new Vector3(-goalPostX, +GoalYLength/2, goalPostY);
+            GoalRightTopPosition    = new Vector3(+goalPostX, +GoalYLength/2, goalPostY);
+            GoalLeftBottomPosition  = new Vector3(-goalPostX, -GoalYLength/2, goalPostY);
+            GoalRightBottomPosition = new Vector3(+goalPostX, -GoalYLength/2, goalPostY);
         }
         
-        /// <summary>
-        /// Gets the location of a landmark in global coordinates.
-        /// </summary>
+        /// <summary>Gets the location of a landmark in global coordinates.</summary>
         /// <param name="landmark"></param>
         /// <returns></returns>
         public static Vector3 GetLandmarkPointGlobal(Landmark landmark) {
