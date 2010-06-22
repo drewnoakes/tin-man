@@ -21,6 +21,7 @@
 // Created 21/06/2010 17:29
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 using TinMan;
@@ -29,17 +30,33 @@ namespace TinMan.Samples.CSharp
 {
     class WizardExample {
         public WizardExample() {
-            var wizard = new Wizard();
-            wizard.HostName = "yoda";
-            wizard.BallTransformUpdated += (time,transform) => Console.WriteLine("Ball position at {0}: {1}", time, transform.GetTranslation());
+            const string HostName = "yoda";
             
-            var wizardThread = new Thread(() => wizard.Run());
-            wizardThread.Start();
+            var wizard = new Wizard();
+            wizard.HostName = HostName;
+            wizard.BallTransformUpdated += (time,transform) => Console.WriteLine("Ball position at {0}: {1}", time, transform.GetTranslation());
+            wizard.AgentTransformUpdated += (time,transform) => Console.WriteLine("Agent position at {0}: {1}", time, transform.GetTranslation());
+            
+            var agentHosts = new List<AgentHost>();
+            
+            Action addAgent = () => {
+                var agent = new MinimalAgent();
+                var agentHost = new AgentHost() { UniformNumber = agentHosts.Count+1, HostName = HostName };
+                new Thread(() => agentHost.Run(agent)).Start();
+                agentHosts.Add(agentHost);
+            };
+            
+            // Add a wizard
+            new Thread(() => wizard.Run()).Start();
             
             bool quit = false;
             while (!quit) {
                 if (Console.KeyAvailable) {
                     switch (Console.ReadKey(true).KeyChar) {
+                        case '+':
+                            Console.WriteLine("Adding agent");
+                            addAgent();
+                            break;
                         case 'd':
                             wizard.DropBall();
                             Console.WriteLine("Dropping ball");
@@ -64,6 +81,12 @@ namespace TinMan.Samples.CSharp
                             wizard.KillAgent(1, FieldSide.Left);
                             Console.WriteLine("Killing agent #1 on left side");
                             break;
+                        case 'a':
+                            var pos = FieldGeometry.GetRandomPosition(FieldSide.Left).WithZ(0);
+                            int num = new Random().Next(agentHosts.Count)+1;
+                            Console.WriteLine("Moving agent {0} to {1}", num, pos);
+                            wizard.SetAgentPosition(num, FieldSide.Left, pos);
+                            break;
                         case 'q':
                             quit = true;
                             break;
@@ -73,8 +96,11 @@ namespace TinMan.Samples.CSharp
                     }
                 }
                 // Sleep a little each cycle as otherwise this would be a very hot loop
-                System.Threading.Thread.Sleep(100);
+                System.Threading.Thread.Sleep(50);
             }
+            
+            foreach (var agentHost in agentHosts)
+                agentHost.Stop();
             
             wizard.Stop();
         }

@@ -69,6 +69,7 @@ namespace TinMan
         /// <summary>The size of the field across its wider dimension, from goal to goal.</summary>
         public const double FieldXLength = 18.0;
         /// <summary>The height above ground level of the simulated area of the field.</summary>
+        /// <remarks>Note that the agent may not be positioned more than 20 above ground level.</remarks>
         public const double FieldZHeight = 40.0;
         /// <summary>The width of the goal as a player looks at it.</summary>
         public const double GoalYLength = 2.1;
@@ -147,6 +148,23 @@ namespace TinMan
         public static bool IsInField(Vector3 vector) {
             return vector.X >= -FieldXLength/2 && vector.X <= FieldXLength/2
                 && vector.Y > -FieldYLength/2 && vector.Y < FieldYLength/2;
+        }
+        
+        private static readonly Random _random = new Random();
+        
+        public static Vector3 GetRandomPosition(FieldSide side) {
+            double x1 = -FieldGeometry.FieldXLength/2;
+            double x2 = +FieldGeometry.FieldXLength/2;
+            if (side==FieldSide.Left)
+                x2 = 0;
+            else if (side==FieldSide.Right)
+                x1 = 0;
+            
+            double z =  _random.NextDouble() * FieldGeometry.FieldZHeight;
+            double y = (_random.NextDouble() * FieldGeometry.FieldYLength) - (FieldGeometry.FieldYLength/2);
+            double x = (_random.NextDouble() * (x2 - x1)) + x1;
+            
+            return new Vector3(x, y, z);
         }
     }
 }

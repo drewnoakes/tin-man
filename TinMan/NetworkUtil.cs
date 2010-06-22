@@ -40,6 +40,7 @@ namespace TinMan
 	        
 	        stream.Write(bytes, 0, bytes.Length);
 	    }
+        
 	    public static void WriteInt32(NetworkStream stream, uint num) {
 	        // Big endian - MSB first
 	        var numBytes = new byte[4];

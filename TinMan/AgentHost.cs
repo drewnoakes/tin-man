@@ -63,7 +63,7 @@ namespace TinMan {
         /// Gets and sets the desired uniform number for this player.  A value of zero tells the server to
         /// assign the next available number automatically.  This is the default.
         /// </summary>
-        int UniformNumber { get; set; }
+        public int UniformNumber { get; set; }
 
         /// <summary>
         /// The name of the host running the server to connect to.  By default this is <tt>localhost</tt>.

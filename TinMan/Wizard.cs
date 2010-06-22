@@ -45,6 +45,13 @@ namespace TinMan
         /// the first read).
         /// </summary>
         public event Action<TimeSpan, TransformationMatrix> BallTransformUpdated;
+
+        /// <summary>
+        /// Fires whenever an agent's position is updated.  The accompanying time is the game time, and will
+        /// be <see cref="TimeSpan.Zero"/> the first time this event fires (as the data is unavailable on
+        /// the first read).
+        /// </summary>
+        public event Action<TimeSpan, TransformationMatrix> AgentTransformUpdated;
         
         private NetworkStream _stream;
         private bool _isRunning = false;
@@ -103,24 +110,25 @@ namespace TinMan
                             
                             // Parse ball location
                             if (sexp.Skip(1) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1)) {
-                                var values = new double[16];
-                                bool success = true;
-                                for (int i=0; i<16; i++) {
-                                    var s = sexp.Take();
-                                    if (s==null) {
-                                        success = false;
-                                        break;
-                                    }
-                                    double d;
-                                    if (!double.TryParse(s, out d)) {
-                                        success = false;
-                                        break;
-                                    }
-                                    values[i] = d;
-                                }
-                                if (success) {
-                                    var transform = new TransformationMatrix(values);
+                                TransformationMatrix transform;
+                                if (TryReadTransformationMatrix(sexp, out transform))
                                     ballEvent(gameTime, transform);
+                                
+                                // Parse agent location
+                                var agentEvent = AgentTransformUpdated;
+                                if (agentEvent!=null && sexp.Out(2)) {
+                                    // Loop through all agents
+                                    bool done = false;
+                                    while (!done) {
+                                        if (sexp.In(3)) {
+                                            if (sexp.Take()=="SLT" && TryReadTransformationMatrix(sexp, out transform))
+                                                agentEvent(gameTime, transform);
+                                            if (!sexp.Out(3))
+                                                done = true;
+                                        } else {
+                                            done = true;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -128,6 +136,25 @@ namespace TinMan
                     sexp.SkipToEnd();
                 }
             }
+        }
+    
+        private static bool TryReadTransformationMatrix(SExpressionReader sexp, out TransformationMatrix transform) {
+            var values = new double[16];
+            for (int i=0; i<16; i++) {
+                var s = sexp.Take();
+                if (s==null) {
+                    transform = null;
+                    return false;
+                }
+                double d;
+                if (!double.TryParse(s, out d)) {
+                    transform = null;
+                    return false;
+                }
+                values[i] = d;
+            }
+            transform = new TransformationMatrix(values);
+            return true;
         }
         
         /// <summary>

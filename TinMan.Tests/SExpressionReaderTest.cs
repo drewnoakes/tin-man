@@ -39,11 +39,11 @@ namespace TinMan
                             reader.Take());
             
             reader = CreateReader("a b c");
-            Assert.AreEqual(0, reader.Offset);
+            Assert.AreEqual(0, _stream.Position);
             Assert.AreEqual("a", reader.Take());
-            Assert.AreEqual(2, reader.Offset);
+            Assert.AreEqual(2, _stream.Position);
             Assert.AreEqual("b", reader.Take());
-            Assert.AreEqual(4, reader.Offset);
+            Assert.AreEqual(4, _stream.Position);
             Assert.AreEqual("c", reader.Take());
             
             reader = CreateReader("(a b c)(d e f)");
@@ -55,9 +55,9 @@ namespace TinMan
         
         [Test] public void Skip() {
             var reader = CreateReader("(0)(1)(2) (3) (4) (5) ");
-            Assert.AreEqual(0, reader.Offset);
+            Assert.AreEqual(0, _stream.Position);
             Assert.IsTrue(reader.Skip(2));
-            Assert.AreEqual(6, reader.Offset);
+            Assert.AreEqual(6, _stream.Position);
             Assert.AreEqual("(2)", reader.Take());
             Assert.IsTrue(reader.Skip(2));
             Assert.AreEqual("(5)", reader.Take());
@@ -67,7 +67,7 @@ namespace TinMan
             Assert.AreEqual("e", reader.Take());
             
             reader = CreateReader("a b  c  (d) e");
-            Assert.AreEqual(0, reader.Offset);
+            Assert.AreEqual(0, _stream.Position);
             Assert.IsTrue(reader.Skip(2));
             Assert.AreEqual("c", reader.Take());
             Assert.IsTrue(reader.Skip(1));
@@ -75,7 +75,7 @@ namespace TinMan
             
             reader = CreateReader("a b c) d e");
             Assert.IsFalse(reader.Skip(4));
-            Assert.AreEqual(5, reader.Offset);
+            Assert.AreEqual(6, _stream.Position);
         }
 
         [Test] public void In() {
@@ -104,7 +104,7 @@ namespace TinMan
             var s = "((time 600.003))(RDS 0 1)((nd(nd))(nd(nd))(nd(nd))(nd(nd))(nd(nd(nd))(nd)(nd)(nd)(nd)(nd))(nd(nd(nd))(nd)(nd)(nd)(nd)(nd))(nd(nd))(nd(nd))(nd(nd))(nd(nd))(nd)(nd)(nd)(nd)(nd (SLT -0.665576 0.371382 -0.647367 0 -0.653323 -0.709255 0.264814 0 -0.360801 0.599193 0.714696 0 7.11823 0.881769 0.0402713 1)(nd)))";
             var reader = CreateReader(s);
             Assert.IsTrue(reader.Skip(2));
-            Assert.AreEqual(25, reader.Offset);
+            Assert.AreEqual(25, _stream.Position);
             Assert.IsTrue(reader.In(1));
             Assert.IsTrue(reader.Skip(14));
             Assert.IsTrue(reader.In(1));
@@ -114,21 +114,30 @@ namespace TinMan
         }
         
         [Test] public void SkipToEnd() {
+            // length is 10
             var reader = CreateReader("(1)(a b c)");
             reader.Skip(1);
-            Assert.AreEqual(3, reader.Offset);
+            Assert.AreEqual(3, _stream.Position);
             reader.SkipToEnd();
-            Assert.AreEqual(int.MaxValue, reader.Offset);
+            Assert.AreEqual(10, _stream.Position);
             reader.SkipToEnd();
-            Assert.AreEqual(int.MaxValue, reader.Offset);
+            Assert.AreEqual(10, _stream.Position);
         }
         
-        private static SExpressionReader CreateReader(string s) {
-            var stream = new MemoryStream();
+        [Test] public void FromBallToAgent() {
+            var sexp = CreateReader(")(nd StaticMesh (load models/soccerball.obj ) (sSc 0.042 0.042 0.042)(resetMaterials soccerball_rcs-soccerball.png)))(nd TRF (SLT 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1)(blah");
+            Assert.IsTrue(sexp.Out(2));
+            Assert.IsTrue(sexp.In(2));
+            Assert.AreEqual("SLT", sexp.Take());
+        }
+        
+        private MemoryStream _stream;
+        private SExpressionReader CreateReader(string s) {
+            _stream = new MemoryStream();
             var bytes = System.Text.Encoding.ASCII.GetBytes(s);
-            stream.Write(bytes, 0, bytes.Length);
-            stream.Position = 0;
-            return new SExpressionReader(stream, s.Length);
+            _stream.Write(bytes, 0, bytes.Length);
+            _stream.Position = 0;
+            return new SExpressionReader(_stream, s.Length);
         }
     }
 }

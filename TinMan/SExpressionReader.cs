@@ -21,19 +21,24 @@
 // Created 22/06/2010 16:10
 
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace TinMan
 {
 	public sealed class SExpressionReader {
 	    private readonly Stream _stream;
-	    public int Offset { get; private set; }
-	    public int MaximumOffset { get; private set; }
+	    private int BytesRead;// { get; set; }
+	    public int Length { get; private set; }
 
 	    public SExpressionReader(Stream stream, int length) {
+	        if (stream==null)
+	            throw new ArgumentNullException("stream");
+	        if (length<=0)
+	            throw new ArgumentOutOfRangeException("length", length, "Must be greater than zero.");
 	        _stream = stream;
-	        MaximumOffset = length - 1;
-	        Offset = 0;
+	        Length = length;
+	        BytesRead = 0;
 	    }
 
 	    #region Reading and Pushing
@@ -43,11 +48,10 @@ namespace TinMan
 	        if (_pushedChar!=-1) {
 	            c = (char)_pushedChar;
 	            _pushedChar = -1;
-	            Offset++;
 	            return true;
 	        }
 	        
-	        if (Offset>MaximumOffset) {
+	        if (BytesRead==Length) {
 	            c = char.MinValue;
 	            return false;
 	        }
@@ -56,15 +60,15 @@ namespace TinMan
 	        while ((i = _stream.ReadByte())==-1) {
 	            System.Threading.Thread.Sleep(1);
 	        }
-	        Offset++;
+	        BytesRead++;
 	        c = (char)i;
 	        return true;
 	    }
+	    
 	    private void Push(char c) {
 	        if (_pushedChar!=-1)
 	            throw new InvalidOperationException("A pushed character already exists.");
 	        _pushedChar = c;
-	        Offset--;
 	    }
 	    
 	    #endregion
@@ -214,13 +218,12 @@ namespace TinMan
 	    private readonly byte[] _rubbish = new byte[1024];
 	    
 	    public void SkipToEnd() {
-	        // We're at offset and have to read maxOffset-offset extra bytes
-	        while (Offset < MaximumOffset) {
-	            int targetCount = Math.Min(_rubbish.Length, MaximumOffset - Offset);
-	            int actualCount = _stream.Read(_rubbish, 0, targetCount);
-	            Offset += actualCount;
+	        while (BytesRead < Length) {
+	            int diff = Math.Min(_rubbish.Length, Length - BytesRead);
+	            int read = _stream.Read(_rubbish, 0, diff);
+	            BytesRead += read;
 	        }
-	        Offset = int.MaxValue;
+	        Debug.Assert(BytesRead==Length);
 	    }
 	}
 }

@@ -121,6 +121,16 @@ namespace TinMan
         public Vector3 Cross(Vector3 vector) {
             return GetCrossProduct(this, vector);
         }
+
+        public Vector3 WithX(double newX) {
+            return new Vector3(newX, Y, Z);
+        }
+        public Vector3 WithY(double newY) {
+            return new Vector3(X, newY, Z);
+        }
+        public Vector3 WithZ(double newZ) {
+            return new Vector3(X, Y, newZ);
+        }
         
         #region Operator overloads
         
