@@ -332,12 +332,10 @@ public string TeamName;
 		while (la.kind == 7) {
 			Get();
 			if (StartOf(1)) {
-				if (StartOf(2)) {
-					VisibleItemExpr();
-				} else {
-					PlayerExpr();
-				}
-			}
+				VisibleItemExpr();
+			} else if (la.kind == 44) {
+				PlayerExpr();
+			} else SynErr(49);
 			Expect(5);
 		}
 		Expect(5);
@@ -345,45 +343,44 @@ public string TeamName;
 
 	void VisibleItemExpr() {
 		string label = la.val; Polar pos; 
-		while (StartOf(3)) {
-			switch (la.kind) {
-			case 35: {
-				Get();
-				break;
-			}
-			case 36: {
-				Get();
-				break;
-			}
-			case 37: {
-				Get();
-				break;
-			}
-			case 38: {
-				Get();
-				break;
-			}
-			case 39: {
-				Get();
-				break;
-			}
-			case 40: {
-				Get();
-				break;
-			}
-			case 41: {
-				Get();
-				break;
-			}
-			case 42: {
-				Get();
-				break;
-			}
-			case 43: {
-				Get();
-				break;
-			}
-			}
+		switch (la.kind) {
+		case 35: {
+			Get();
+			break;
+		}
+		case 36: {
+			Get();
+			break;
+		}
+		case 37: {
+			Get();
+			break;
+		}
+		case 38: {
+			Get();
+			break;
+		}
+		case 39: {
+			Get();
+			break;
+		}
+		case 40: {
+			Get();
+			break;
+		}
+		case 41: {
+			Get();
+			break;
+		}
+		case 42: {
+			Get();
+			break;
+		}
+		case 43: {
+			Get();
+			break;
+		}
+		default: SynErr(50); break;
 		}
 		PolarPosExpr(out pos);
 		switch (label) {
@@ -441,14 +438,14 @@ public string TeamName;
 			Get();
 		} else if (la.kind == 1) {
 			AngleInDegrees(out direction);
-		} else SynErr(49);
+		} else SynErr(51);
 		MessageText(out messageText);
 		Expect(5);
 		message = new HeardMessage(time, direction, new Message(messageText.Trim('\''))); 
 	}
 
 	void Perceptors() {
-		while (StartOf(4)) {
+		while (StartOf(2)) {
 			switch (la.kind) {
 			case 6: {
 				TimeSpan t; 
@@ -540,8 +537,6 @@ out id, out side);
     
     static readonly bool[,] set = {
 		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
-		{x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, T,x,x,x, x,x},
-		{x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x},
 		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x},
 		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x}
 
@@ -653,7 +648,9 @@ public sealed class Errors {
 			case 46: s = "\"(hear\" expected"; break;
 			case 47: s = "\"self\" expected"; break;
 			case 48: s = "??? expected"; break;
-			case 49: s = "invalid HearExpr"; break;
+			case 49: s = "invalid SeeExpr"; break;
+			case 50: s = "invalid VisibleItemExpr"; break;
+			case 51: s = "invalid HearExpr"; break;
 
             default: s = "error code " + n; break;
         }

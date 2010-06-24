@@ -261,12 +261,12 @@ AgentStateExpr<out double temp, out double battery> =
 // )
 SeeExpr =
     "(See"
-        { '(' [VisibleItemExpr | PlayerExpr] ')' }
+        { '(' (VisibleItemExpr | PlayerExpr) ')' }
     ')'
     .
 
 VisibleItemExpr =                           (. string label = la.val; Polar pos; .)
-        { "F1L" | "F2L" | "F1R" | "F2R" | "G1L" | "G2L" | "G1R" | "G2R" | "B" }
+        ( "F1L" | "F2L" | "F1R" | "F2R" | "G1L" | "G2L" | "G1R" | "G2R" | "B" )
         PolarPosExpr<out pos>
                                              (. switch (label) {
                                                     case "F1L": SeeLandmark(pos, Landmark.FlagLeftTop); break;

@@ -31,9 +31,10 @@ namespace TinMan
     /// Facilitates various superpower actions within the simulated universe such as killing agents,
     /// throwing the ball around or changing the game play mode.
     /// </summary>
+    /// <remarks>
     /// The tools provided by this class are not available for use in competitive matches.  Instead they
     /// are inteded for use as part of machine learning or supervisory roles.
-    /// <remarks>
+    /// </remarks>
     public sealed class Wizard {
         /// <summary>The default port exposed by the server for monitors, trainers or referees.</summary>
         public const int DefaultTcpPort = 3200;
