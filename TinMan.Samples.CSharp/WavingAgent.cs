@@ -45,22 +45,22 @@ namespace TinMan.Samples.CSharp
                     int angle = (c - '0') * 10;
                     
                     // Move the left shoulder to that angle
-                    Body.LAJ1.MoveToWithGain(angle, 1);
+                    Body.LAJ1.MoveToWithGain(Angle.FromDegrees(angle), 1);
                 }
                 if (c=='?')
                 {
                     var random = new Random();
-                    Body.LAJ1.SetControlFunction((hinge, context) => {
+                    Body.LAJ1.SetControlFunction((hinge, ctx) => {
                         return AngularSpeed.FromDegreesPerSecond(random.Next(100) - 50);
                     });
                 }
             }
         }
-    }
 
-    static void Main()
-    {
-        // This call blocks while your agent runs
-        new AgentHost().Run(new WavingAgent());
+        static void Main()
+        {
+            // This call blocks while your agent runs
+            new AgentHost(){HostName = "yoda"}.Run(new WavingAgent());
+        }
     }
 }

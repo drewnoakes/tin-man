@@ -105,8 +105,8 @@ namespace TinMan.Samples.CSharp
             wizard.Stop();
         }
         
-        static void Main() {
-            new WizardExample();
-        }
+//        static void Main() {
+//            new WizardExample();
+//        }
     }
 }
