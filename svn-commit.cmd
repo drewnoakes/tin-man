@@ -1,1 +1,1 @@
-git svn dcommit --username drewnoakes@gmail.com
+git svn dcommit --username drewnoakes
