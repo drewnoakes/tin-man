@@ -30,8 +30,8 @@ namespace TinMan.Samples.CSharp
 {
     class WizardExample {
         public WizardExample() {
-            const string HostName = "yoda";
-            
+            const string HostName = "localhost";
+
             var wizard = new Wizard();
             wizard.HostName = HostName;
             wizard.BallTransformUpdated += (time,transform) => Console.WriteLine("Ball position at {0}: {1}", time, transform.GetTranslation());

@@ -34,5 +34,5 @@ let myAgent = {
 
 let agent = new GetSmart();
 let host = new AgentHost()
-host.HostName <- "yoda"
+//host.HostName <- "yoda"
 host.Run(agent) |> ignore

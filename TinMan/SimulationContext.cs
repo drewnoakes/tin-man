@@ -43,7 +43,10 @@ namespace TinMan
         public string TeamName {
             get { return _client.TeamName; }
         }
-        
+    
+	    /// <summary>Gets the wizard of this simulation.  May be <c>null</c>.</summary>
+	    public Wizard Wizard { get; set; }
+	    
 	    /// <summary>
 	    /// Causes the agent to speak a message out loud such that nearby agents can hear it.
 	    /// This is the only method of inter-agent communication allowed in RoboCup.

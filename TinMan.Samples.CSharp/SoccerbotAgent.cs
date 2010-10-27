@@ -34,6 +34,6 @@ class SoccerbotAgent : AgentBase<SoccerbotBody>
 
 //    static void Main() {
 //        // This call blocks while your agent runs
-//        new AgentHost { HostName = "yoda" }.Run(new SoccerbotAgent());
+//        new AgentHost().Run(new SoccerbotAgent());
 //    }
 }

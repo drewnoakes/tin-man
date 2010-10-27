@@ -155,12 +155,20 @@ namespace TinMan.PerceptorParsing
         
         [Test] public void ShouldParseSeenBall() {
             var parser = Parse("(See (B (pol 11.52 52.50 -8.10)))");
-            Assert.IsNotNull(parser.State.BallPosition);
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            Assert.IsNotNull(parser.State.BallPosition);
             var state = parser.State.BallPosition.Value;
             Assert.AreEqual(11.52, state.Distance, 0.0001);
             Assert.AreEqual(Angle.FromDegrees(52.50), state.Theta);
             Assert.AreEqual(Angle.FromDegrees(-8.10), state.Phi);
+        }
+        
+        [Test] public void ShouldParseMyPosInSeeMessage() {
+            var parser = Parse("(See (mypos -8.20 4.00 0.54))");
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            Assert.IsNotNull(parser.State.AgentPosition);
+            var state = parser.State.AgentPosition.Value;
+            Assert.AreEqual(new Vector3(-8.2, 4, 0.54), state);
         }
         
         [Test] public void ShouldParseSeenPlayer() {

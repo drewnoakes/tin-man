@@ -13,7 +13,7 @@ internal sealed class Parser {
 	public const int _double = 1;
 	public const int _ident = 2;
 	public const int _message = 3;
-	public const int maxT = 48;
+	public const int maxT = 49;
 
     private const bool T = true;
     private const bool x = false;
@@ -46,6 +46,7 @@ public string TeamName;
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
     private List<HeardMessage> Messages;
+    private Vector3? AgentPosition;
     
     public PerceptorState State { get; private set; }
 
@@ -335,7 +336,9 @@ public string TeamName;
 				VisibleItemExpr();
 			} else if (la.kind == 44) {
 				PlayerExpr();
-			} else SynErr(49);
+			} else if (la.kind == 46) {
+				MyPosExpr();
+			} else SynErr(50);
 			Expect(5);
 		}
 		Expect(5);
@@ -380,7 +383,7 @@ public string TeamName;
 			Get();
 			break;
 		}
-		default: SynErr(50); break;
+		default: SynErr(51); break;
 		}
 		PolarPosExpr(out pos);
 		switch (label) {
@@ -430,15 +433,22 @@ public string TeamName;
 		
 	}
 
+	void MyPosExpr() {
+		Expect(46);
+		Vector3 agentPosition; 
+		Vector3(out agentPosition);
+		AgentPosition = agentPosition; 
+	}
+
 	void HearExpr(out HeardMessage message) {
 		TimeSpan time; Angle direction = Angle.NaN; string messageText; 
-		Expect(46);
+		Expect(47);
 		TimeSpan(out time);
-		if (la.kind == 47) {
+		if (la.kind == 48) {
 			Get();
 		} else if (la.kind == 1) {
 			AngleInDegrees(out direction);
-		} else SynErr(51);
+		} else SynErr(52);
 		MessageText(out messageText);
 		Expect(5);
 		message = new HeardMessage(time, direction, new Message(messageText.Trim('\''))); 
@@ -507,7 +517,7 @@ out id, out side);
 				SeeExpr();
 				break;
 			}
-			case 46: {
+			case 47: {
 				if (Messages==null) Messages = new List<HeardMessage>(1); HeardMessage message; 
 				HearExpr(out message);
 				Messages.Add(message); 
@@ -520,7 +530,7 @@ out id, out side);
 		                     GyroStates, HingeStates, UniversalJointStates,
 		                     TouchStates, ForceStates, AccelerometerStates,
 		                     LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
-		                     AgentBattery, AgentTemperature, Messages);
+		                     AgentBattery, AgentTemperature, Messages, AgentPosition);
 		
 	}
 
@@ -536,9 +546,9 @@ out id, out side);
     }
     
     static readonly bool[,] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x},
-		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x},
+		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x}
 
     };
 } // end Parser
@@ -645,12 +655,13 @@ public sealed class Errors {
 			case 43: s = "\"B\" expected"; break;
 			case 44: s = "\"P\" expected"; break;
 			case 45: s = "\"(id\" expected"; break;
-			case 46: s = "\"(hear\" expected"; break;
-			case 47: s = "\"self\" expected"; break;
-			case 48: s = "??? expected"; break;
-			case 49: s = "invalid SeeExpr"; break;
-			case 50: s = "invalid VisibleItemExpr"; break;
-			case 51: s = "invalid HearExpr"; break;
+			case 46: s = "\"mypos\" expected"; break;
+			case 47: s = "\"(hear\" expected"; break;
+			case 48: s = "\"self\" expected"; break;
+			case 49: s = "??? expected"; break;
+			case 50: s = "invalid SeeExpr"; break;
+			case 51: s = "invalid VisibleItemExpr"; break;
+			case 52: s = "invalid HearExpr"; break;
 
             default: s = "error code " + n; break;
         }

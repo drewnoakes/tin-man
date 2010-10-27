@@ -39,6 +39,8 @@ namespace TinMan {
         
         private static readonly Log _log = Log.Create();
         
+        private readonly SimulationContext _context;
+        
         /// <summary>
         /// Creates a new client.  <see cref="HostName"/> is set to <tt>localhost</tt> and
         /// <see cref="TeamName"/> to <tt>TinManBots</tt>.  Change these explicitly after
@@ -49,6 +51,9 @@ namespace TinMan {
             PortNumber = DefaultTcpPort;
             TeamName = "TinManBots";
             UniformNumber = 0;
+
+            _context = new SimulationContext(this);
+            Context = _context;
         }
         
         #region Properties
@@ -119,9 +124,7 @@ namespace TinMan {
                 SendCommands(stream, new [] { new InitialisePlayerCommand(UniformNumber, TeamName) });
                 NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
                 
-                var context = new SimulationContext(this);
-                Context = context;
-                
+              
                 var commands = new List<IEffectorCommand>();
                 while (!_stopRequested) {
                     commands.Clear();
@@ -149,10 +152,10 @@ namespace TinMan {
                         
                         // Visit all hinges again to compute any control functions
                         foreach (var hinge in agent.Body.AllHinges)
-                            hinge.ComputeControlFunction(context);
+                            hinge.ComputeControlFunction(Context);
                         
                         // Collate list of commands to send
-                        context.FlushCommands(commands);
+                        _context.FlushCommands(commands);
                         foreach (var hinge in agent.Body.AllHinges) {
                             if (hinge.IsDesiredSpeedChanged)
                                 commands.Add(hinge.GetCommand());

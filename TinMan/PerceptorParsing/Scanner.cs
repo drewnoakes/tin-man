@@ -224,8 +224,8 @@ namespace TinMan.PerceptorParsing {
     {
         const char EOL = '\n';
         const int eofSym = 0; /* pdt */
-	const int maxT = 48;
-	const int noSym = 48;
+	const int maxT = 49;
+	const int noSym = 49;
 
     
         public IBuffer buffer; // scanner buffer
@@ -346,7 +346,8 @@ namespace TinMan.PerceptorParsing {
 			case "G2R": t.kind = 42; break;
 			case "B": t.kind = 43; break;
 			case "P": t.kind = 44; break;
-			case "self": t.kind = 47; break;
+			case "mypos": t.kind = 46; break;
+			case "self": t.kind = 48; break;
 			default: break;
 		}
         }
@@ -529,7 +530,7 @@ namespace TinMan.PerceptorParsing {
 				if (ch == 'r') {AddCh(); goto case 55;}
 				else {goto case 0;}
 			case 55:
-				{t.kind = 46; break;}
+				{t.kind = 47; break;}
 			case 56:
 				recEnd = pos; recKind = 7;
 				if (ch == 'p') {AddCh(); goto case 9;}

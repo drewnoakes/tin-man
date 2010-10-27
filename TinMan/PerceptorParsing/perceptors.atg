@@ -63,6 +63,7 @@
  *                  (G2R (pol 43.25 -4.10 -4.71))
  *                  (B (pol 18.34 4.66 -9.90))
  *                  (P (team RoboLog) (id 1) (pol 37.50 16.15 -0.00))
+ *                  (mypos -8.20 4.00 0.54)   <-- only applies when non-standard setting used in agent's RSG file
  *             )
  * GameState Perceptor
  *    Format:  (GS (t <time>) (pm <playmode>))
@@ -113,6 +114,7 @@ COMPILER Perceptors
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
     private List<HeardMessage> Messages;
+    private Vector3? AgentPosition;
     
     public PerceptorState State { get; private set; }
 
@@ -258,10 +260,11 @@ AgentStateExpr<out double temp, out double battery> =
 //      (G1L (pol 9.88 139.29 -21.07))
 //      (B (pol 1.89 -0.00 -57.87))
 //      (P (team RoboLog) (id 1) (pol 37.50 16.15 -0.00))
+//      (mypos -8.20 4.00 0.54)
 // )
 SeeExpr =
     "(See"
-        { '(' (VisibleItemExpr | PlayerExpr) ')' }
+        { '(' (VisibleItemExpr | PlayerExpr | MyPosExpr) ')' }
     ')'
     .
 
@@ -308,6 +311,14 @@ PlayerExpr =
                                                    OppositionPositions.Add(player);
                                                }
                                              .)
+    .
+
+// (mypos -8.20 4.00 0.54)
+MyPosExpr =
+        "mypos"
+                                            (. Vector3 agentPosition; .)
+        Vector3<out agentPosition>
+                                            (. AgentPosition = agentPosition; .)
     .
     
 // (hear <time> 'self'|<direction> <message>)
@@ -359,7 +370,7 @@ Perceptors =
                               GyroStates, HingeStates, UniversalJointStates,
                               TouchStates, ForceStates, AccelerometerStates,
                               LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
-                              AgentBattery, AgentTemperature, Messages);
+                              AgentBattery, AgentTemperature, Messages, AgentPosition);
      .)
     .
 

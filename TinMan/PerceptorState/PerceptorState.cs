@@ -76,6 +76,19 @@ namespace TinMan
         public double? AgentBattery { get; private set; }
         public double? AgentTemperature { get; private set; }
         
+        /// <summary>
+        /// Gets the position of the agent on the field in world coordinates via the
+        /// Vector3's X and Y properties, with the agent's heading in the Z property.
+        /// Note that this property is only ever populated by the server when a special
+        /// configuration option is used.  This option is not used in competitions,
+        /// however it can be useful for training your agent.
+        /// </summary>
+        /// <remarks>
+        /// To enable this value, set <c>(setSenseMyPos true)</c> in
+        /// <c>rcssserver3d/rsg/agent/nao/naoneckhead.rsg</c>.
+        /// </remarks>
+        public Vector3? AgentPosition { get; private set; }
+        
         public IEnumerable<HeardMessage> HeardMessages { get; private set; }
 
         // TODO observe the server and see whether some of these 'nullable' values are actually never null in practice
@@ -91,7 +104,9 @@ namespace TinMan
                               IEnumerable<LandmarkPosition> landmarkPositions,
                               IEnumerable<PlayerPosition> teamMatePositions, IEnumerable<PlayerPosition> oppositionPositions,
                               Polar? ballPosition,
-                              double? agentBattery, double? agentTemperature, IEnumerable<HeardMessage> heardMessages) {
+                              double? agentBattery, double? agentTemperature,
+                              IEnumerable<HeardMessage> heardMessages,
+                              Vector3? agentPosition) {
             SimulationTime = simulationTime;
             GameTime = gameTime;
             PlayMode = playMode;
@@ -110,6 +125,7 @@ namespace TinMan
             AgentBattery = agentBattery;
             AgentTemperature = agentTemperature;
             HeardMessages = heardMessages;
+            AgentPosition = agentPosition;
         }
         
         /// <summary>Looks up the current angle for the given hinge.</summary>

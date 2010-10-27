@@ -48,7 +48,7 @@ namespace TinMan.SampleBot
 	    
 //        public static void Main() {
 //            for (int i=0; i<2; i++) {
-//                new System.Threading.Thread(() => new AgentHost{HostName="yoda"}.Run(new TalkingAgent())).Start();
+//                new System.Threading.Thread(() => new AgentHost().Run(new TalkingAgent())).Start();
 //            }
 //        }
 	}

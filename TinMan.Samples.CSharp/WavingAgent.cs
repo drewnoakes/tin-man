@@ -60,7 +60,7 @@ namespace TinMan.Samples.CSharp
         static void Main()
         {
             // This call blocks while your agent runs
-            new AgentHost(){HostName = "yoda"}.Run(new WavingAgent());
+            new AgentHost().Run(new WavingAgent());
         }
     }
 }

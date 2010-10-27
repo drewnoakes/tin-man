@@ -64,6 +64,10 @@ namespace TinMan
     /// </pre>
     /// </remarks>
     public static class FieldGeometry {
+        /// <summary>The radius of the ball.</summary>
+        public const double BallRadiusMetres = 0.04;
+        /// <summary>The mass of the ball in kilograms.</summary>
+        public const double BallMassKilograms = 0.026;
         /// <summary>The size of the field across its narrower dimension.</summary>
         public const double FieldYLength = 12.0;
         /// <summary>The size of the field across its wider dimension, from goal to goal.</summary>

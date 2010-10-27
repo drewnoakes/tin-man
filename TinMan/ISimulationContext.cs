@@ -29,6 +29,9 @@ namespace TinMan
 	    /// <summary>Gets the name assigned to this team.</summary>
 	    string TeamName { get; }
 	    
+	    /// <summary>Gets the wizard of this simulation.  May be <c>null</c>.</summary>
+	    Wizard Wizard { get; set; }
+	    
 	    /// <summary>
 	    /// Causes the agent to speak a message out loud such that nearby agents can hear it.
 	    /// This is the only method of inter-agent communication allowed in RoboCup.

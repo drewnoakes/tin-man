@@ -239,13 +239,17 @@ namespace TinMan
             SendCommand("(agent (unum {0}) (team {1}) (temperature {2}))", uniformNumber, GetSideString(teamSide), temperature);
         }
         
-        /// <summary>Repositions the ball at the specified position.</summary>
+        /// <summary>Repositions the ball at the specified position.
+        /// Set <paramref name="newVector"/>'s <see cref="Vector3.Z"/> value to
+        /// <see cref="FieldGeometry.BallRadiusMetres"/> to position the ball on the ground.</summary>
         /// <param name="newPosition"></param>
         public void SetBallPosition(Vector3 newPosition) {
             SendCommand("(ball (pos {0}))", GetVectorString(newPosition));
         }
 
-        /// <summary>Repositions the ball and provides it with a particular velocity.</summary>
+        /// <summary>Repositions the ball and provides it with a particular velocity.
+        /// Set <paramref name="newVector"/>'s <see cref="Vector3.Z"/> value to
+        /// <see cref="FieldGeometry.BallRadiusMetres"/> to position the ball on the ground.</summary>
         /// <param name="newPosition"></param>
         /// <param name="newVelocity"></param>
         public void SetBallPositionAndVelocity(Vector3 newPosition, Vector3 newVelocity) {
