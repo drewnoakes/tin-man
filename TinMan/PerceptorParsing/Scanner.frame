@@ -31,6 +31,8 @@ using System.Collections.Generic;
 
 -->namespace
 
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class Token
     {
         /// <summary>token kind</summary>
@@ -47,6 +49,7 @@ using System.Collections.Generic;
         public Token next { get; set; }  
     }
     
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal interface IBuffer
     {
         int Read ();
@@ -55,11 +58,15 @@ using System.Collections.Generic;
         int Pos { get; set; }
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal static class Buffer
     {
         public const int EOF = char.MaxValue + 1;
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class StringBuffer : IBuffer
     {
         public StringBuffer(string str) {
@@ -81,6 +88,8 @@ using System.Collections.Generic;
         public string String { get; private set; }
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class StreamBuffer : IBuffer
     {
         // This Buffer supports the following cases:
@@ -246,6 +255,8 @@ using System.Collections.Generic;
     }
     */
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class Scanner
     {
         const char EOL = '\n';

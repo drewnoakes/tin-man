@@ -1,9 +1,12 @@
+
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 
 namespace TinMan.PerceptorParsing {
 
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class Token
     {
         /// <summary>token kind</summary>
@@ -20,6 +23,7 @@ namespace TinMan.PerceptorParsing {
         public Token next { get; set; }  
     }
     
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal interface IBuffer
     {
         int Read ();
@@ -28,11 +32,15 @@ namespace TinMan.PerceptorParsing {
         int Pos { get; set; }
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal static class Buffer
     {
         public const int EOF = char.MaxValue + 1;
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class StringBuffer : IBuffer
     {
         public StringBuffer(string str) {
@@ -54,6 +62,8 @@ namespace TinMan.PerceptorParsing {
         public string String { get; private set; }
     }
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class StreamBuffer : IBuffer
     {
         // This Buffer supports the following cases:
@@ -69,7 +79,7 @@ namespace TinMan.PerceptorParsing {
         int bufLen;         // length of buffer
         int fileLen;        // length of input stream (may change if the stream is no file)
         int bufPos;         // current position in buffer
-        readonly Stream stream;      // input stream (seekable)
+        Stream stream;      // input stream (seekable)
         
         public StreamBuffer(Stream s) {
             stream = s;
@@ -219,6 +229,8 @@ namespace TinMan.PerceptorParsing {
     }
     */
     
+    [System.Diagnostics.DebuggerNonUserCode]
+    [System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
     internal sealed class Scanner
     {
         const char EOL = '\n';

@@ -1,11 +1,14 @@
-using System;
 using System.Collections.Generic;
-using System.Text;
+
+
+
+using System;
 
 namespace TinMan.PerceptorParsing {
 
 
-
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 internal sealed class Parser {
 	public const int _EOF = 0;
 	public const int _double = 1;
@@ -551,6 +554,8 @@ out id, out side);
     };
 } // end Parser
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public struct ParseError {
     public int LineNumber { get; private set; }
     public int ColumnNumber { get; private set; }
@@ -566,7 +571,7 @@ public struct ParseError {
     }
 
     public override string ToString() {
-        var m = new StringBuilder();
+        var m = new System.Text.StringBuilder();
         m.Append(Message);
         bool hasInfo = LineNumber!=-1 || ColumnNumber!=-1 || ErrorCode!=-1;
         bool infoYet = false;
@@ -591,13 +596,15 @@ public struct ParseError {
     }
 }
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public sealed class Errors {
     public List<ParseError> Items;
     public bool HasError { get { return Items!=null; } }
     public string ErrorMessages {
         get {
             if (Items==null) return null;
-            var s = new StringBuilder();
+            var s = new System.Text.StringBuilder();
             foreach (var item in Items)
                 s.AppendLine(item.ToString());
             return s.ToString();
@@ -694,6 +701,8 @@ public sealed class Errors {
 }
 
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public sealed class FatalError: Exception {
     public FatalError(string m): base(m) {}
 }

@@ -28,7 +28,8 @@ Coco/R itself) does not fall under the GNU General Public License.
 using System;
 
 -->namespace
-
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 internal sealed class Parser {
 -->constants
     private const bool T = true;
@@ -114,6 +115,8 @@ internal sealed class Parser {
     };
 } // end Parser
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public struct ParseError {
     public int LineNumber { get; private set; }
     public int ColumnNumber { get; private set; }
@@ -154,6 +157,8 @@ public struct ParseError {
     }
 }
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public sealed class Errors {
     public List<ParseError> Items;
     public bool HasError { get { return Items!=null; } }
@@ -204,6 +209,8 @@ public sealed class Errors {
 }
 
 
+[System.Diagnostics.DebuggerNonUserCode]
+[System.CodeDom.Compiler.GeneratedCode("CoCo/R", "1")]
 public sealed class FatalError: Exception {
     public FatalError(string m): base(m) {}
 }
