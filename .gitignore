@@ -1,6 +1,7 @@
 *.pcap
 "Screen Captures/"
 "Screen Captures/*"
-
+*.user
+*.suo
 */bin
 */obj
