@@ -21,9 +21,8 @@
 // Created 06/05/2010 15:08
 
 using System;
-using System.Linq;
-using System.ComponentModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinMan
 {

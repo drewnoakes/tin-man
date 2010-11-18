@@ -21,9 +21,6 @@
 // Created 06/05/2010 15:08
 
 using System;
-using System.Linq;
-using System.ComponentModel;
-using System.Collections.Generic;
 
 namespace TinMan
 {
@@ -157,15 +154,15 @@ namespace TinMan
         private static readonly Random _random = new Random();
         
         public static Vector3 GetRandomPosition(FieldSide side) {
-            double x1 = -FieldGeometry.FieldXLength/2;
-            double x2 = +FieldGeometry.FieldXLength/2;
+            double x1 = -FieldXLength/2;
+            double x2 = +FieldXLength/2;
             if (side==FieldSide.Left)
                 x2 = 0;
             else if (side==FieldSide.Right)
                 x1 = 0;
             
-            double z =  _random.NextDouble() * FieldGeometry.FieldZHeight;
-            double y = (_random.NextDouble() * FieldGeometry.FieldYLength) - (FieldGeometry.FieldYLength/2);
+            double z =  _random.NextDouble() * FieldZHeight;
+            double y = (_random.NextDouble() * FieldYLength) - (FieldYLength/2);
             double x = (_random.NextDouble() * (x2 - x1)) + x1;
             
             return new Vector3(x, y, z);

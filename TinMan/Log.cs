@@ -45,7 +45,7 @@ namespace TinMan
             ErrorAction = (m,ex) => WriteConsole(m+Environment.NewLine+ex, ConsoleColor.White, ConsoleColor.Red);
         }
         
-        private static object _consoleLock = new object();
+        private static readonly object _consoleLock = new object();
         private static void WriteConsole(string message, ConsoleColor foregroundColor, ConsoleColor backgroundColor) {
             lock (_consoleLock) {
                 var oldForeColor = Console.ForegroundColor;

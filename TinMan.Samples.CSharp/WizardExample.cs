@@ -24,8 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-using TinMan;
-
 namespace TinMan.Samples.CSharp
 {
     class WizardExample {
@@ -41,7 +39,7 @@ namespace TinMan.Samples.CSharp
             
             Action addAgent = () => {
                 var agent = new MinimalAgent();
-                var agentHost = new AgentHost() { UniformNumber = agentHosts.Count+1, HostName = HostName };
+                var agentHost = new AgentHost { UniformNumber = agentHosts.Count+1, HostName = HostName };
                 new Thread(() => agentHost.Run(agent)).Start();
                 agentHosts.Add(agentHost);
             };
@@ -96,7 +94,7 @@ namespace TinMan.Samples.CSharp
                     }
                 }
                 // Sleep a little each cycle as otherwise this would be a very hot loop
-                System.Threading.Thread.Sleep(50);
+                Thread.Sleep(50);
             }
             
             foreach (var agentHost in agentHosts)

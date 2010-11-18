@@ -21,9 +21,7 @@
 // Created 21/06/2010 15:58
 
 using System;
-using System.IO;
 using System.Net.Sockets;
-using System.Text;
 
 namespace TinMan
 {
@@ -55,7 +53,7 @@ namespace TinMan
         public event Action<TimeSpan, TransformationMatrix> AgentTransformUpdated;
         
         private NetworkStream _stream;
-        private bool _isRunning = false;
+        private bool _isRunning;
         
         /// <summary>Initialises a new wizard for localhost on the default port.</summary>
         public Wizard() {

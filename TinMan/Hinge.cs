@@ -21,7 +21,6 @@
 // Created 16/05/2010 15:46
 
 using System;
-using System.Diagnostics;
 
 namespace TinMan
 {

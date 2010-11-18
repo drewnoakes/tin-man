@@ -20,9 +20,8 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 22/06/2010 16:10
 
-using System;
 using System.IO;
-
+using System.Text;
 using NUnit.Framework;
 
 namespace TinMan
@@ -134,7 +133,7 @@ namespace TinMan
         private MemoryStream _stream;
         private SExpressionReader CreateReader(string s) {
             _stream = new MemoryStream();
-            var bytes = System.Text.Encoding.ASCII.GetBytes(s);
+            var bytes = Encoding.ASCII.GetBytes(s);
             _stream.Write(bytes, 0, bytes.Length);
             _stream.Position = 0;
             return new SExpressionReader(_stream, s.Length);

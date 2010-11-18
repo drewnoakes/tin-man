@@ -20,7 +20,6 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 06/05/2010 15:08
 
-using System;
 using System.Collections.Generic;
 
 namespace TinMan

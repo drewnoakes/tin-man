@@ -108,10 +108,10 @@ namespace TinMan
             Assert.AreEqual(TransformationMatrix.Identity, TransformationMatrix.Identity.Invert());
             // Some random numeric examples
             Assert.AreEqual(
-                new TransformationMatrix(new double[] {-5/3d,0,1/3d,0,-4/3d,1,-1/3d,0,4/3d,0,-1/6d,0,4/3d,0,-5/3d,1}),
+                new TransformationMatrix(new[] {-5/3d,0,1/3d,0,-4/3d,1,-1/3d,0,4/3d,0,-1/6d,0,4/3d,0,-5/3d,1}),
                 new TransformationMatrix(new double[] {1,0,2,0,4,1,6,0,8,0,10,0,12,0,14,1}).Invert());
             Assert.AreEqual(
-                new TransformationMatrix(new double[] {0.01,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0.01}),
+                new TransformationMatrix(new[] {0.01,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0.01}),
                 new TransformationMatrix(new double[] {100,0,0,0,0,1,0,0,0,0,1,0,0,0,0,100}).Invert());
             // inversions undo translations and rotations
             Assert.AreEqual(

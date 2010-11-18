@@ -19,7 +19,6 @@
 
 #region Using directives
 
-using System;
 using System.Reflection;
 using System.Runtime.InteropServices;
 

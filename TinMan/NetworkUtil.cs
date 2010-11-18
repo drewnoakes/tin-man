@@ -21,11 +21,10 @@
 // Created 06/05/2010 14:07
 
 using System;
-using System.Net;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
-
-using TinMan.PerceptorParsing;
+using System.Threading;
 
 namespace TinMan
 {
@@ -59,16 +58,16 @@ namespace TinMan
 	    }
 
         public static string ReadResponseString(NetworkStream stream, TimeSpan timeout) {
-            var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+            var stopwatch = Stopwatch.StartNew();
             while (!stream.DataAvailable) {
                 if (stopwatch.Elapsed > timeout) {
                     _log.Warn("No response received within time limit.");
                     return null;
                 }
-                System.Threading.Thread.Sleep(5);
+                Thread.Sleep(5);
             }
             
-            int length = NetworkUtil.ReadInt32(stream);
+            int length = ReadInt32(stream);
             var bytes = new byte[length];
             
             int totalBytesRead = 0;

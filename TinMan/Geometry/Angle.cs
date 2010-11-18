@@ -21,6 +21,7 @@
 // Created 06/06/2010 23:28.
 
 using System;
+using System.Diagnostics;
 
 namespace TinMan
 {
@@ -28,7 +29,7 @@ namespace TinMan
     /// Represents an angle as a double-precision floating point value.
     /// This type is immutable.
     /// </summary>
-    [System.Diagnostics.DebuggerDisplay("{Degrees} deg")]
+    [DebuggerDisplay("{Degrees} deg")]
     public struct Angle : IEquatable<Angle> {
         /// <summary>A constant angle of zero.</summary>
         public static readonly Angle Zero = new Angle(0);
@@ -125,7 +126,7 @@ namespace TinMan
                 radians += Math.PI*2;
             if (radians >= Math.PI*2)
                 radians = radians % (Math.PI*2);
-            return Angle.FromRadians(radians);
+            return FromRadians(radians);
         }
         
         /// <summary>
@@ -160,23 +161,23 @@ namespace TinMan
         }
         
         public static Angle operator +(Angle a, Angle b) {
-            return Angle.FromRadians(a.Radians + b.Radians);
+            return FromRadians(a.Radians + b.Radians);
         }
         
         public static Angle operator -(Angle a, Angle b) {
-            return Angle.FromRadians(a.Radians - b.Radians);
+            return FromRadians(a.Radians - b.Radians);
         }
         
         public static Angle operator -(Angle a) {
-            return Angle.FromRadians(-a.Radians);
+            return FromRadians(-a.Radians);
         }
         
         public static Angle operator *(Angle a, double scale) {
-            return Angle.FromRadians(a.Radians * scale);
+            return FromRadians(a.Radians * scale);
         }
 
         public static Angle operator /(Angle a, double quotient) {
-            return Angle.FromRadians(a.Radians / quotient);
+            return FromRadians(a.Radians / quotient);
         }
 
         public static AngularSpeed operator /(Angle a, TimeSpan time) {

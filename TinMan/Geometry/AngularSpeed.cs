@@ -21,13 +21,14 @@
 // Created 10/06/2010 04:37.
 
 using System;
+using System.Diagnostics;
 
 namespace TinMan
 {
     /// <summary>
     /// Represents an angular speed as a double-precision floating point value.
     /// </summary>
-    [System.Diagnostics.DebuggerDisplay("{DegreesPerSecond} deg/sec")]
+    [DebuggerDisplay("{DegreesPerSecond} deg/sec")]
     public struct AngularSpeed : IEquatable<AngularSpeed> {
         
         /// <summary>A constant angular speed of zero.</summary>
@@ -115,23 +116,23 @@ namespace TinMan
         }
         
         public static AngularSpeed operator +(AngularSpeed a, AngularSpeed b) {
-            return AngularSpeed.FromRadiansPerSecond(a.RadiansPerSecond + b.RadiansPerSecond);
+            return FromRadiansPerSecond(a.RadiansPerSecond + b.RadiansPerSecond);
         }
         
         public static AngularSpeed operator -(AngularSpeed a, AngularSpeed b) {
-            return AngularSpeed.FromRadiansPerSecond(a.RadiansPerSecond - b.RadiansPerSecond);
+            return FromRadiansPerSecond(a.RadiansPerSecond - b.RadiansPerSecond);
         }
         
         public static AngularSpeed operator -(AngularSpeed a) {
-            return AngularSpeed.FromRadiansPerSecond(-a.RadiansPerSecond);
+            return FromRadiansPerSecond(-a.RadiansPerSecond);
         }
         
         public static AngularSpeed operator *(AngularSpeed a, double scale) {
-            return AngularSpeed.FromRadiansPerSecond(a.RadiansPerSecond * scale);
+            return FromRadiansPerSecond(a.RadiansPerSecond * scale);
         }
         
         public static AngularSpeed operator /(AngularSpeed a, double quotient) {
-            return AngularSpeed.FromRadiansPerSecond(a.RadiansPerSecond / quotient);
+            return FromRadiansPerSecond(a.RadiansPerSecond / quotient);
         }
 
         public static Angle operator *(AngularSpeed a, TimeSpan time) {

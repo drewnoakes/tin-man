@@ -72,7 +72,7 @@ namespace TinMan
         }
         
         /// <summary>
-        /// Gets a value indicating whether X, Y and Z are all equal to <see cref="Double.NaN"/>.
+        /// Gets a value indicating whether X, Y and Z are all equal to <see cref="double.NaN"/>.
         /// </summary>
         public bool IsNaN {
             get { return double.IsNaN(X) && double.IsNaN(Y) && double.IsNaN(Z); }
@@ -175,9 +175,9 @@ namespace TinMan
             if (!(obj is Vector3))
                 return false;
             Vector3 that = (Vector3)obj;
-            return Math.Abs(this.X - that.X) < 0.00001 &&
-                   Math.Abs(this.Y - that.Y) < 0.00001 &&
-                   Math.Abs(this.Z - that.Z) < 0.00001;
+            return Math.Abs(X - that.X) < 0.00001 &&
+                   Math.Abs(Y - that.Y) < 0.00001 &&
+                   Math.Abs(Z - that.Z) < 0.00001;
         }
         
         public override int GetHashCode() {

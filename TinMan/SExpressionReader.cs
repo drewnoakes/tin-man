@@ -23,6 +23,8 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
+using System.Threading;
 
 namespace TinMan
 {
@@ -58,7 +60,7 @@ namespace TinMan
 	        
 	        int i;
 	        while ((i = _stream.ReadByte())==-1) {
-	            System.Threading.Thread.Sleep(1);
+	            Thread.Sleep(1);
 	        }
 	        BytesRead++;
 	        c = (char)i;
@@ -126,7 +128,7 @@ namespace TinMan
 	                        Push(c);
 	                        return false;
 	                    case State.Sublist:
-	                        System.Diagnostics.Debug.Assert(openBraceCount > 0);
+	                        Debug.Assert(openBraceCount > 0);
 	                        openBraceCount--;
 	                        if (openBraceCount==0) {
 	                            count--;
@@ -190,7 +192,7 @@ namespace TinMan
 	        
 	        SkipWhitespace();
 	        
-	        var sb = new System.Text.StringBuilder();
+	        var sb = new StringBuilder();
 	        while (true) {
 	            char c;
 	            if (!TryReadChar(out c))

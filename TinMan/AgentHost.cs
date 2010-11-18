@@ -24,8 +24,6 @@ using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading;
-
 using TinMan.PerceptorParsing;
 
 namespace TinMan {
@@ -88,7 +86,7 @@ namespace TinMan {
         
         #endregion
         
-        private bool _stopRequested = false;
+        private bool _stopRequested;
         
         /// <summary>
         /// Connects to the RoboCup3D server and runs a simulation with <paramref name="agent"/>.

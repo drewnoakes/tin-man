@@ -37,7 +37,7 @@ namespace TinMan
                                                     0, 0, 1, 0,
                                                     0, 0, 0, 1
                                                 });
-            NaN = new TransformationMatrix(new double[] {
+            NaN = new TransformationMatrix(new[] {
                                                double.NaN, double.NaN, double.NaN, double.NaN,
                                                double.NaN, double.NaN, double.NaN, double.NaN,
                                                double.NaN, double.NaN, double.NaN, double.NaN,
@@ -57,7 +57,7 @@ namespace TinMan
         public static TransformationMatrix Identity { get; private set; }
         
         /// <summary>
-        /// A transformation matrix in which all 16 values are <see cref="Double.NaN"/>.
+        /// A transformation matrix in which all 16 values are <see cref="double.NaN"/>.
         /// </summary>
         public static TransformationMatrix NaN { get; private set; }
         
@@ -70,7 +70,7 @@ namespace TinMan
         /// <param name="zAxis"></param>
         /// <returns></returns>
         public static TransformationMatrix GetTransformForCoordinateAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis) {
-            return new TransformationMatrix(new double[] {
+            return new TransformationMatrix(new[] {
                 xAxis.X, yAxis.X, zAxis.X, 0,
                 xAxis.Y, yAxis.Y, zAxis.Y, 0,
                 xAxis.Z, yAxis.Z, zAxis.Z, 0,
@@ -115,7 +115,7 @@ namespace TinMan
         /// <param name="z"></param>
         /// <returns></returns>
         public TransformationMatrix Translate(double x, double y, double z) {
-            return Multiply(new TransformationMatrix(new double[] {
+            return Multiply(new TransformationMatrix(new[] {
                                                          1, 0, 0, 0,
                                                          0, 1, 0, 0,
                                                          0, 0, 1, 0,
@@ -132,7 +132,7 @@ namespace TinMan
         public TransformationMatrix RotateX(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new double[] {
+            return Multiply(new TransformationMatrix(new[] {
                                                          1, 0, 0, 0,
                                                          0, c,-s, 0,
                                                          0, s, c, 0,
@@ -149,7 +149,7 @@ namespace TinMan
         public TransformationMatrix RotateY(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new double[] {
+            return Multiply(new TransformationMatrix(new[] {
                                                          c, 0, s, 0,
                                                          0, 1, 0, 0,
                                                         -s, 0, c, 0,
@@ -166,7 +166,7 @@ namespace TinMan
         public TransformationMatrix RotateZ(Angle angle) {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new double[] {
+            return Multiply(new TransformationMatrix(new[] {
                                                          c,-s, 0, 0,
                                                          s, c, 0, 0,
                                                          0, 0, 1, 0,
@@ -286,7 +286,7 @@ namespace TinMan
                 return false;
             }
             var m = _values;
-            inversion = new TransformationMatrix(new double[] {
+            inversion = new TransformationMatrix(new[] {
                 (m[9] *m[14]*m[7]  - m[13]*m[10]*m[7]  + m[13]*m[6] *m[11] - m[5] *m[14]*m[11] - m[9] *m[6] *m[15] + m[5] *m[10]*m[15]) / det,
                 (m[13]*m[10]*m[3]  - m[9] *m[14]*m[3]  - m[13]*m[2] *m[11] + m[1] *m[14]*m[11] + m[9] *m[2] *m[15] - m[1] *m[10]*m[15]) / det,
                 (m[5] *m[14]*m[3]  - m[13]*m[6] *m[3]  + m[13]*m[2] *m[7]  - m[1] *m[14]*m[7]  - m[5] *m[2] *m[15] + m[1] *m[6] *m[15]) / det,

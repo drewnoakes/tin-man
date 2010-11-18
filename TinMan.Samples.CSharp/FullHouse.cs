@@ -21,7 +21,6 @@
 // Created 12/06/2010 06:35
 
 using System.Threading;
-
 using TinMan;
 
 class HerdAgent : AgentBase<NaoBody>

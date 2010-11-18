@@ -20,7 +20,6 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 01/06/2010 03:49
 
-using System;
 using NUnit.Framework;
 
 namespace TinMan

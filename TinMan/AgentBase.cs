@@ -21,7 +21,6 @@
 // Created 10/05/2010 12:43
 
 using System;
-using System.Collections.Generic;
 
 namespace TinMan
 {
@@ -40,7 +39,7 @@ namespace TinMan
         /// is an explicit interface implementation, meaning it's hidden on an instance unless it's declared
         /// as the interface.  The alternative property provides strongly typed access which is more convenient.
         /// </remarks>
-        IBody IAgent.Body { get { return ((AgentBase<TBody>)this).Body; } }
+        IBody IAgent.Body { get { return Body; } }
         
         /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
         public bool IsAlive { get; private set; }

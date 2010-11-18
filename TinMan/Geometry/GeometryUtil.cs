@@ -20,8 +20,6 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 07/05/2010 02:50
 
-using System;
-
 namespace TinMan
 {
     /// <summary>

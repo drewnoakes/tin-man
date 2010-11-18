@@ -1,7 +1,6 @@
-
 using System;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 
 namespace TinMan.PerceptorParsing {
 
@@ -70,7 +69,7 @@ namespace TinMan.PerceptorParsing {
         int bufLen;         // length of buffer
         int fileLen;        // length of input stream (may change if the stream is no file)
         int bufPos;         // current position in buffer
-        Stream stream;      // input stream (seekable)
+        readonly Stream stream;      // input stream (seekable)
         
         public StreamBuffer(Stream s) {
             stream = s;

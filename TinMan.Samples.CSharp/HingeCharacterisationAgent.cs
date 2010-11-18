@@ -21,15 +21,14 @@
 // Created 10/06/2010 03:01
 
 using System;
-using System.Collections.Generic;
 
 namespace TinMan.SampleBot
 {
     // TODO what happens if we send negative while inertia moving positively, that is, can we apply a brake to slow down faster than we would from friction alone?
     internal sealed class HingeCharacterisationAgent : AgentBase<NaoBody> {
         private bool _beamToGoal = true;
-        private int _stableCount = 0;
-        private int _moveCount = 0;
+        private int _stableCount;
+        private int _moveCount;
         private AngularSpeed _impulseSpeed = AngularSpeed.FromDegreesPerSecond(5) ;
         private Angle _lastAngle;
         private TimeSpan _lastSimulationTime;

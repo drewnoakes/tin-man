@@ -28,7 +28,7 @@ namespace TinMan {
     /// </summary>
     public struct Polar {
         /// <summary>A constant polar value of zero.</summary>
-        public static readonly Polar Zero = new Polar();
+        public static readonly Polar Zero;
         
         /// <summary>The distance from the origin.</summary>
         public double Distance { get; private set; }

@@ -22,8 +22,6 @@
 
 using System;
 
-using TinMan;
-
 namespace TinMan.Samples.CSharp
 {
     public sealed class WavingAgent : AgentBase<NaoBody>

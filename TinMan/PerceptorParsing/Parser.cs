@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-
-
-
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace TinMan.PerceptorParsing {
 
@@ -568,7 +566,7 @@ public struct ParseError {
     }
 
     public override string ToString() {
-        var m = new System.Text.StringBuilder();
+        var m = new StringBuilder();
         m.Append(Message);
         bool hasInfo = LineNumber!=-1 || ColumnNumber!=-1 || ErrorCode!=-1;
         bool infoYet = false;
@@ -599,7 +597,7 @@ public sealed class Errors {
     public string ErrorMessages {
         get {
             if (Items==null) return null;
-            var s = new System.Text.StringBuilder();
+            var s = new StringBuilder();
             foreach (var item in Items)
                 s.AppendLine(item.ToString());
             return s.ToString();
