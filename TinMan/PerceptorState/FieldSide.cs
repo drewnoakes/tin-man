@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,15 +24,18 @@
 
 namespace TinMan
 {
-	/// <summary>
-	/// Enumeration of field sides.
-	/// </summary>
-	public enum FieldSide {
-	    /// <summary>The side of the field is unknown.</summary>
-	    Unknown = 0,
-	    /// <summary>The left side of the field, having a yellow goal.</summary>
-	    Left,
-	    /// <summary>The right side of the field, having a blue goal.</summary>
-	    Right
-	}
+    /// <summary>
+    /// Enumeration of field sides.
+    /// </summary>
+    public enum FieldSide
+    {
+        /// <summary>The side of the field is unknown.</summary>
+        Unknown = 0,
+
+        /// <summary>The left side of the field, having a yellow goal.</summary>
+        Left,
+
+        /// <summary>The right side of the field, having a blue goal.</summary>
+        Right
+    }
 }

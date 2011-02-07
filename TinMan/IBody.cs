@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -28,7 +30,8 @@ namespace TinMan
     /// Interface for all agent bodies used in TinMan.  Two models that ship with SimSpark are already
     /// implemented in TimMan, namely <see cref="NaoBody"/> and <see cref="SoccerbotBody"/>.
     /// </summary>
-    public interface IBody {
+    public interface IBody
+    {
         /// <summary>
         /// Gets a well-known path of the Ruby Scene Graph (RSG) file in the RCSS3D server package
         /// for the model to be loaded for this agent's body.
@@ -36,15 +39,16 @@ namespace TinMan
         string RsgPath { get; }
 
         /// <summary>
-        /// Performs a lookup to find the hinge with specified effector label.  Returns <c>null</c> if
-        /// no hinge is found.
+        /// Performs a lookup to find the <see cref="Hinge"/> with specified effector label.
+        /// Returns <c>null</c> if no hinge is found.
         /// </summary>
-        /// <param name="effectorLabel"></param>
-        /// <returns></returns>
+        /// <param name="effectorLabel">The label of the hinge's effector.</param>
+        /// <returns>The <see cref="Hinge"/> if found, otherwise <c>null</c>.</returns>
         Hinge GetHingeForEffectorLabel(string effectorLabel);
-        
-        /// <summary>Gets all hinges in the agent's body.</summary>
+
+        /// <summary>Gets all <see cref="Hinge"/> instances in the agent's body.</summary>
         IEnumerable<Hinge> AllHinges { get; }
+
 /*
         /// <summary>
         /// Performs a lookup to find the universal joint with specified effector label.  Returns <c>null</c> if
@@ -57,6 +61,7 @@ namespace TinMan
         /// <summary>Gets all universal joints in the agent's body.</summary>
         IEnumerable<UniversalJoint> AllUniversalJoints { get; }
 */
+
         /// <summary>
         /// Converts a polar coordinate from the agent's view perspective (as is reported by vision
         /// perceptors) into a vector in the agent's local coordinates.

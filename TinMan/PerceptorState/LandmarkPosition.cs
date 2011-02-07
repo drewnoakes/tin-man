@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,18 +24,23 @@
 
 namespace TinMan
 {
-	/// <summary>Represents information about the location of a seen landmark, such as a corner flag or a goal post.</summary>
-	public struct LandmarkPosition {
-	    public Landmark Landmark { get; private set; }
-	    public Polar PolarPosition { get; private set; }
-	    
-	    /// <remarks>
-	    /// Most users will not need to use this constructor as this type is only for inbound messages.
-	    /// This constructor is public to allow for unit testing.
-	    /// </remarks>
-	    public LandmarkPosition(Landmark landmark, Polar radialPosition) : this() {
-	        Landmark = landmark;
-	        PolarPosition = radialPosition;
-	    }
-	}
+    /// <summary>Represents information about the location of a seen landmark, such as a corner flag or a goal post.</summary>
+    public struct LandmarkPosition
+    {
+        /// <summary>Gets the type of landmark that has been seen.</summary>
+        public Landmark Landmark { get; private set; }
+
+        /// <summary>Gets the polar position of the landmark that has been seen, in camera coordinates.</summary>
+        public Polar PolarPosition { get; private set; }
+
+        /// <remarks>
+        /// Most users will not need to use this constructor as this type is only for inbound messages.
+        /// This constructor is public to allow for unit testing.
+        /// </remarks>
+        public LandmarkPosition(Landmark landmark, Polar radialPosition) : this()
+        {
+            Landmark = landmark;
+            PolarPosition = radialPosition;
+        }
+    }
 }

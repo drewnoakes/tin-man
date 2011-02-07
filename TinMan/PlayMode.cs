@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,16 +24,17 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TinMan
 {
     /// <summary>
     /// Enumeration of all possible modes that a simulated game of soccer can be in.
     /// </summary>
-    public enum PlayMode {
-        
+    public enum PlayMode
+    {
         // IMPORTANT -- DO NOT REORDER THESE ITEMS
-        
+
         /// <summary>
         /// This value is specific to TinMan and won't be returned by the server.
         /// TinMan uses it to indicate that no value has been received from the server.
@@ -74,55 +77,59 @@ namespace TinMan
         /// <summary>No play mode exists.</summary>
         None
     }
-    
+
     /// <summary>
     /// A collection of utility methods for converting server play modes (strings) to TinMan ones (enums).
     /// Most users of TinMan won't need to use this type, as TinMan only uses the <see cref="PlayMode"/> enum
     /// in its APIs.
     /// </summary>
-    public static class PlayModeUtil {
+    public static class PlayModeUtil
+    {
         private static readonly Dictionary<string, PlayMode> _playModeByStringCode;
         private static readonly Dictionary<PlayMode, string> _stringCodeByPlayMode;
-        
-        static PlayModeUtil() {
-            _playModeByStringCode = new Dictionary<string, PlayMode> {
-                { "BeforeKickOff", PlayMode.BeforeKickOff },
-                { "KickOff_Left", PlayMode.KickOffLeft },
-                { "KickOff_Right", PlayMode.KickOffRight },
-                { "PlayOn", PlayMode.PlayOn },
-                { "KickIn_Left", PlayMode.KickInLeft },
-                { "KickIn_Right", PlayMode.KickInRight },
-                { "corner_kick_left", PlayMode.CornerKickLeft },
-                { "corner_kick_right", PlayMode.CornerKickRight },
-                { "goal_kick_left", PlayMode.GoalKickLeft },
-                { "goal_kick_right", PlayMode.GoalKickRIght },
-                { "offside_left", PlayMode.OffsideLeft },
-                { "offside_right", PlayMode.OffsideRight },
-                { "GameOver", PlayMode.GameOver },
-                { "Goal_Left", PlayMode.GoalLeft },
-                { "Goal_Right", PlayMode.GoalRight },
-                { "free_kick_left", PlayMode.FreeKickLeft },
-                { "free_kick_right", PlayMode.FreeKickRight },
-                { "unknown", PlayMode.None }
-            };
-            
-            _stringCodeByPlayMode = new Dictionary<PlayMode, string>();
-            foreach (var pair in _playModeByStringCode)
-                _stringCodeByPlayMode[pair.Value] = pair.Key;
+
+        static PlayModeUtil()
+        {
+            _playModeByStringCode = new Dictionary<string, PlayMode>
+                                        {
+                                            { "BeforeKickOff", PlayMode.BeforeKickOff },
+                                            { "KickOff_Left", PlayMode.KickOffLeft },
+                                            { "KickOff_Right", PlayMode.KickOffRight },
+                                            { "PlayOn", PlayMode.PlayOn },
+                                            { "KickIn_Left", PlayMode.KickInLeft },
+                                            { "KickIn_Right", PlayMode.KickInRight },
+                                            { "corner_kick_left", PlayMode.CornerKickLeft },
+                                            { "corner_kick_right", PlayMode.CornerKickRight },
+                                            { "goal_kick_left", PlayMode.GoalKickLeft },
+                                            { "goal_kick_right", PlayMode.GoalKickRIght },
+                                            { "offside_left", PlayMode.OffsideLeft },
+                                            { "offside_right", PlayMode.OffsideRight },
+                                            { "GameOver", PlayMode.GameOver },
+                                            { "Goal_Left", PlayMode.GoalLeft },
+                                            { "Goal_Right", PlayMode.GoalRight },
+                                            { "free_kick_left", PlayMode.FreeKickLeft },
+                                            { "free_kick_right", PlayMode.FreeKickRight },
+                                            { "unknown", PlayMode.None }
+                                        };
+
+            // 'flip' the dictionary for inverse lookups
+            _stringCodeByPlayMode = _playModeByStringCode.ToDictionary(pair => pair.Value, pair => pair.Key);
         }
 
         /// <summary>Gets the enum value for the specified server play mode string.</summary>
         /// <param name="modeStr"></param>
         /// <param name="playMode"></param>
         /// <returns></returns>
-        public static bool TryParse(string modeStr, out PlayMode playMode) {
+        public static bool TryParse(string modeStr, out PlayMode playMode)
+        {
             return _playModeByStringCode.TryGetValue(modeStr, out playMode);
         }
-        
+
         /// <summary>Gets the string used by the server for the specified play mode enum value.</summary>
         /// <param name="playMode"></param>
         /// <returns></returns>
-        public static string GetServerString(this PlayMode playMode) {
+        public static string GetServerString(this PlayMode playMode)
+        {
             string str;
             if (!_stringCodeByPlayMode.TryGetValue(playMode, out str))
                 throw new ArgumentException("Unexpected PlayMode enum value: " + playMode);

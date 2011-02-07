@@ -137,7 +137,7 @@ namespace TinMan
                 NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
 
                 var commands = new List<IEffectorCommand>();
-                while (!_stopRequested)
+                while (!_stopRequested && agent.IsAlive)
                 {
                     // It seems like a good idea to pass the stream to Coco/R rather than loading the whole
                     // string into memory first, however because Coco/R requires the ability to seek within

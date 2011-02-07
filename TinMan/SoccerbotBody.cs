@@ -33,9 +33,13 @@ namespace TinMan
     /// Note that the Soccerbot model has been replaced by <see cref="NaoBody"/> for RoboCup
     /// competitions.
     /// </remarks>
-    public sealed class SoccerbotBody : IBody {
+    public sealed class SoccerbotBody : IBody
+    {
         /// <summary>Well-known path of the Ruby Scene Graph (RSG) file for the NAO model in the RCSS3D server package.</summary>
-        public string RsgPath { get { return "rsg/agent/soccerbot058/soccerbot.rsg"; } }
+        public string RsgPath
+        {
+            get { return "rsg/agent/soccerbot058/soccerbot.rsg"; }
+        }
 
         #region Hinges
         
@@ -70,7 +74,8 @@ namespace TinMan
         
         public IEnumerable<Hinge> AllHinges { get; private set; }
 
-        public SoccerbotBody() {
+        public SoccerbotBody()
+        {
             HJ1 = new Hinge("hj1", "he1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
             HJ2 = new Hinge("hj2", "he2", Angle.FromDegrees(-45),  Angle.FromDegrees(45));
 
@@ -82,7 +87,7 @@ namespace TinMan
             RAJ1 = new Hinge("raj1", "rae1", Angle.FromDegrees(-90),  Angle.FromDegrees(180));
             RAJ2 = new Hinge("raj2", "rae2", Angle.FromDegrees(-180), Angle.FromDegrees(10));
             RAJ3 = new Hinge("raj3", "rae3", Angle.FromDegrees(-135), Angle.FromDegrees(135));
-            RAJ4 = new Hinge("raj4", "rae4", Angle.FromDegrees(-10),   Angle.FromDegrees(130));
+            RAJ4 = new Hinge("raj4", "rae4", Angle.FromDegrees(-10),  Angle.FromDegrees(130));
 
             LLJ1 = new Hinge("llj1", "lle1", Angle.FromDegrees(-60),  Angle.FromDegrees(90));
             LLJ2 = new Hinge("llj2", "lle2", Angle.FromDegrees(-45),  Angle.FromDegrees(120));
@@ -107,13 +112,15 @@ namespace TinMan
             };
         }
 
-        public Hinge GetHingeForEffectorLabel(string effectorLabel) {
+        public Hinge GetHingeForEffectorLabel(string effectorLabel)
+        {
             return AllHinges.SingleOrDefault(
                 h => string.Equals(h.EffectorLabel, effectorLabel, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>Converts observation polar coordinates from camera space to a vector in torso space.</summary>
-        public Vector3 ConvertCameraPolarToLocalVector(Polar cameraView) {
+        public Vector3 ConvertCameraPolarToLocalVector(Polar cameraView)
+        {
             // Soccerbot's camera is in his torso, so there's no need to compensate for
             // the head's positioning as we do with Nao.
             return cameraView.ToVector3();

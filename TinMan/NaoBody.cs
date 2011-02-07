@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -27,31 +29,35 @@ using System.Linq;
 namespace TinMan
 {
     /// <summary>
-    /// Represents the body of the Nao model in the SimSpark simulator.  As of 2010, this model was the standard
+    /// Represents the body of the Nao model in the SimSpark simulator.  As of 2011, this model was the standard
     /// model for RoboCup 3D Simulated Soccer competitions.
     /// </summary>
     /// <remarks>
     /// The Nao humanoid robot manufactured by Aldebaran Robotics.
     /// Its biped architecture has 22 degrees of freedom and allows Nao to have great mobility.
-    /// The Nao model replaced the <em>soccerbot</em> as the default model for RoboCup competitive simulated 3D soccer.
-    /// Nao's field of the robot is restricted to 120 degrees.
+    /// <see cref="NaoBody"/> replaced the <see cref="SoccerbotBody"/> as the default model for RoboCup competitive simulated 3D soccer.
+    /// Nao's field of view is restricted to 120 degrees.
     /// </remarks>
-    public sealed class NaoBody : IBody {
+    public sealed class NaoBody : IBody
+    {
         /// <summary>Approximate weight of the Nao robot is 4.5kg.</summary>
         public const double WeightKilograms = 4.5;
-        /// <summary>Approximate height of the Nao robot is 57cm.</summary>
+
+        /// <summary>Approximate height of the Nao robot is 0.57m.</summary>
         public const double Height = 0.57;
-        
+
         /// <summary>Well-known path of the Ruby Scene Graph (RSG) file for the NAO model in the RCSS3D server package.</summary>
-        public string RsgPath { get { return "rsg/agent/nao/nao.rsg"; } }
+        public string RsgPath
+        {
+            get { return "rsg/agent/nao/nao.rsg"; }
+        }
 
         #region Hinges
-        
+
         /// <summary>Neck joint.  Allows the head (and camera) to be panned left and right.  Zero degrees looks directly ahead.  Angles range -120 to 120 degrees.</summary>
         public Hinge HJ1 { get; private set; }
         /// <summary>Head joint.  Allows the head (and camera) to be tilted up and down. Zero degrees looks horizontally.  Angles range -45 to 45 degrees.</summary>
         public Hinge HJ2 { get; private set; }
-
         /// <summary>Shoulder.  Allows the entire arm to rotate within a circle extending in front of, above, behind and below the shoulder.  Zero degrees points straight ahead.  Angles range -120 to 120 degrees.  Positive values raise the arm upwards above the head.</summary>
         public Hinge LAJ1 { get; private set; }
         /// <summary>Shoulder.  Allows the entire arm to extend such that the hand of a straighenend arm moves from the hip outwards away from the body.  Zero degrees keeps the arm within the circle governed by arm joint one.  Angles range -1 to 95 degrees.</summary>
@@ -60,7 +66,6 @@ namespace TinMan
         public Hinge LAJ3 { get; private set; }
         /// <summary>Bends the arm at the elbow.  At zero degrees the arm is straight.  Angles range -90 to 1 degrees.</summary>
         public Hinge LAJ4 { get; private set; }
-
         /// <summary>Shoulder.  Allows the entire arm to rotate within a circle extending in front of, above, behind and below the shoulder.  Zero degrees points straight ahead.  Angles range -120 to 120 degrees.  Positive values raise the arm upwards above the head.</summary>
         public Hinge RAJ1 { get; private set; }
         /// <summary>Shoulder.  Allows the entire arm to extend such that the hand of a straighenend arm moves from the hip outwards away from the body.  Zero degrees keeps the arm within the circle governed by arm joint one.  Angles range -95 to 1 degrees.</summary>
@@ -107,10 +112,15 @@ namespace TinMan
         public Hinge RLJ6 { get; private set; }
 
         #endregion
-        
+
+        /// <summary>Gets all <see cref="Hinge"/> instances in the agent's body.</summary>
         public IEnumerable<Hinge> AllHinges { get; private set; }
 
-        public NaoBody() {
+        /// <summary>
+        /// Initialises a new instance of <see cref="NaoBody"/>.
+        /// </summary>
+        public NaoBody()
+        {
             HJ1 = new Hinge("hj1", "he1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
             HJ2 = new Hinge("hj2", "he2", Angle.FromDegrees(-45),  Angle.FromDegrees(45));
 
@@ -138,26 +148,29 @@ namespace TinMan
             RLJ5 = new Hinge("rlj5", "rle5", Angle.FromDegrees(-45),  Angle.FromDegrees(75));
             RLJ6 = new Hinge("rlj6", "rle6", Angle.FromDegrees(-25),  Angle.FromDegrees(45));
 
-            AllHinges = new[] {
-                HJ1, HJ2,
-                RAJ1, RAJ2, RAJ3, RAJ4,
-                LAJ1, LAJ2, LAJ3, LAJ4,
-                RLJ1, RLJ2, RLJ3, RLJ4, RLJ5, RLJ6,
-                LLJ1, LLJ2, LLJ3, LLJ4, LLJ5, LLJ6
-            };
+            AllHinges = new[]
+                            {
+                                HJ1, HJ2,
+                                RAJ1, RAJ2, RAJ3, RAJ4,
+                                LAJ1, LAJ2, LAJ3, LAJ4,
+                                RLJ1, RLJ2, RLJ3, RLJ4, RLJ5, RLJ6,
+                                LLJ1, LLJ2, LLJ3, LLJ4, LLJ5, LLJ6
+                            };
         }
 
-        public Hinge GetHingeForEffectorLabel(string effectorLabel) {
+        public Hinge GetHingeForEffectorLabel(string effectorLabel)
+        {
             return AllHinges.SingleOrDefault(
                 h => string.Equals(h.EffectorLabel, effectorLabel, StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>Converts observation polar coordinates from camera space to a vector in torso space.</summary>
-        public Vector3 ConvertCameraPolarToLocalVector(Polar cameraView) {
-            return new Polar(cameraView.Distance, 
-                             cameraView.Theta + HJ1.Angle, 
+        public Vector3 ConvertCameraPolarToLocalVector(Polar cameraView)
+        {
+            return new Polar(cameraView.Distance,
+                             cameraView.Theta + HJ1.Angle,
                              cameraView.Phi + HJ2.Angle
-                            ).ToVector3();
+                ).ToVector3();
         }
     }
 }

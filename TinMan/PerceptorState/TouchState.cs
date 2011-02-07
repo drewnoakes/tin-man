@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,23 +24,28 @@
 
 namespace TinMan
 {
-	/// <summary>Represents the state of a simulated touch perceptor.</summary>
-	public struct TouchState {
-	    /// <summary>Gets the label that identifies the touch perceptor.</summary>
-	    public string Label { get; private set; }
-	    public bool IsTouching { get; private set; }
-	    
-	    /// <remarks>
-	    /// Most users will not need to use this constructor as this type is only for inbound messages.
-	    /// This constructor is public to allow for unit testing.
-	    /// </remarks>
-	    public TouchState(string label, bool isTouching) : this() {
-	        Label = label;
-	        IsTouching = isTouching;
-	    }
-	    
-	    public override string ToString() {
-	        return string.Format("{0} {1}touching", Label, IsTouching ? "" : "not ");
-	    }
-	}
+    /// <summary>Represents the state of a simulated touch perceptor.</summary>
+    public struct TouchState
+    {
+        /// <summary>Gets the label that identifies the touch perceptor.</summary>
+        public string Label { get; private set; }
+
+        /// <summary>Gets a value indicating whether the touch perceptor reports sensing touch or not.</summary>
+        public bool IsTouching { get; private set; }
+
+        /// <remarks>
+        /// Most users will not need to use this constructor as this type is only for inbound messages.
+        /// This constructor is public to allow for unit testing.
+        /// </remarks>
+        public TouchState(string label, bool isTouching) : this()
+        {
+            Label = label;
+            IsTouching = isTouching;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}touching", Label, IsTouching ? "" : "not ");
+        }
+    }
 }

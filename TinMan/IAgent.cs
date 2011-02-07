@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,24 +24,25 @@
 
 namespace TinMan
 {
-	/// <summary>
-	/// Interface for all TinMan agents.  Most users should derive directly from <see cref="AgentBase{T}"/>
-	/// for simplicity.  If you must derive from another class, or wish to mock your agent, you can use
-	/// this interface.
-	/// </summary>
-	public interface IAgent {
-	    /// <summary>Gets the agent's body.</summary>
-	    /// <remarks>Must not be <c>null</c>.</remarks>
-	    IBody Body { get; }
-	    
-	    /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
-	    bool IsAlive { get; }
-	    
-	    /// <summary>
-	    /// Gives the agent a chance to process the latest body state and perform any necessary actions.
-	    /// </summary>
-	    /// <param name="context"></param>
-	    /// <param name="state"></param>
-	    void Think(ISimulationContext context, PerceptorState state);
-	}
+    /// <summary>
+    /// Interface for all TinMan agents.  Most users should derive directly from <see cref="AgentBase{T}"/>
+    /// for simplicity.  If you must derive from another class, or wish to mock your agent, you can use
+    /// this interface.
+    /// </summary>
+    public interface IAgent
+    {
+        /// <summary>Gets the agent's body.</summary>
+        /// <remarks>Must not be <c>null</c>.</remarks>
+        IBody Body { get; }
+
+        /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
+        bool IsAlive { get; }
+
+        /// <summary>
+        /// Gives the agent a chance to process the latest body state and perform any necessary actions.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="state"></param>
+        void Think(ISimulationContext context, PerceptorState state);
+    }
 }

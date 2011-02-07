@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -23,23 +25,27 @@
 namespace TinMan
 {
     /// <summary>Represents the state of a simulated accelerometer.</summary>
-	public struct AccelerometerState {
+    public struct AccelerometerState
+    {
         /// <summary>Gets the label that identifies the accelerometer.</summary>
         public string Label { get; private set; }
+
         /// <summary>Gets the vector direction returned by the accelerometer.</summary>
-	    public Vector3 AccelerationVector { get; private set; }
-	    
-	    /// <remarks>
-	    /// Most users will not need to use this constructor as this type is only for inbound messages.
-	    /// This constructor is public to allow for unit testing.
-	    /// </remarks>
-	    public AccelerometerState(string label, Vector3 accelerationVector) : this() {
-	        Label = label;
-	        AccelerationVector = accelerationVector;
-	    }
-	    
-	    public override string ToString() {
-	        return string.Format("{0} {1}", Label, AccelerationVector);
-	    }
-	}
+        public Vector3 AccelerationVector { get; private set; }
+
+        /// <remarks>
+        /// Most users will not need to use this constructor as this type is only for inbound messages.
+        /// This constructor is public to allow for unit testing.
+        /// </remarks>
+        public AccelerometerState(string label, Vector3 accelerationVector) : this()
+        {
+            Label = label;
+            AccelerationVector = accelerationVector;
+        }
+
+        public override string ToString()
+        {
+            return string.Format("{0} {1}", Label, AccelerationVector);
+        }
+    }
 }

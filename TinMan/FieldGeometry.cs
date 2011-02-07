@@ -60,7 +60,8 @@ namespace TinMan
     ///                                            (9,6)
     /// </pre>
     /// </remarks>
-    public static class FieldGeometry {
+    public static class FieldGeometry
+    {
         /// <summary>The radius of the ball.</summary>
         public const double BallRadiusMetres = 0.04;
         /// <summary>The mass of the ball in kilograms.</summary>
@@ -107,7 +108,8 @@ namespace TinMan
         /// <summary>The location, in global coordinates, of the top of the bottom-right (south-east) goal post.</summary>
         public static readonly Vector3 GoalRightBottomPosition;
         
-        static FieldGeometry() {
+        static FieldGeometry()
+        {
             const double flagHeight = 0; // 0.375f;  // TODO verify that the spotted point of the flag is at ground level (Z==0)
             const double goalPostX = FieldXLength/2; // TODO verify that the flag is exactly on the corner of the field
             const double goalPostY = GoalYLength/2;  // TODO verify this -- the height of the point spotted on the goal is halfway up it?
@@ -127,8 +129,10 @@ namespace TinMan
         /// <summary>Gets the location of a landmark in global coordinates.</summary>
         /// <param name="landmark"></param>
         /// <returns></returns>
-        public static Vector3 GetLandmarkPointGlobal(Landmark landmark) {
-            switch (landmark) {
+        public static Vector3 GetLandmarkPointGlobal(Landmark landmark) 
+        {
+            switch (landmark) 
+            {
                 case Landmark.FlagLeftTop:      return FlagLeftTopPosition;
                 case Landmark.FlagLeftBottom:   return FlagLeftBottomPosition;
                 case Landmark.FlagRightTop:     return FlagRightTopPosition;
@@ -146,14 +150,16 @@ namespace TinMan
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static bool IsInField(Vector3 vector) {
+        public static bool IsInField(Vector3 vector)
+        {
             return vector.X >= -FieldXLength/2 && vector.X <= FieldXLength/2
-                && vector.Y > -FieldYLength/2 && vector.Y < FieldYLength/2;
+                && vector.Y >  -FieldYLength/2 && vector.Y <  FieldYLength/2;
         }
         
         private static readonly Random _random = new Random();
         
-        public static Vector3 GetRandomPosition(FieldSide side) {
+        public static Vector3 GetRandomPosition(FieldSide side)
+        {
             double x1 = -FieldXLength/2;
             double x2 = +FieldXLength/2;
             if (side==FieldSide.Left)

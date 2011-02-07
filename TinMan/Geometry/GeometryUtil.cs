@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,6 +16,7 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -25,7 +27,8 @@ namespace TinMan
     /// <summary>
     /// A collection of static geometry-related utility methods.
     /// </summary>
-    public static class GeometryUtil {
+    public static class GeometryUtil
+    {
         /// <summary>
         /// Calculates the distance along a line that is closest to <paramref name="point"/>.
         /// </summary>
@@ -33,13 +36,14 @@ namespace TinMan
         /// <param name="direction">The direction of the line.</param>
         /// <param name="point"></param>
         /// <returns></returns>
-        public static double CalculateDistanceAlongLineThatIsClosestToPoint(Vector3 origin, Vector3 direction, Vector3 point) {
+        public static double CalculateDistanceAlongLineThatIsClosestToPoint(Vector3 origin, Vector3 direction, Vector3 point)
+        {
             // TODO if a dedicated Ray class is made, move this method to it
             Vector3 v = direction.Normalize();
-            Vector3 s = v.Cross(new Vector3(0,0,1));
-            double u 
-                = ((s.X/s.Y) * (origin.Y - point.Y) + (point.X - origin.X))
-                / (v.X - (s.X/s.Y)*v.Y);
+            Vector3 s = v.Cross(new Vector3(0, 0, 1));
+            double u
+                = ((s.X/s.Y)*(origin.Y - point.Y) + (point.X - origin.X))
+                  /(v.X - (s.X/s.Y)*v.Y);
             return (origin + v*u - point).Length;
         }
     }
