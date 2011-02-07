@@ -48,11 +48,10 @@ namespace TinMan
 	        sb.Append(" -> ");
 	        bool first = true;
 	        foreach (var p in PartPositions) {
-	            if (!first) {
+	            if (!first)
 	                sb.Append(", ");
-	                first = false;
-	            }
-	            sb.AppendFormat("{0} @ {1}", p.Label, p.PolarPosition);
+	            first = false;
+                sb.AppendFormat("{0} @ {1}", p.Label, p.PolarPosition);
 	        }
 	        return sb.ToString();
 	    }
