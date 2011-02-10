@@ -36,6 +36,8 @@ namespace TinMan
     /// </summary>
     public sealed class AgentHost
     {
+        // TODO track whether we're running and raise exceptions if methods are called in an invalid order
+
         public const int DefaultTcpPort = 3100;
         public const string DefaultHostName = "localhost";
         public static readonly TimeSpan CyclePeriod = TimeSpan.FromMilliseconds(20);
@@ -165,6 +167,10 @@ namespace TinMan
                         if (perceptorState.TryGetHingeAngle(hinge, out angle))
                             hinge.Angle = angle;
                     }
+
+                    // Certain values are only seen once (at startup) so we copy them from the perceptor state to the context and make the permanently available there
+                    if (perceptorState.TeamSide != FieldSide.Unknown)
+                        _context.TeamSide = perceptorState.TeamSide;
 
                     // Let the agent perform its magic
                     agent.Think(Context, perceptorState);

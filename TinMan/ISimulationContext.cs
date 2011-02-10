@@ -36,6 +36,11 @@ namespace TinMan
         Wizard Wizard { get; set; }
 
         /// <summary>
+        /// Gets the side of the playing field that this agent's team has been assigned to.
+        /// </summary>
+        FieldSide TeamSide { get; }
+
+        /// <summary>
         /// Causes the agent to speak a message out loud such that nearby agents can hear it.
         /// This is the only method of inter-agent communication allowed in RoboCup.
         /// </summary>

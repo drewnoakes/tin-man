@@ -49,6 +49,9 @@ namespace TinMan
             get { return _client.TeamName; }
         }
 
+        /// <summary>Gets the side of the playing field that this agent's team has been assigned to.</summary>
+        public FieldSide TeamSide { get; internal set; }
+
         /// <summary>Gets the wizard of this simulation.  May be <c>null</c>.</summary>
         public Wizard Wizard { get; set; }
 

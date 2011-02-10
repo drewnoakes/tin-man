@@ -52,15 +52,12 @@ namespace TinMan
         /// </summary>
         public TimeSpan GameTime { get; private set; }
 
-        /// <summary>
-        /// Gets the current state of the soccer game.
-        /// </summary>
+        /// <summary>Gets the current state of the soccer game.</summary>
         public PlayMode PlayMode { get; private set; }
 
-        /// <summary>
-        /// Gets the side of the field upon which the agent's team is currently playing.
-        /// </summary>
-        public FieldSide TeamSide { get; private set; }
+        /// <summary>Gets the side of the field upon which the agent's team is currently playing.</summary>
+        /// <remarks>This value is only sent by the server at startup, hence this property is internal, and its value copied to the public property <see cref="ISimulationContext.TeamSide"/> when observed.</remarks>
+        internal FieldSide TeamSide { get; private set; }
 
         /// <summary>
         /// Gets the uniform number assigned to this agent.  If no number has been assigned yet,
