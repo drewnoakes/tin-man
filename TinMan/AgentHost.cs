@@ -150,7 +150,7 @@ namespace TinMan
                         continue;
 
                     // Parse message
-                    var parser = new Parser(new Scanner(new StringBuffer(data)));
+                    var parser = new Parser(new Scanner(new StringBuffer(data))) { TeamName = TeamName };
                     parser.Parse();
                     var perceptorState = parser.State;
                     var errors = parser.errors;
