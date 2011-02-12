@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+    using System.Globalization;
 
 
 
@@ -53,7 +54,7 @@ public string TeamName;
 
     private double AsDouble(string s) {
         double d;
-        if (!double.TryParse(s, out d))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
             SemErr("Unable to convert \"" + s + "\" to a double.");
         return d;
     }

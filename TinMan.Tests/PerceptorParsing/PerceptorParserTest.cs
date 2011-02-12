@@ -47,6 +47,18 @@ namespace TinMan.PerceptorParsing
             }
         }
         
+        [Test, SetCulture("de-DE")] public void CanParseForCultureWithCommaDecimalSeparator() {
+            // In some cultures 1.234 is the English equivalent of 1,234.00.
+            // This test sets the culture to de-DE to ensure that any parsing of float values
+            // from the server (which always use periods for decimal separators) result in
+            // the intended values.
+            const string s = "(time (now 417.65))(GS (t 0.00) (pm BeforeKickOff))(GYR (n torso) (rt 0.00 0.00 0.00))(ACC (n torso) (a 0.00 0.00 9.81))(HJ (n hj1) (ax -0.00))(HJ (n hj2) (ax -0.00))(HJ (n raj1) (ax -0.00))(HJ (n raj2) (ax -0.00))(HJ (n raj3) (ax -0.00))(HJ (n raj4) (ax -0.00))(HJ (n laj1) (ax -0.00))(HJ (n laj2) (ax -0.00))(HJ (n laj3) (ax -0.00))(HJ (n laj4) (ax -0.00))(HJ (n rlj1) (ax -0.00))(HJ (n rlj2) (ax -0.00))(HJ (n rlj3) (ax -0.00))(HJ (n rlj4) (ax -0.00))(HJ (n rlj5) (ax -0.00))(HJ (n rlj6) (ax -0.00))(HJ (n llj1) (ax -0.00))(HJ (n llj2) (ax -0.00))(HJ (n llj3) (ax -0.00))(HJ (n llj4) (ax -0.00))(HJ (n llj5) (ax -0.00))(HJ (n llj6) (ax -0.00))"; //
+            
+            var parser = Parse(s);
+            Assert.AreEqual(417.65, parser.State.SimulationTime.TotalSeconds, 0.001);
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+        }
+        
         [Test] public void ShouldParseSimulationTime() {
             var parser = Parse("(time (now 417.65))");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);

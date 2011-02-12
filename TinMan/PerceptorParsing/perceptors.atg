@@ -90,6 +90,7 @@
  */
 
     using System.Collections.Generic;
+    using System.Globalization;
 
 COMPILER Perceptors
 
@@ -120,7 +121,7 @@ COMPILER Perceptors
 
     private double AsDouble(string s) {
         double d;
-        if (!double.TryParse(s, out d))
+        if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
             SemErr("Unable to convert \"" + s + "\" to a double.");
         return d;
     }
