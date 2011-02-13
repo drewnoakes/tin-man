@@ -35,10 +35,14 @@ namespace TinMan
         /// <summary>Gets and sets an optional wizard for this simulation.  May be <c>null</c>.</summary>
         Wizard Wizard { get; set; }
 
-        /// <summary>
-        /// Gets the side of the playing field that this agent's team has been assigned to.
-        /// </summary>
+        /// <summary>Gets the side of the playing field that this agent's team has been assigned to.</summary>
         FieldSide TeamSide { get; }
+
+        /// <summary>
+        /// Gets the uniform number assigned to this agent.  If no number has been assigned yet,
+        /// this value may be <c>null</c>.
+        /// </summary>
+        int? UniformNumber { get; }
 
         /// <summary>
         /// Causes the agent to speak a message out loud such that nearby agents can hear it.

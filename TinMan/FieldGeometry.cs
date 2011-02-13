@@ -70,6 +70,14 @@ namespace TinMan
         public const double FieldYLength = 12.0;
         /// <summary>The size of the field across its wider dimension, from goal to goal.</summary>
         public const double FieldXLength = 18.0;
+        /// <summary>The x-coordinate value at the left edge of the field.</summary>
+        public const double FieldXLeft = -FieldXLength / 2;
+        /// <summary>The x-coordinate value at the right edge of the field.</summary>
+        public const double FieldXRight = FieldXLength / 2;
+        /// <summary>The x-coordinate value at the left edge of the field.</summary>
+        public const double FieldYTop = FieldYLength / 2;
+        /// <summary>The x-coordinate value at the right edge of the field.</summary>
+        public const double FieldYBottom = -FieldYLength / 2;
         /// <summary>The height above ground level of the simulated area of the field.</summary>
         /// <remarks>Note that the agent may not be positioned more than 20 above ground level.</remarks>
         public const double FieldZHeight = 40.0;

@@ -42,6 +42,9 @@ namespace TinMan
         /// <summary>The default port exposed by the server for monitors, trainers or referees.</summary>
         public const int DefaultTcpPort = 3200;
 
+        /// <summary>The default host name, <c>localhost</c>.</summary>
+        private const string DefaultHostName = "localhost";
+
         private static readonly Log _log = Log.Create();
 
         /// <summary>
@@ -64,7 +67,7 @@ namespace TinMan
         /// <summary>Initialises a new wizard for localhost on the default port.</summary>
         public Wizard()
         {
-            HostName = "localhost";
+            HostName = DefaultHostName;
             PortNumber = DefaultTcpPort;
         }
 

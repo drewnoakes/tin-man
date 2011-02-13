@@ -1,20 +1,20 @@
 ﻿#region License
-/* 
- * This file is part of TinMan.
- *
- * TinMan is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * TinMan is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
- */
+
+// This file is part of TinMan.
+// 
+// TinMan is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+// 
+// TinMan is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
@@ -22,18 +22,22 @@
 
 using TinMan;
 
-class SoccerbotAgent : AgentBase<SoccerbotBody>
+namespace TinManSamples.CSharp
 {
-    public SoccerbotAgent()
-      : base(new SoccerbotBody()) {}
-
-    public override void Think(ISimulationContext context, PerceptorState state)
+    internal class SoccerbotAgent : AgentBase<SoccerbotBody>
     {
-        // TODO kick goal
-    }
+        public SoccerbotAgent()
+            : base(new SoccerbotBody())
+        {}
+
+        public override void Think(PerceptorState state)
+        {
+            // TODO kick goal
+        }
 
 //    static void Main() {
 //        // This call blocks while your agent runs
 //        new AgentHost().Run(new SoccerbotAgent());
 //    }
+    }
 }

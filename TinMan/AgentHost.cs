@@ -106,6 +106,12 @@ namespace TinMan
             if (agent == null)
                 throw new ArgumentNullException("agent");
 
+            agent.Context = Context;
+
+            _log.Info("Initialising agent");
+
+            agent.Initialise();
+
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
             // Try to make a TCP connection.
@@ -171,9 +177,11 @@ namespace TinMan
                     // Certain values are only seen once (at startup) so we copy them from the perceptor state to the context and make the permanently available there
                     if (perceptorState.TeamSide != FieldSide.Unknown)
                         _context.TeamSide = perceptorState.TeamSide;
+                    if (perceptorState.UniformNumber.HasValue)
+                        _context.UniformNumber = perceptorState.UniformNumber;
 
                     // Let the agent perform its magic
-                    agent.Think(Context, perceptorState);
+                    agent.Think(perceptorState);
 
                     // Visit all hinges again to compute any control functions
                     foreach (var hinge in agent.Body.AllHinges)
@@ -194,10 +202,7 @@ namespace TinMan
                     }
                 }
 
-// ReSharper disable SuspiciousTypeConversion.Global
-                if (agent is IDisposable)
-                    ((IDisposable)agent).Dispose();
-// ReSharper restore SuspiciousTypeConversion.Global
+                agent.Shutdown();
             }
         }
 

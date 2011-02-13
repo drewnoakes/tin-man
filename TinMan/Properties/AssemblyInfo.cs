@@ -14,7 +14,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TinMan")]
-[assembly: AssemblyCopyright("Copyright 2010 Drew Noakes")]
+[assembly: AssemblyCopyright("Copyright 2011 Drew Noakes")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

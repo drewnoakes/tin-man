@@ -39,10 +39,27 @@ namespace TinMan
         bool IsAlive { get; }
 
         /// <summary>
+        /// Gets and sets the simulation context for this agent.  The setter is intended only for use by the TinMan
+        /// framework.  This value is unavailable before the first call to <see cref="Initialise"/>.  Attempting to
+        /// access it before that time will result in an exception.
+        /// </summary>
+        ISimulationContext Context { get; set; }
+
+        /// <summary>
+        /// Performs any initialisation required by the agent prior to the first call to <see cref="Think"/>.
+        /// Called by the TinMan framework.
+        /// </summary>
+        void Initialise();
+
+        /// <summary>
         /// Gives the agent a chance to process the latest body state and perform any necessary actions.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="state"></param>
-        void Think(ISimulationContext context, PerceptorState state);
+        void Think(PerceptorState state);
+
+        /// <summary>
+        /// Called when the agent is about to shut down.  At this point, no further messages will be sent to the server.
+        /// </summary>
+        void Shutdown();
     }
 }

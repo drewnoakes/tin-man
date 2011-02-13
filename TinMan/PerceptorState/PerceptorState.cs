@@ -63,7 +63,7 @@ namespace TinMan
         /// Gets the uniform number assigned to this agent.  If no number has been assigned yet,
         /// this value may be <c>null</c>.
         /// </summary>
-        public int? UniformNumber { get; private set; }
+        internal int? UniformNumber { get; private set; }
 
         /// <summary>Gets the state of any gyroscopes in the agent's body.</summary>
         public IEnumerable<GyroState> GyroStates { get; private set; }

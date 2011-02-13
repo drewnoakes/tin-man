@@ -40,6 +40,7 @@ namespace TinMan
         {
             if (client == null)
                 throw new ArgumentNullException("client");
+
             _client = client;
         }
 
@@ -51,6 +52,9 @@ namespace TinMan
 
         /// <summary>Gets the side of the playing field that this agent's team has been assigned to.</summary>
         public FieldSide TeamSide { get; internal set; }
+
+        /// <summary>Gets the uniform number assigned to this agent.  If no number has been assigned yet, this value may be <c>null</c>.</summary>
+        public int? UniformNumber { get; internal set; }
 
         /// <summary>Gets the wizard of this simulation.  May be <c>null</c>.</summary>
         public Wizard Wizard { get; set; }

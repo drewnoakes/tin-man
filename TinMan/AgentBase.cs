@@ -23,6 +23,7 @@
 // Created 10/05/2010 12:43
 
 using System;
+using TinMan.RoboViz;
 
 namespace TinMan
 {
@@ -32,6 +33,10 @@ namespace TinMan
     /// </summary>
     public abstract class AgentBase<TBody> : IAgent where TBody : class, IBody
     {
+        private ISimulationContext _context;
+
+        #region Properties
+
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>Will not be <c>null</c>.</remarks>
         public TBody Body { get; private set; }
@@ -47,11 +52,51 @@ namespace TinMan
             get { return Body; }
         }
 
+        /// <summary>
+        /// Gets and sets the simulation context for this agent.  The setter is intended only for use by the TinMan
+        /// framework, and is populated by <see cref="AgentHost.Run" />.  This value is unavailable before the first
+        /// call to <see cref="IAgent.Think"/>.  Attempting to access it before that time will result in an
+        /// <see cref="InvalidOperationException"/>.
+        /// </summary>
+        /// <remarks>
+        /// This is an explicit interface implementation so that the setter is hidden from subclasses in order to
+        /// avoid confusion.
+        /// </remarks>
+        ISimulationContext IAgent.Context
+        {
+            get
+            {
+                if (_context == null)
+                    throw new InvalidOperationException("The Context property cannot be accessed before the first call to Think.");
+                return _context;
+            }
+            set
+            {
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                if (_context != null)
+                    throw new InvalidOperationException("Context has already been set.");
+                _context = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the <see cref="ISimulationContext"/> for this agent.  This value is unavailable before the first call to
+        /// <see cref="IAgent.Think"/>.  Attempting to access it before that time will result in an
+        /// <see cref="InvalidOperationException"/>.
+        /// </summary>
+        protected ISimulationContext Context
+        {
+            get { return ((IAgent)this).Context; }
+        }
+
         /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
         public bool IsAlive { get; private set; }
 
         /// <summary>Gets a logger used by the agent.</summary>
         protected Log Log { get; private set; }
+
+        #endregion
 
         /// <summary>
         /// Initialises AgentBase with a body instance.
@@ -68,21 +113,79 @@ namespace TinMan
         }
 
         /// <summary>
+        /// Performs any initialisation required by the agent prior to the first call to <see cref="IAgent.Think"/>.
+        /// Called by the TinMan framework.  You are not required to override this method.
+        /// </summary>
+        public virtual void Initialise()
+        {}
+
+        #region Think
+
+        void IAgent.Think(PerceptorState state)
+        {
+            Think(state);
+
+            if (_roboVizRemote != null)
+                _roboVizRemote.FlushMessages();
+        }
+
+        /// <summary>
         /// Gives the agent a chance to process the latest body state and
         /// perform any necessary actions.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="state"></param>
-        public abstract void Think(ISimulationContext context, PerceptorState state);
+        public abstract void Think(PerceptorState state);
+
+        #endregion
+
+        #region Shutdown sequence
+
+        void IAgent.Shutdown()
+        {
+            if (_roboVizRemote != null)
+                _roboVizRemote.Dispose();
+
+            Shutdown();
+        }
 
         /// <summary>
-        /// Causes the <see cref="AgentHost"/> to stop hosting this agent.  This action cannot be
-        /// undone.
+        /// Performs any final action required by the agent as the run loop exits.
+        /// Called by the TinMan framework.  You are not required to override this method.
+        /// </summary>
+        protected virtual void Shutdown() { }
+
+        #endregion
+
+        /// <summary>
+        /// Requests that the <see cref="AgentHost"/> exit the run loop at the completion of this cycle.
+        /// This action cannot be undone.
         /// </summary>
         protected void StopSimulation()
         {
             Log.Info("Agent requested that the simulation stops.");
             IsAlive = false;
         }
+
+        #region RoboViz Remote
+
+        private RoboVizRemote _roboVizRemote;
+
+        protected IRoboVizRemote CreateRoboVizRemote()
+        {
+            return CreateRoboVizRemote(new RoboVizOptions());
+        }
+
+        protected IRoboVizRemote CreateRoboVizRemote(RoboVizOptions options)
+        {
+            if (options == null)
+                throw new ArgumentNullException("options");
+            if (_roboVizRemote != null)
+                throw new InvalidOperationException("Only a single RoboViz remote may be created.");
+
+            _roboVizRemote = new RoboVizRemote(options, Context);
+            return _roboVizRemote;
+        }
+
+        #endregion
     }
 }

@@ -5,7 +5,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Exe</OutputType>
-    <RootNamespace>TinMan.Samples.CSharp</RootNamespace>
+    <RootNamespace>TinManSamples.CSharp</RootNamespace>
     <AssemblyName>TinMan.Samples.CSharp</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
@@ -61,18 +61,22 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="LocaliserVisualisationAgent.cs" />
     <Compile Include="FullHouse.cs" />
     <Compile Include="LoggingAgent.cs" />
     <Compile Include="MinimalAgent.cs" />
     <Compile Include="HingeCharacterisationAgent.cs">
     </Compile>
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="InteractiveAgent.cs" />
+    <Compile Include="RoboVizDemoAgent.cs" />
     <Compile Include="SoccerbotAgent.cs" />
-    <Compile Include="TalkingAgent.cs" />
+    <Compile Include="SocialAgent.cs" />
     <Compile Include="WavingAgent.cs" />
     <Compile Include="WizardExample.cs" />
   </ItemGroup>

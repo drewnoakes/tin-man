@@ -18,31 +18,37 @@
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
-// Created 10/06/2010 03:01
+// Created 15/06/2010 23:27
 
 using System;
 using TinMan;
 
 namespace TinManSamples.CSharp
 {
-    class LoggingAgent : AgentBase<NaoBody>
+    /// <summary>
+    /// An agent that sends and receives messages.  Messages are sent randomly.
+    /// </summary>
+    public sealed class SocialAgent : AgentBase<NaoBody>
     {
-        static LoggingAgent()
-        {
-            Log.InfoAction = delegate(string message) { /* Call alternative logging framework here */ };
-            Log.VerboseAction = delegate(string message) { /* Call alternative logging framework here */ };
-            Log.WarnAction = delegate(string message) { /* Call alternative logging framework here */ };
-            Log.ErrorAction = delegate(string message, Exception exception) { /* Call alternative logging framework here */ };
-        }
-    
-        public LoggingAgent() : base(new NaoBody())
-        {
-            Log.Info("Creating agent.");
-        }
+        public SocialAgent()
+            : base(new NaoBody())
+        {}
+
+        private readonly Log _log = Log.Create();
+        private readonly Random _random = new Random();
 
         public override void Think(PerceptorState state)
         {
-            Log.Verbose("Simulation time = {0}", state.SimulationTime);
+            // Check if we heard anything and log
+            if (state.HeardMessages != null)
+            {
+                foreach (var message in state.HeardMessages)
+                    _log.Verbose("Heard message: " + message);
+            }
+
+            // Send a message 
+            if (_random.NextDouble() < 0.05)
+                Context.Say("Message" + _random.Next(1000));
         }
     }
 }

@@ -72,6 +72,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +105,10 @@
     <Compile Include="PerceptorState\PlayerPosition.cs" />
     <Compile Include="PerceptorState\TouchState.cs" />
     <Compile Include="PerceptorState\UniversalJointState.cs" />
+    <Content Include="RoboViz\ReadMe.txt" />
+    <Compile Include="RoboViz\RoboVizRemote.cs" />
+    <Compile Include="RoboViz\Shape.cs" />
+    <Compile Include="RoboViz\ShapeSet.cs" />
     <Compile Include="SExpressionReader.cs" />
     <Compile Include="SoccerbotBody.cs" />
     <Compile Include="PerceptorParsing\Parser.cs" />
