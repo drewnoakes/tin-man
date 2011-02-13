@@ -44,6 +44,7 @@ namespace TinMan
         private static readonly Log _log = Log.Create();
 
         private readonly SimulationContext _context;
+        private bool _stopRequested;
 
         /// <summary>
         /// Creates a new client.  <see cref="HostName"/> is set to <tt>localhost</tt> and
@@ -91,8 +92,6 @@ namespace TinMan
         public ISimulationContext Context { get; private set; }
 
         #endregion
-
-        private bool _stopRequested;
 
         /// <summary>
         /// Connects to the RoboCup3D server and runs a simulation with <paramref name="agent"/>.

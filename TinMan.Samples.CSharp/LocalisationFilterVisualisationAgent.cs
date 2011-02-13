@@ -7,7 +7,7 @@ using TinMan.RoboViz;
 
 namespace TinManSamples.CSharp
 {
-    public sealed class LocaliserVisualisationAgent : AgentBase<NaoBody>
+    public sealed class LocalisationFilterVisualisationAgent : AgentBase<NaoBody>
     {
         private const int NumberOfPositionsToShow = 10;
 
@@ -15,7 +15,7 @@ namespace TinManSamples.CSharp
         private Circle _bestGuessCircle;
         private Dot[] _filterDots;
 
-        public LocaliserVisualisationAgent(ILocalisationFilter localiser)
+        public LocalisationFilterVisualisationAgent(ILocalisationFilter localiser)
             : base(new NaoBody())
         {
             _localiser = localiser;
@@ -23,11 +23,11 @@ namespace TinManSamples.CSharp
 
         public override void Initialise()
         {
-            var roboViz = CreateRoboVizRemote(new RoboVizOptions());
+            var roboViz = CreateRoboVizRemote();
 
             // create a circle to indicate the best guess at our position, hidden initially
             _bestGuessCircle = new Circle(0, 0, 0.25, 2, Color.Blue) { IsVisible = false };
-            
+
             // create a swarm of dots to show the N best guesses
             _filterDots = new Dot[NumberOfPositionsToShow];
             for (var i = 0; i < NumberOfPositionsToShow; i++)
@@ -56,7 +56,7 @@ namespace TinManSamples.CSharp
                 var i = 0;
                 foreach (var guess in guesses.Take(NumberOfPositionsToShow))
                 {
-                    var alpha = (byte)((1 - guess.Weight)*255);
+                    var alpha = (byte)((1 - guess.Weight) * 255);
                     _filterDots[i].Color = Color.FromArgb(alpha, Color.White);
                     _filterDots[i].Position = guess.Position;
                     i++;

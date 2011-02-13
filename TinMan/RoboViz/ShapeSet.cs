@@ -13,6 +13,8 @@ namespace TinMan.RoboViz
         private readonly string _name;
         private ShapeSet _parentSet;
         private RoboVizRemote _parentRoot;
+        private string _path;
+        private byte[] _pathBytes;
 
         public ShapeSet(string name)
         {
@@ -31,9 +33,6 @@ namespace TinMan.RoboViz
             get { return _subsets; }
         }
 
-        private string _path;
-        private byte[] _pathBytes;
-
         public string Path
         {
             get
@@ -48,16 +47,6 @@ namespace TinMan.RoboViz
                         throw new InvalidOperationException("Cannot determine path for a ShapeSet that does not have a RoboVizRemote at the root of its hierarchy.");
                 }
                 return _path;
-            }
-        }
-
-        public byte[] PathBytes
-        {
-            get 
-            {
-                if (_pathBytes == null)
-                    _pathBytes = Encoding.ASCII.GetBytes(Path);
-                return _pathBytes;
             }
         }
 
@@ -84,9 +73,7 @@ namespace TinMan.RoboViz
             childSubSet.SetParent(this);
         }
 
-        /// <summary>
-        /// Translates any contained Shapes and/or nested ShapeSets by the specified offset.
-        /// </summary>
+        /// <summary>Translates any contained Shapes and/or nested ShapeSets by the specified offset.</summary>
         /// <param name="offset"></param>
         public void Translate(Vector3 offset)
         {
@@ -98,7 +85,28 @@ namespace TinMan.RoboViz
                 subset.Translate(offset);
         }
 
+        public void Remove(Shape shape)
+        {
+            if (shape == null)
+                throw new ArgumentNullException("shape");
+            var success = _shapes.Remove(shape);
+            if (!success)
+                throw new ArgumentException("Cannot remove the Shape as it is not contained in this ShapeSet.");
+            shape.ClearSetShapeSet();
+            IsDirty = true;
+        }
+
         internal bool IsDirty { get; set; }
+
+        internal byte[] PathBytes
+        {
+            get 
+            {
+                if (_pathBytes == null)
+                    _pathBytes = Encoding.ASCII.GetBytes(Path);
+                return _pathBytes;
+            }
+        }
 
         private void SetParent(ShapeSet parent)
         {
@@ -118,18 +126,7 @@ namespace TinMan.RoboViz
             _parentRoot = parent;
         }
 
-        #region Implementation of IEnumerable
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            // This method exists only so that we can use the C# initialisation syntax.  Eg:
-            // new ShapeSet("foo") {  }
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        public void FlushMessages(UdpClient udpClient)
+        internal void FlushMessages(UdpClient udpClient)
         {
             foreach (var shape in _shapes)
             {
@@ -143,12 +140,15 @@ namespace TinMan.RoboViz
             IsDirty = false;
         }
 
-        public void Remove(Shape shape)
+        #region Implementation of IEnumerable
+
+        IEnumerator IEnumerable.GetEnumerator()
         {
-            var success = _shapes.Remove(shape);
-            if (!success)
-                throw new ArgumentException("Cannot remove the Shape as it is not contained in this ShapeSet.");
-            IsDirty = true;
+            // This method exists only so that we can use the C# initialisation syntax.  Eg:
+            // new ShapeSet("foo") {  }
+            throw new NotImplementedException();
         }
+
+        #endregion
     }
 }

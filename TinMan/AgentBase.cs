@@ -130,10 +130,9 @@ namespace TinMan
         }
 
         /// <summary>
-        /// Gives the agent a chance to process the latest body state and
-        /// perform any necessary actions.
+        /// Gives the agent a chance to process the latest body state and perform any necessary actions.
         /// </summary>
-        /// <param name="state"></param>
+        /// <param name="state">The latest snapshot of the agent's state.</param>
         public abstract void Think(PerceptorState state);
 
         #endregion
@@ -170,17 +169,29 @@ namespace TinMan
 
         private RoboVizRemote _roboVizRemote;
 
+        /// <summary>
+        /// Creates and returns an instance of <see cref="IRoboVizRemote"/> with default <see cref="RoboVizOptions"/>.
+        /// This remote will be automatically disposed when the agent exits.
+        /// </summary>
+        /// <returns></returns>
         protected IRoboVizRemote CreateRoboVizRemote()
         {
             return CreateRoboVizRemote(new RoboVizOptions());
         }
 
+        /// <summary>
+        /// Creates and returns an instance of <see cref="IRoboVizRemote"/> with specified <paramref name="options"/>.
+        /// This remote will be automatically disposed when the agent exits.
+        /// </summary>
+        /// <returns></returns>
         protected IRoboVizRemote CreateRoboVizRemote(RoboVizOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
             if (_roboVizRemote != null)
                 throw new InvalidOperationException("Only a single RoboViz remote may be created.");
+            if (Context == null)
+                throw new InvalidOperationException("Cannot call CreateRoboVizRemote from your Agent's constructor.  Override your agent's \"Initialise\" method and call from there instead.");
 
             _roboVizRemote = new RoboVizRemote(options, Context);
             return _roboVizRemote;

@@ -11,7 +11,7 @@ namespace TinManSamples.CSharp
     /// <para/>
     /// It's purpose is to highlight a combination of static and animated elements
     /// and is not representative of how this API would ordinarily be used.
-    /// See <see cref="LocaliserVisualisationAgent" /> for a simpler, more likely example.
+    /// See <see cref="LocalisationFilterVisualisationAgent" /> for a simpler, more likely example.
     /// </summary>
     public class RoboVizDemoAgent : AgentBase<NaoBody>
     {

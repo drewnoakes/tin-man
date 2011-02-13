@@ -14,7 +14,7 @@ type GetSmart() =
             with get() = context
             and set(value) = context <- value
         member this.IsAlive = isAlive
-        member this.Think(s) =
+        member this.Think(state) =
             // print the head's current angle
             printfn "%s" (body.HJ1.Angle.ToString())
             // request the head move to the left at 1 degree/sec
@@ -26,14 +26,14 @@ type GetSmart() =
 
 type AgentToo() =
     inherit AgentBase<NaoBody>(new NaoBody()) with
-        override this.Think(s) =
+        override this.Think(state) =
             // return unit as interface has void return type
             ()
     
 let body = new NaoBody()
 let myAgent = {
     new AgentBase<NaoBody>(body) with
-        override this.Think(s) =
+        override this.Think(state) =
             // return unit as interface has void return type
             ()
 }

@@ -65,7 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="LocaliserVisualisationAgent.cs" />
+    <Compile Include="LocalisationSimpleVisualisationAgent.cs" />
+    <Compile Include="LocalisationFilterVisualisationAgent.cs" />
     <Compile Include="FullHouse.cs" />
     <Compile Include="LoggingAgent.cs" />
     <Compile Include="MinimalAgent.cs" />
