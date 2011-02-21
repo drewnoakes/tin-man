@@ -68,7 +68,8 @@ namespace TinMan.RoboViz
 
         protected static void WriteDouble(byte[] buf, int offset, double d)
         {
-            var s = d.ToString("0.00000");
+            // TODO in some cases we truncate the last character -- we could round the number for better accuracy
+            var s = d.ToString("#.00000");
             s = s.Substring(0, Math.Min(s.Length, 6));
             Debug.Assert(s.Length == 6);
             var byteCount = Encoding.ASCII.GetBytes(s, 0, 6, buf, offset);
