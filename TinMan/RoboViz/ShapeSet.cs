@@ -100,12 +100,7 @@ namespace TinMan.RoboViz
 
         internal byte[] PathBytes
         {
-            get 
-            {
-                if (_pathBytes == null)
-                    _pathBytes = Encoding.ASCII.GetBytes(Path);
-                return _pathBytes;
-            }
+            get { return _pathBytes ?? (_pathBytes = Encoding.ASCII.GetBytes(Path)); }
         }
 
         private void SetParent(ShapeSet parent)

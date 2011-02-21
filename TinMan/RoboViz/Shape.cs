@@ -610,4 +610,202 @@ namespace TinMan.RoboViz
 
         #endregion
     }
+
+    /// <summary>
+    /// A coloured text label at a point in 3D space.
+    /// Note that `X`,`Y`,`Z` are equivalent to `Position`, so use whichever is more convenient at the time.
+    /// </summary>
+    public sealed class FieldAnnotation : Shape
+    {
+        private double _x;
+        private double _y;
+        private double _z;
+        private Color _color;
+        private string _text;
+        private byte[] _textBytes;
+
+        /// <summary>Initialises a 5-pixel wide white <see cref="TinMan.RoboViz.Dot"/>.</summary>
+        public FieldAnnotation()
+        {
+            _text = string.Empty;
+            _color = Color.White;
+        }
+
+        public FieldAnnotation(Vector3 position, string text, Color color)
+        {
+            Position = position;
+            _text = text;
+            _color = color;
+        }
+
+        #region Properties
+
+        public Color Color
+        {
+            get { return _color; }
+            set { _color = value; SetDirty(); }
+        }
+
+        public Vector3 Position
+        {
+            get { return new Vector3(X, Y, Z); }
+            set { _x = value.X; _y = value.Y; _z = value.Z; SetDirty(); }
+        }
+
+        public double X
+        {
+            get { return _x; }
+            set { _x = value; SetDirty(); }
+        }
+
+        public double Y
+        {
+            get { return _y; }
+            set { _y = value; SetDirty(); }
+        }
+
+        public double Z
+        {
+            get { return _z; }
+            set { _z = value; SetDirty(); }
+        }
+
+        public string Text
+        {
+            get { return _text; }
+            set { _text = value; SetDirty(); }
+        }
+
+        private byte[] TextBytes
+        {
+            get { return _textBytes ?? (_textBytes = Encoding.ASCII.GetBytes(Text)); }
+        }
+
+        #endregion
+
+        #region Overrides
+
+        public override void Translate(Vector3 offset)
+        {
+            Position += offset;
+        }
+
+        internal override void SendMessage(UdpClient udpClient)
+        {
+            var textBytes = TextBytes;
+            
+            // If no text is available, we don't bother sending the message
+            if (textBytes.Length == 0)
+                return;
+
+            var pathBytes = ShapeSet.PathBytes;
+            var numBytes = 25 + pathBytes.Length + textBytes.Length;
+            var buf = new byte[numBytes];
+
+            buf[0] = 2;
+            buf[1] = 0;
+            textBytes.CopyTo(buf, 2);
+            WriteDouble(buf, 3 + textBytes.Length, _x);
+            WriteDouble(buf, 9 + textBytes.Length, _y);
+            WriteDouble(buf, 15 + textBytes.Length, _z);
+            WriteColor(buf, 21 + textBytes.Length, Color, false);
+            pathBytes.CopyTo(buf, 24 + textBytes.Length);
+
+            var bytesSentCount = udpClient.Send(buf, buf.Length);
+            Debug.Assert(bytesSentCount == numBytes);
+        }
+
+        #endregion
+    }
+
+/*
+    /// <summary>
+    /// A coloured text label that displays alongside an agent.
+    /// Note that `X`,`Y`,`Z` are equivalent to `Position`, so use whichever is more convenient at the time.
+    /// </summary>
+    public sealed class AgentAnnotation : Shape
+    {
+        private double _x;
+        private double _y;
+        private double _z;
+        private Color _color;
+        private readonly ISimulationContext _context;
+        private string _text;
+        private byte[] _textBytes;
+
+        /// <summary>Initialises a 5-pixel wide white <see cref="TinMan.RoboViz.Dot"/>.</summary>
+        public AgentAnnotation(ISimulationContext context)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+            _context = context;
+            _text = string.Empty;
+            _color = Color.White;
+        }
+
+        public AgentAnnotation(ISimulationContext context, Vector3 position, string text, Color color)
+        {
+            if (context == null)
+                throw new ArgumentNullException("context");
+            _context = context;
+            _text = text;
+            _color = color;
+        }
+
+        #region Properties
+
+        public Color Color
+        {
+            get { return _color; }
+            set { _color = value; SetDirty(); }
+        }
+
+        public string Text
+        {
+            get { return _text; }
+            set { _text = value; SetDirty(); }
+        }
+
+        private byte[] TextBytes
+        {
+            get { return _textBytes ?? (_textBytes = Encoding.ASCII.GetBytes(Text)); }
+        }
+
+        #endregion
+
+        #region Overrides
+
+        public override void Translate(Vector3 offset)
+        {
+            // Has no effect
+        }
+
+        internal override void SendMessage(UdpClient udpClient)
+        {
+            var textBytes = TextBytes;
+            
+            // If no text is available, we don't bother sending the message
+            if (textBytes.Length == 0)
+                return;
+
+            var pathBytes = ShapeSet.PathBytes;
+            var numBytes = 25 + pathBytes.Length + textBytes.Length;
+            var buf = new byte[numBytes];
+
+            buf[0] = 2;
+            buf[1] = 1;
+            textBytes.CopyTo(buf, 2);
+            WriteDouble(buf, 3 + textBytes.Length, _x);
+            WriteDouble(buf, 9 + textBytes.Length, _y);
+            WriteDouble(buf, 15 + textBytes.Length, _z);
+            WriteColor(buf, 21 + textBytes.Length, Color, false);
+            pathBytes.CopyTo(buf, 24 + textBytes.Length);
+
+            var bytesSentCount = udpClient.Send(buf, buf.Length);
+            Debug.Assert(bytesSentCount == numBytes);
+        }
+
+        #endregion
+    }
+*/
 }

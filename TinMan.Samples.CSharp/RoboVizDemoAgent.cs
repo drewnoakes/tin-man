@@ -49,26 +49,30 @@ namespace TinManSamples.CSharp
             roboViz.Add(new ShapeSet("static")
                         {
                             new ShapeSet("axes")
-                            {
-                                new Line(Vector3.Origin, new Vector3(3, 0, 0), 3, Color.Red),
-                                new Line(Vector3.Origin, new Vector3(0, 3, 0), 3, Color.Green),
-                                new Line(Vector3.Origin, new Vector3(0, 0, 3), 3, Color.Blue)
-                            },
+                                {
+                                    new Line(Vector3.Origin, new Vector3(3, 0, 0), 3, Color.Red),
+                                    new Line(Vector3.Origin, new Vector3(0, 3, 0), 3, Color.Green),
+                                    new Line(Vector3.Origin, new Vector3(0, 0, 3), 3, Color.Blue)
+                                },
                             new ShapeSet("circles")
-                            {
-                                new Circle(-5, 0, 3, 2, Color.Blue),
-                                new Circle(5, 0, 3, 2, Color.Blue)
-                            },
+                                {
+                                    new Circle(-5, 0, 3, 2, Color.Blue),
+                                    new Circle(5, 0, 3, 2, Color.Blue)
+                                },
                             new ShapeSet("spheres")
-                            {
-                                new Sphere(new Vector3(-5, 0, 2), 0.5, Color.Pink),
-                                new Sphere(new Vector3(5, 0, 2), 0.5, Color.Pink)
-                            },
+                                {
+                                    new Sphere(new Vector3(-5, 0, 2), 0.5, Color.Pink),
+                                    new Sphere(new Vector3(5, 0, 2), 0.5, Color.Pink)
+                                },
                             new ShapeSet("polygons")
-                            {
-                                new Polygon(polygonVertices, Color.FromArgb(128, Color.White))
-                            },
-                            fieldLines
+                                {
+                                    new Polygon(polygonVertices, Color.FromArgb(128, Color.White))
+                                },
+                            fieldLines,
+                            new FieldAnnotation { Text = "LB", Color = Color.Orange, Position = FieldGeometry.FlagLeftBottomPosition },
+                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagLeftTopPosition },
+                            new FieldAnnotation { Text = "RB", Color = Color.Orange, Position = FieldGeometry.FlagRightBottomPosition },
+                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagRightTopPosition },
                         });
 
             // Animated shapes:
