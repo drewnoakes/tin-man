@@ -704,11 +704,11 @@ namespace TinMan.RoboViz
 
             buf[0] = 2;
             buf[1] = 0;
-            textBytes.CopyTo(buf, 2);
-            WriteDouble(buf, 3 + textBytes.Length, _x);
-            WriteDouble(buf, 9 + textBytes.Length, _y);
-            WriteDouble(buf, 15 + textBytes.Length, _z);
-            WriteColor(buf, 21 + textBytes.Length, Color, false);
+            WriteDouble(buf, 2, _x);
+            WriteDouble(buf, 8, _y);
+            WriteDouble(buf, 14, _z);
+            WriteColor(buf, 20, Color, false);
+            textBytes.CopyTo(buf, 23);
             pathBytes.CopyTo(buf, 24 + textBytes.Length);
 
             var bytesSentCount = udpClient.Send(buf, buf.Length);
