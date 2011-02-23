@@ -75,7 +75,7 @@ namespace TinManSamples.CSharp
                             new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagLeftTopPosition },
                             new FieldAnnotation { Text = "RB", Color = Color.Orange, Position = FieldGeometry.FlagRightBottomPosition },
                             new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagRightTopPosition },
-                            new FieldAnnotation { Text = "(0,0)", Color = Color.White, Position = Vector3.Origin },
+                            new FieldAnnotation { Text = "(0,0)", Color = Color.White, Position = Vector3.Origin }
                         });
 
             // Animated shapes:
