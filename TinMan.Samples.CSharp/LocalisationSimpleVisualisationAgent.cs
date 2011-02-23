@@ -20,7 +20,7 @@ namespace TinManSamples.CSharp
         {
             // Request that a RoboViz remote is created.
             // It will be disposed of automatically when the agent exits.
-            var roboViz = CreateRoboVizRemote();
+            var roboViz = new RoboVizRemote(this);
 
             // Create a 5-pixel, blue dot to indicate the agent's calculated position, hidden initially.
             // Keep a reference to this object so that we can manipulate it later.

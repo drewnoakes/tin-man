@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
 using TinMan.PerceptorParsing;
@@ -177,7 +178,10 @@ namespace TinMan
                     if (perceptorState.TeamSide != FieldSide.Unknown)
                         _context.TeamSide = perceptorState.TeamSide;
                     if (perceptorState.UniformNumber.HasValue)
+                    {
+                        Debug.Assert(perceptorState.UniformNumber > 0);
                         _context.UniformNumber = perceptorState.UniformNumber;
+                    }
 
                     // Let the agent perform its magic
                     agent.Think(perceptorState);
@@ -201,7 +205,7 @@ namespace TinMan
                     }
                 }
 
-                agent.Shutdown();
+                agent.ShutDown();
             }
         }
 

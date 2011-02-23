@@ -23,7 +23,7 @@ namespace TinManSamples.CSharp
 
         public override void Initialise()
         {
-            var roboViz = CreateRoboVizRemote();
+            var roboViz = new RoboVizRemote(this);
 
             // create a circle to indicate the best guess at our position, hidden initially
             _bestGuessCircle = new Circle(0, 0, 0.25, 2, Color.Blue) { IsVisible = false };

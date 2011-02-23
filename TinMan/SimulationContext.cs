@@ -42,6 +42,8 @@ namespace TinMan
                 throw new ArgumentNullException("client");
 
             _client = client;
+            
+            TeamSide = FieldSide.Unknown;
         }
 
         /// <summary>Gets the name assigned to this team.</summary>

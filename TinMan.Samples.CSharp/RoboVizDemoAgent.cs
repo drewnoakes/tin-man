@@ -24,7 +24,9 @@ namespace TinManSamples.CSharp
 
         public override void Initialise()
         {
-            var roboViz = CreateRoboVizRemote();
+            var roboViz = new RoboVizRemote(this);
+            roboViz.AgentText = "Hello World";
+            roboViz.AgentTextColor = Color.DarkRed;
 
             // During agent initialisation, we construct all the shapes we're going to need, and arrange them in a hierarchy.
             // We assign references to certain dots and lines to fields so that we can animate them later during 'Think'.
@@ -73,6 +75,7 @@ namespace TinManSamples.CSharp
                             new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagLeftTopPosition },
                             new FieldAnnotation { Text = "RB", Color = Color.Orange, Position = FieldGeometry.FlagRightBottomPosition },
                             new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagRightTopPosition },
+                            new FieldAnnotation { Text = "(0,0)", Color = Color.White, Position = Vector3.Origin },
                         });
 
             // Animated shapes:

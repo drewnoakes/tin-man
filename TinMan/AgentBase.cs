@@ -23,7 +23,6 @@
 // Created 10/05/2010 12:43
 
 using System;
-using TinMan.RoboViz;
 
 namespace TinMan
 {
@@ -33,6 +32,9 @@ namespace TinMan
     /// </summary>
     public abstract class AgentBase<TBody> : IAgent where TBody : class, IBody
     {
+        public event Action ThinkCompleted;
+        public event Action ShuttingDown;
+
         private ISimulationContext _context;
 
         #region Properties
@@ -125,8 +127,9 @@ namespace TinMan
         {
             Think(state);
 
-            if (_roboVizRemote != null)
-                _roboVizRemote.FlushMessages();
+            var evt = ThinkCompleted;
+            if (evt != null)
+                evt();
         }
 
         /// <summary>
@@ -139,19 +142,20 @@ namespace TinMan
 
         #region Shutdown sequence
 
-        void IAgent.Shutdown()
+        void IAgent.ShutDown()
         {
-            if (_roboVizRemote != null)
-                _roboVizRemote.Dispose();
+            ShutDown();
 
-            Shutdown();
+            var evt = ShuttingDown;
+            if (evt != null)
+                evt();
         }
 
         /// <summary>
         /// Performs any final action required by the agent as the run loop exits.
         /// Called by the TinMan framework.  You are not required to override this method.
         /// </summary>
-        protected virtual void Shutdown() { }
+        protected virtual void ShutDown() { }
 
         #endregion
 
@@ -164,39 +168,5 @@ namespace TinMan
             Log.Info("Agent requested that the simulation stops.");
             IsAlive = false;
         }
-
-        #region RoboViz Remote
-
-        private RoboVizRemote _roboVizRemote;
-
-        /// <summary>
-        /// Creates and returns an instance of <see cref="IRoboVizRemote"/> with default <see cref="RoboVizOptions"/>.
-        /// This remote will be automatically disposed when the agent exits.
-        /// </summary>
-        /// <returns></returns>
-        protected IRoboVizRemote CreateRoboVizRemote()
-        {
-            return CreateRoboVizRemote(new RoboVizOptions());
-        }
-
-        /// <summary>
-        /// Creates and returns an instance of <see cref="IRoboVizRemote"/> with specified <paramref name="options"/>.
-        /// This remote will be automatically disposed when the agent exits.
-        /// </summary>
-        /// <returns></returns>
-        protected IRoboVizRemote CreateRoboVizRemote(RoboVizOptions options)
-        {
-            if (options == null)
-                throw new ArgumentNullException("options");
-            if (_roboVizRemote != null)
-                throw new InvalidOperationException("Only a single RoboViz remote may be created.");
-            if (Context == null)
-                throw new InvalidOperationException("Cannot call CreateRoboVizRemote from your Agent's constructor.  Override your agent's \"Initialise\" method and call from there instead.");
-
-            _roboVizRemote = new RoboVizRemote(options, Context);
-            return _roboVizRemote;
-        }
-
-        #endregion
     }
 }

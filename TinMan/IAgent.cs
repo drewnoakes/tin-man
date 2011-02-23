@@ -20,6 +20,8 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 10/05/2010 12:43
 
+using System;
+
 namespace TinMan
 {
     /// <summary>
@@ -29,6 +31,18 @@ namespace TinMan
     /// </summary>
     public interface IAgent
     {
+        /// <summary>
+        /// Raised when <see cref="Think"/> finishes.  Add on components may use this event to hook into
+        /// the agent's process cycle.
+        /// </summary>
+        event Action ThinkCompleted;
+
+        /// <summary>
+        /// Raised when the agent is shutting down due to a call to <see cref="ShutDown"/>.  Add on components
+        /// may use this event to hook into the agent's process cycle.
+        /// </summary>
+        event Action ShuttingDown;
+
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>Must not be <c>null</c>.</remarks>
         IBody Body { get; }
@@ -53,11 +67,15 @@ namespace TinMan
         /// Gives the agent a chance to process the latest body state and perform any necessary actions.
         /// </summary>
         /// <param name="state"></param>
+        /// <remarks>Implementations should raise <see cref="ThinkCompleted"/> after thinking so that external components
+        /// that track the agent's life cycle are notified.</remarks>
         void Think(PerceptorState state);
 
         /// <summary>
         /// Called when the agent is about to shut down.  At this point, no further messages will be sent to the server.
         /// </summary>
-        void Shutdown();
+        /// <remarks>Implementations should raise <see cref="ShuttingDown"/> so that external components that track the
+        /// agent's life cycle are notified.</remarks>
+        void ShutDown();
     }
 }

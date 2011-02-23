@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Net.Sockets;
+using System.Text;
 
 namespace TinMan.RoboViz
 {
@@ -26,26 +28,50 @@ namespace TinMan.RoboViz
         }
     }
 
-    public sealed class RoboVizRemote : IRoboVizRemote,  IDisposable
+    public sealed class RoboVizRemote : IRoboVizRemote
     {
         private readonly List<ShapeSet> _sets = new List<ShapeSet>();
         private readonly ISimulationContext _simulationContext;
         private readonly UdpClient _udpClient;
         private readonly bool _useDefaultPrefix;
         private string _path;
+        private bool _isAgentTextDirty;
+        private string _agentText;
+        private Color _agentTextColor;
 
-        internal RoboVizRemote(RoboVizOptions options, ISimulationContext simulationContext)
+        /// <summary>
+        /// Initialises an instance of <see cref="RoboVizRemote"/> with default <see cref="RoboVizOptions"/>.
+        /// This remote will be automatically disposed when the agent exits.
+        /// </summary>
+        /// <returns></returns>
+        public RoboVizRemote(IAgent agent)
+            : this(agent, new RoboVizOptions())
+        {}
+
+        /// <summary>
+        /// Initialises an instance of <see cref="RoboVizRemote"/> with specified <paramref name="options"/>.
+        /// This remote will be automatically disposed when the agent exits.
+        /// </summary>
+        /// <returns></returns>
+        public RoboVizRemote(IAgent agent, RoboVizOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
-            if (simulationContext == null)
-                throw new ArgumentNullException("simulationContext");
+            if (agent == null)
+                throw new ArgumentNullException("agent");
 
-            _simulationContext = simulationContext;
+            _simulationContext = agent.Context;
             _useDefaultPrefix = options.UseDefaultPrefix;
+
+            agent.ThinkCompleted += OnThinkCompleted;
+            agent.ShuttingDown += OnShutDown;
 
             _udpClient = new UdpClient();
             _udpClient.Connect(options.HostName, options.Port);
+
+            _isAgentTextDirty = false;
+            _agentText = null;
+            _agentTextColor = Color.LightSkyBlue;
         }
 
         public void Add(ShapeSet shapeSet)
@@ -77,7 +103,27 @@ namespace TinMan.RoboViz
             }
         }
 
-        internal void FlushMessages()
+        public string AgentText
+        {
+            get { return _agentText; }
+            set 
+            {
+                _agentText = value;
+                _isAgentTextDirty = true;
+            }
+        }
+
+        public Color AgentTextColor
+        {
+            get { return _agentTextColor; }
+            set 
+            {
+                _agentTextColor = value;
+                _isAgentTextDirty = true;
+            }
+        }
+
+        private void OnThinkCompleted()
         {
             // Find shallowest nodes that are dirty
             var queue = new Queue<ShapeSet>(_sets);
@@ -106,6 +152,46 @@ namespace TinMan.RoboViz
 
                 SwapBuffer(set, _udpClient);
             }
+
+            // If the agent text changed, send that message too
+            if (_isAgentTextDirty)
+            {
+                if (_agentText==null || _agentText.Trim().Length==0)
+                {
+                    // clear text
+                    var buf = new byte[] { 2, 2, GetAgentByte() };
+                    _udpClient.Send(buf, buf.Length);
+                }
+                else
+                {
+                    // update text
+                    var textBytes = Encoding.ASCII.GetBytes(_agentText);
+                    var buf = new byte[7 + textBytes.Length];
+                    buf[0] = 2;
+                    buf[1] = 1;
+                    buf[2] = GetAgentByte();
+                    Shape.WriteColor(buf, 3, AgentTextColor, false);
+                    textBytes.CopyTo(buf, 6);
+                    _udpClient.Send(buf, buf.Length);
+                }
+                _isAgentTextDirty = false;
+            }
+        }
+
+        private byte GetAgentByte()
+        {
+            if (_simulationContext.TeamSide == FieldSide.Unknown)
+                throw new InvalidOperationException("Team side is unknown.");
+            if (_simulationContext.UniformNumber == null)
+                throw new InvalidOperationException("Uniform number is unknown.");
+            if (_simulationContext.UniformNumber.Value < 1 || _simulationContext.UniformNumber.Value > 128)
+                throw new InvalidOperationException("Uniform number is invalid.");
+
+            checked
+            {
+                var val = _simulationContext.TeamSide == FieldSide.Left ? 0 : 128;
+                return (byte)(val + _simulationContext.UniformNumber - 1);
+            }
         }
 
         private static void SwapBuffer(ShapeSet set, UdpClient udpClient)
@@ -119,7 +205,7 @@ namespace TinMan.RoboViz
 
         #region Implementation of IDisposable
 
-        public void Dispose()
+        private void OnShutDown()
         {
             // Send three zeroes to signify a complete buffer swap, effectively clearing any markers for the agent before shutdown
             _udpClient.Send(new byte[3], 3);

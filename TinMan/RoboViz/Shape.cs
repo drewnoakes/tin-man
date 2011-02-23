@@ -76,7 +76,7 @@ namespace TinMan.RoboViz
             Debug.Assert(byteCount == 6);
         }
 
-        protected static void WriteColor(byte[] buf, int offset, Color color, bool includeAlpha)
+        protected internal static void WriteColor(byte[] buf, int offset, Color color, bool includeAlpha)
         {
             buf[offset++] = color.R;
             buf[offset++] = color.G;
