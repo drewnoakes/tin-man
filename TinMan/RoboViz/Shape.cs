@@ -7,6 +7,8 @@ using System.Text;
 
 namespace TinMan.RoboViz
 {
+    // TODO update property setters so that they don't set the dirty flag if the value is not changing
+
     /// <summary>
     /// Base class for all RoboViz shapes.
     /// </summary>
@@ -643,7 +645,13 @@ namespace TinMan.RoboViz
         public Color Color
         {
             get { return _color; }
-            set { _color = value; SetDirty(); }
+            set
+            {
+                if (_color == value)
+                    return;
+                _color = value; 
+                SetDirty();
+            }
         }
 
         public Vector3 Position
@@ -673,7 +681,14 @@ namespace TinMan.RoboViz
         public string Text
         {
             get { return _text; }
-            set { _text = value; SetDirty(); }
+            set
+            {
+                if (_text == value)
+                    return;
+                _text = value;
+                _textBytes = null;
+                SetDirty();
+            }
         }
 
         private byte[] TextBytes

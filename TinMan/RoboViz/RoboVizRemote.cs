@@ -108,6 +108,8 @@ namespace TinMan.RoboViz
             get { return _agentText; }
             set 
             {
+                if (_agentText == value)
+                    return;
                 _agentText = value;
                 _isAgentTextDirty = true;
             }
@@ -118,6 +120,8 @@ namespace TinMan.RoboViz
             get { return _agentTextColor; }
             set 
             {
+                if (_agentTextColor == value)
+                    return;
                 _agentTextColor = value;
                 _isAgentTextDirty = true;
             }
