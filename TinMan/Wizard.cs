@@ -228,18 +228,32 @@ namespace TinMan
         #region Commands
 
         /// <summary>Moves the specified agent to a given field position.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
-        /// <param name="newPosition"></param>
+        /// <remarks>Note that most agent coordinate frames have their origins located within their torsos.  Therefore,
+        /// the vector specified by <paramref name="newPosition"/> must contain a positive offset in the z-axis, otherwise
+        /// the agent will be moved so that its feet are beneath the field.
+        /// <para/>
+        /// For <see cref="NaoBody" />, a sensible z-offset is 0.45.
+        /// </remarks>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
+        /// <param name="newPosition">The position in field coordinates to which the origin of the agent's frame will be moved.
+        /// Note that the agent may be positioned above or below the field surface, so be careful to use a sensible Z value.</param>
         public void SetAgentPosition(int uniformNumber, FieldSide teamSide, Vector3 newPosition)
         {
             SendCommand("(agent (unum {0}) (team {1}) (pos {2}))", uniformNumber, GetSideString(teamSide), GetVectorString(newPosition));
         }
 
         /// <summary>Moves the specified agent to a given field position, facing in the given direction.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
-        /// <param name="newPosition"></param>
+        /// <remarks>Note that most agent coordinate frames have their origins located within their torsos.  Therefore,
+        /// the vector specified by <paramref name="newPosition"/> must contain a positive offset in the z-axis, otherwise
+        /// the agent will be moved so that its feet are beneath the field.
+        /// <para/>
+        /// For <see cref="NaoBody" />, a sensible z-offset is 0.45.
+        /// </remarks>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
+        /// <param name="newPosition">The position in field coordinates to which the origin of the agent's frame will be moved.
+        /// Note that the agent may be positioned above or below the field surface, so be careful to use a sensible Z value.</param>
         /// <param name="newDirection"></param>
         public void SetAgentPositionAndDirection(int uniformNumber, FieldSide teamSide, Vector3 newPosition, Angle newDirection)
         {
@@ -252,8 +266,8 @@ namespace TinMan
         }
 
         /// <summary>Overrides the battery level for the specified agent.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
         /// <param name="batteryLevel"></param>
         public void SetBatteryLevel(int uniformNumber, FieldSide teamSide, double batteryLevel)
         {
@@ -262,8 +276,8 @@ namespace TinMan
         }
 
         /// <summary>Overrides the temperature for the specified agent.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
         /// <param name="temperature"></param>
         public void SetTemperature(int uniformNumber, FieldSide teamSide, double temperature)
         {
@@ -324,16 +338,16 @@ namespace TinMan
         /// <summary>
         /// Selects the specified agent.  Only some of the wizard's operations apply to the selected agent.
         /// </summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
         public void SelectAgent(int uniformNumber, FieldSide teamSide)
         {
             SendCommand("(select (unum {0}) (team {1}))", uniformNumber, GetSideString(teamSide));
         }
 
         /// <summary>Removes the specified agent from the simulation.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
         public void KillAgent(int uniformNumber, FieldSide teamSide)
         {
             SendCommand("(agent (unum {0}) (team {1}))", uniformNumber, GetSideString(teamSide));
@@ -346,8 +360,8 @@ namespace TinMan
         }
 
         /// <summary>Repositions the specified agent according to the server's rules.</summary>
-        /// <param name="uniformNumber"></param>
-        /// <param name="teamSide"></param>
+        /// <param name="uniformNumber">The uniform number of the target agent.</param>
+        /// <param name="teamSide">The side of the field which the target agent's team is defending.</param>
         public void RepositionAgent(int uniformNumber, FieldSide teamSide)
         {
             SendCommand("(repos (unum {0}) (team {1}))", uniformNumber, GetSideString(teamSide));
@@ -362,8 +376,7 @@ namespace TinMan
 
         private void SendCommand(string format, params object[] items)
         {
-            string str = string.Format(format, items);
-            NetworkUtil.WriteStringWith32BitLengthPrefix(_stream, str);
+            NetworkUtil.WriteStringWith32BitLengthPrefix(_stream, string.Format(format, items));
         }
 
         #endregion
