@@ -108,7 +108,7 @@ namespace TinMan
 
         public override string ToString()
         {
-            return string.Format("<{0:0.00}, θ={1:0.00}°, φ={2:0.00}°>", Distance, Theta.Degrees, Phi.Degrees);
+            return string.Format("<{0:0.00} θ={1:0.00}° φ={2:0.00}°>", Distance, Theta.Degrees, Phi.Degrees);
         }
     }
 }

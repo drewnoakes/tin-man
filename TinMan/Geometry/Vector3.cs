@@ -201,7 +201,7 @@ namespace TinMan
 
         public override string ToString()
         {
-            return string.Format("<{0:0.00},{1:0.00},{2:0.00}>", X, Y, Z);
+            return string.Format("<{0:0.00} {1:0.00} {2:0.00}>", X, Y, Z);
         }
 
         public override bool Equals(object obj)
