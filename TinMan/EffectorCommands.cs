@@ -23,6 +23,7 @@
 // Created 04/06/2010 02:58
 
 using System;
+using System.Globalization;
 using System.Text;
 
 namespace TinMan
@@ -63,7 +64,9 @@ namespace TinMan
             // Note that the simulator expects the argument for the HingeJointEffector to
             // be in degrees per simulation cycle.
             Angle anglePerCycle = _angularSpeed*AgentHost.CyclePeriod;
-            s.AppendFormat("({0} {1:0.######})", _hinge.EffectorLabel, anglePerCycle.Degrees);
+            s.AppendFormat("({0} {1})",
+                    _hinge.EffectorLabel,
+                    anglePerCycle.Degrees.ToString("0.######", CultureInfo.InvariantCulture));
         }
     }
 
@@ -117,7 +120,10 @@ namespace TinMan
 
         public void AppendSExpression(StringBuilder s)
         {
-            s.AppendFormat("(beam {0:0.####} {1:0.####} {2:0.####})", _x, _y, _rotation.Degrees);
+            s.AppendFormat("(beam {0} {1} {2})",
+                _x.ToString("0.######", CultureInfo.InvariantCulture),
+                _y.ToString("0.######", CultureInfo.InvariantCulture),
+                _rotation.Degrees.ToString("0.######", CultureInfo.InvariantCulture));
         }
     }
 

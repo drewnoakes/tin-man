@@ -222,8 +222,8 @@ namespace TinMan
         private static string GetVectorString(Vector3 vector)
         {
             return vector.X.ToString(CultureInfo.InvariantCulture) + " " 
-                    + vector.Y.ToString(CultureInfo.InvariantCulture) + " " 
-                    + vector.Z.ToString(CultureInfo.InvariantCulture);
+                 + vector.Y.ToString(CultureInfo.InvariantCulture) + " " 
+                 + vector.Z.ToString(CultureInfo.InvariantCulture);
         }
 
         #endregion
@@ -265,7 +265,7 @@ namespace TinMan
                         uniformNumber,
                         GetSideString(teamSide),
                         GetVectorString(newPosition),
-                        newDirection.Degrees);
+                        newDirection.Degrees.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>Overrides the battery level for the specified agent.</summary>
@@ -275,7 +275,7 @@ namespace TinMan
         public void SetBatteryLevel(int uniformNumber, FieldSide teamSide, double batteryLevel)
         {
             // TODO what valid range can the battery level have?
-            SendCommand("(agent (unum {0}) (team {1}) (battery {2}))", uniformNumber, GetSideString(teamSide), batteryLevel);
+            SendCommand("(agent (unum {0}) (team {1}) (battery {2}))", uniformNumber, GetSideString(teamSide), batteryLevel.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>Overrides the temperature for the specified agent.</summary>
@@ -285,7 +285,7 @@ namespace TinMan
         public void SetTemperature(int uniformNumber, FieldSide teamSide, double temperature)
         {
             // TODO what are valid temperature ranges?
-            SendCommand("(agent (unum {0}) (team {1}) (temperature {2}))", uniformNumber, GetSideString(teamSide), temperature);
+            SendCommand("(agent (unum {0}) (team {1}) (temperature {2}))", uniformNumber, GetSideString(teamSide), temperature.ToString(CultureInfo.InvariantCulture));
         }
 
         /// <summary>Repositions the ball at the specified position.
