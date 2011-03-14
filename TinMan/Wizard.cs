@@ -25,6 +25,7 @@
 // ReSharper disable MemberCanBePrivate.Global
 
 using System;
+using System.Globalization;
 using System.Net.Sockets;
 
 namespace TinMan
@@ -220,7 +221,9 @@ namespace TinMan
 
         private static string GetVectorString(Vector3 vector)
         {
-            return vector.X + " " + vector.Y + " " + vector.Z;
+            return vector.X.ToString(CultureInfo.InvariantCulture) + " " 
+                    + vector.Y.ToString(CultureInfo.InvariantCulture) + " " 
+                    + vector.Z.ToString(CultureInfo.InvariantCulture);
         }
 
         #endregion
