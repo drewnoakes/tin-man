@@ -118,7 +118,7 @@ namespace TinMan
         /// Performs any initialisation required by the agent prior to the first call to <see cref="IAgent.Think"/>.
         /// Called by the TinMan framework.  You are not required to override this method.
         /// </summary>
-        public virtual void Initialise()
+        public virtual void OnInitialise()
         {}
 
         #region Think
@@ -142,9 +142,9 @@ namespace TinMan
 
         #region Shutdown sequence
 
-        void IAgent.ShutDown()
+        void IAgent.OnShuttingDown()
         {
-            ShutDown();
+            OnShutDown();
 
             var evt = ShuttingDown;
             if (evt != null)
@@ -155,7 +155,7 @@ namespace TinMan
         /// Performs any final action required by the agent as the run loop exits.
         /// Called by the TinMan framework.  You are not required to override this method.
         /// </summary>
-        protected virtual void ShutDown() { }
+        protected virtual void OnShutDown() { }
 
         #endregion
 

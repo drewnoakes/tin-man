@@ -45,13 +45,18 @@ namespace TinManSamples.CSharp
                 // Multiply the number pressed by 10 to get the desired angle
                 int angle = (c - '0')*10;
 
-                // Move the left shoulder to that angle
+                // Move the left shoulder to that angle and hold it there.
+                // This operation will occur automatically over subsequent cycles, and the
+                // joint angle be regulated until a different instruction is provided.
                 Body.LAJ1.MoveToWithGain(Angle.FromDegrees(angle), 1);
             }
             else if (c == '?')
             {
+                // Set a 'control function' that returns a random speed between -50 and +50 for the joint each cycle.
+                // Note how this control function applies across multiple cycles.  Therefore a single press of the '?'
+                // key will create a sequence of erratic movements that will only stop when another digit key is pressed.
                 var random = new Random();
-                Body.LAJ1.SetControlFunction((hinge, ctx) => AngularSpeed.FromDegreesPerSecond(random.Next(100) - 50));
+                Body.LAJ1.SetControlFunction((hinge, context, perceptorState) => AngularSpeed.FromDegreesPerSecond(random.Next(100) - 50));
             }
         }
     }

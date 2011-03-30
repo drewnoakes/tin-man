@@ -22,6 +22,8 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 06/05/2010 14:07
 
+// ReSharper disable MemberCanBePrivate.Global
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -41,9 +43,20 @@ namespace TinMan
 
         public const int DefaultTcpPort = 3100;
         public const string DefaultHostName = "localhost";
-        public static readonly TimeSpan CyclePeriod = TimeSpan.FromMilliseconds(20);
-        private static readonly Log _log = Log.Create();
 
+        /// <summary>
+        /// The period of time between simulation steps.  Agents are given the chance to think
+        /// and update their effectors in steps of this period.
+        /// </summary>
+        public const double CyclePeriodSeconds = 0.02;
+
+        /// <summary>
+        /// The period of time between simulation steps.  Agents are given the chance to think
+        /// and update their effectors in steps of this period.
+        /// </summary>
+        public static readonly TimeSpan CyclePeriod = TimeSpan.FromSeconds(CyclePeriodSeconds);
+
+        private static readonly Log _log = Log.Create();
         private readonly SimulationContext _context;
         private bool _stopRequested;
 
@@ -110,7 +123,7 @@ namespace TinMan
 
             _log.Info("Initialising agent");
 
-            agent.Initialise();
+            agent.OnInitialise();
 
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
@@ -188,7 +201,7 @@ namespace TinMan
 
                     // Visit all hinges again to compute any control functions
                     foreach (var hinge in agent.Body.AllHinges)
-                        hinge.ComputeControlFunction(Context);
+                        hinge.ComputeControlFunction(Context, perceptorState);
 
                     // Collate list of commands to send
                     _context.FlushCommands(commands);
@@ -205,7 +218,7 @@ namespace TinMan
                     }
                 }
 
-                agent.ShutDown();
+                agent.OnShuttingDown();
             }
         }
 

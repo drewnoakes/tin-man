@@ -106,6 +106,7 @@
     <Compile Include="PerceptorState\TouchState.cs" />
     <Compile Include="PerceptorState\UniversalJointState.cs" />
     <Content Include="RoboViz\ReadMe.txt" />
+    <Compile Include="PidHingeController.cs" />
     <Compile Include="RoboViz\RoboVizRemote.cs" />
     <Compile Include="RoboViz\Shape.cs" />
     <Compile Include="RoboViz\ShapeSet.cs" />

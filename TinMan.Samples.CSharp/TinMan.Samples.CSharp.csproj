@@ -65,6 +65,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PidAgent.cs" />
     <Compile Include="LocalisationSimpleVisualisationAgent.cs" />
     <Compile Include="LocalisationFilterVisualisationAgent.cs" />
     <Compile Include="FullHouse.cs" />

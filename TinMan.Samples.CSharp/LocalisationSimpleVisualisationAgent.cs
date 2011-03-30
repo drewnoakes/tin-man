@@ -16,7 +16,7 @@ namespace TinManSamples.CSharp
             _localiser = localiser;
         }
 
-        public override void Initialise()
+        public override void OnInitialise()
         {
             // Request that a RoboViz remote is created.
             // It will be disposed of automatically when the agent exits.

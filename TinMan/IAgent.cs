@@ -38,7 +38,7 @@ namespace TinMan
         event Action ThinkCompleted;
 
         /// <summary>
-        /// Raised when the agent is shutting down due to a call to <see cref="ShutDown"/>.  Add on components
+        /// Raised when the agent is shutting down due to a call to <see cref="OnShuttingDown"/>.  Add on components
         /// may use this event to hook into the agent's process cycle.
         /// </summary>
         event Action ShuttingDown;
@@ -52,7 +52,7 @@ namespace TinMan
 
         /// <summary>
         /// Gets and sets the simulation context for this agent.  The setter is intended only for use by the TinMan
-        /// framework.  This value is unavailable before the first call to <see cref="Initialise"/>.  Attempting to
+        /// framework.  This value is unavailable before the first call to <see cref="OnInitialise"/>.  Attempting to
         /// access it before that time will result in an exception.
         /// </summary>
         ISimulationContext Context { get; set; }
@@ -61,7 +61,7 @@ namespace TinMan
         /// Performs any initialisation required by the agent prior to the first call to <see cref="Think"/>.
         /// Called by the TinMan framework.
         /// </summary>
-        void Initialise();
+        void OnInitialise();
 
         /// <summary>
         /// Gives the agent a chance to process the latest body state and perform any necessary actions.
@@ -76,6 +76,6 @@ namespace TinMan
         /// </summary>
         /// <remarks>Implementations should raise <see cref="ShuttingDown"/> so that external components that track the
         /// agent's life cycle are notified.</remarks>
-        void ShutDown();
+        void OnShuttingDown();
     }
 }

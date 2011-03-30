@@ -21,7 +21,7 @@ namespace TinManSamples.CSharp
             _localiser = localiser;
         }
 
-        public override void Initialise()
+        public override void OnInitialise()
         {
             var roboViz = new RoboVizRemote(this);
 

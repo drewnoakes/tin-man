@@ -45,7 +45,8 @@ Choose one of the following:
   6 SoccerbotAgent
   7 RoboVizDemoAgent
   8 SocialAgent
-  9 WizardExample
+  9 PidAgent
+  0 WizardExample
 ");
             switch (Console.ReadKey(true).KeyChar - '0')
             {
@@ -75,6 +76,9 @@ Choose one of the following:
                         new Thread(() => new AgentHost().Run(new SocialAgent())).Start();
                     break;
                 case 9:
+                    new AgentHost().Run(new PidAgent());
+                    break;
+                case 0:
                     new WizardExample();
                     break;
             }

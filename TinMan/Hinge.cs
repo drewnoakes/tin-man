@@ -126,7 +126,7 @@ namespace TinMan
 
         #region Control function
 
-        private Func<Hinge, ISimulationContext, AngularSpeed> _controlFunction;
+        private Func<Hinge, ISimulationContext, PerceptorState, AngularSpeed> _controlFunction;
 
         /// <summary>
         /// Sets a function that controls the speed of the hinge.  This function is called
@@ -137,7 +137,7 @@ namespace TinMan
         /// For more information on hinge control functions, see the project wiki.
         /// </remarks>
         /// <param name="controlFunction">The control function to apply to this hinge.</param>
-        public void SetControlFunction(Func<Hinge, ISimulationContext, AngularSpeed> controlFunction)
+        public void SetControlFunction(Func<Hinge, ISimulationContext, PerceptorState, AngularSpeed> controlFunction)
         {
             _controlFunction = controlFunction;
         }
@@ -165,12 +165,12 @@ namespace TinMan
             get { return _controlFunction != null; }
         }
 
-        internal void ComputeControlFunction(ISimulationContext context)
+        internal void ComputeControlFunction(ISimulationContext context, PerceptorState perceptorState)
         {
             // Copy the reference for multi-threading safety
-            Func<Hinge, ISimulationContext, AngularSpeed> fun = _controlFunction;
+            Func<Hinge, ISimulationContext, PerceptorState, AngularSpeed> fun = _controlFunction;
             if (fun != null)
-                SetDesiredSpeedInternal(fun(this, context));
+                SetDesiredSpeedInternal(fun(this, context, perceptorState));
         }
 
         #endregion

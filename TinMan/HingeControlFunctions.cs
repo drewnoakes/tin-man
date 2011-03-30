@@ -38,7 +38,7 @@ namespace TinMan
     {
         /// <summary>
         /// Starts the process of moving a hinge joint to a specified angular position and holding it there.
-        /// The of <paramref name="gain"/> influences the amount of time it will take to achieve
+        /// The value of <paramref name="gain"/> influences the amount of time it will take to achieve
         /// <paramref name="desiredAngle"/>.  Smaller gains create slower movements.  Note that high levels
         /// of gain will create unstable oscillations that will never settle.
         /// </summary>
@@ -58,15 +58,18 @@ namespace TinMan
                 throw new ArgumentNullException("hinge");
 
             // Set a control function for this hinge.  Any existing control function will be replaced.
-            hinge.SetControlFunction(delegate(Hinge h, ISimulationContext c)
+            hinge.SetControlFunction(delegate(Hinge h, ISimulationContext c, PerceptorState state)
             {
                 // Speed for this cycle is a factor of the gain and the current angular distance
                 Angle angleDiff = desiredAngle - h.Angle;
+
                 // If we're sufficiently close to the desired angle, stop moving
                 if (angleDiff.Abs.Degrees < 1)
                     return AngularSpeed.Zero;
+                
                 // Still moving, so calculate the desired speed for the next simulation cycle
                 double speed = angleDiff.Degrees*gain;
+                
                 return AngularSpeed.FromDegreesPerSecond(speed);
             });
         }

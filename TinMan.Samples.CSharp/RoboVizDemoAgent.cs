@@ -22,7 +22,7 @@ namespace TinManSamples.CSharp
             : base(new NaoBody())
         {}
 
-        public override void Initialise()
+        public override void OnInitialise()
         {
             var roboViz = new RoboVizRemote(this);
             roboViz.AgentText = "Hello World";
