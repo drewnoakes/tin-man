@@ -52,6 +52,7 @@
  * Vision Perceptor
  *    Format:  (See (<name> (pol <distance> <angle1> <angle2>))
  *                  (P (team <teamname>) (id <playerID>) (pol <distance> <angle1> <angle2>))
+ *                  (L (pol <distance> <angle1> <angle2>) (pol <distance> <angle1> <angle2>))
  *             )
  *    Example: (See (F1L (pol 19.11 111.69 -9.57))
  *                  (F2L (pol 16.41 -115.88 -11.15))
@@ -62,6 +63,7 @@
  *                  (G1R (pol 43.56 7.84 -4.68))
  *                  (G2R (pol 43.25 -4.10 -4.71))
  *                  (B (pol 18.34 4.66 -9.90))
+ *                  (L (pol 9.88 139.29 -1.07) (pol 43.56 7.84 -4.68))
  *                  (P (team RoboLog) (id 1) (pol 37.50 16.15 -0.00))
  *                  (mypos -8.20 4.00 0.54)   <-- only applies when non-standard setting used in agent's RSG file
  *             )
@@ -111,6 +113,7 @@ COMPILER Perceptors
     private List<TouchState> TouchStates;
     private List<ForceState> ForceStates;
     private List<LandmarkPosition> LandmarkPositions;
+    private List<VisibleLine> VisibleLines;
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
@@ -141,7 +144,7 @@ CHARACTERS
 TOKENS
 
     double = ['-'] digit { digit } [ '.' digit { digit } ] .
-    ident = letter { letter | digit | '_' } .
+    ident = letter { letter | digit | '_' | '-' } .
     message = '\'' messageChar { messageChar } '\'' .
 
 PRODUCTIONS
@@ -261,11 +264,12 @@ AgentStateExpr<out double temp, out double battery> =
 //      (G1L (pol 9.88 139.29 -21.07))
 //      (B (pol 1.89 -0.00 -57.87))
 //      (P (team RoboLog) (id 1) (pol 37.50 16.15 -0.00))
+//      (L (pol 9.88 139.29 -1.07) (pol 43.56 7.84 -4.68))
 //      (mypos -8.20 4.00 0.54)
 // )
 SeeExpr =
     "(See"
-        { '(' (VisibleItemExpr | PlayerExpr | MyPosExpr) ')' }
+        { '(' (VisibleItemExpr | PlayerExpr | MyPosExpr | LineExpr) ')' }
     ')'
     .
 
@@ -321,6 +325,18 @@ MyPosExpr =
         Vector3<out agentPosition>
                                             (. AgentPosition = agentPosition; .)
     .
+// (L (pol 9.88 139.29 -1.07) (pol 43.56 7.84 -4.68))
+LineExpr =
+        "L"
+                                            (. Polar end1, end2; .)
+        PolarPosExpr<out end1>
+        PolarPosExpr<out end2>
+                                            (. 
+                                               if (VisibleLines == null)
+                                                 VisibleLines = new List<VisibleLine>(4);
+                                               VisibleLines.Add(new VisibleLine(end1, end2));
+                                             .)
+    .
     
 // (hear <time> 'self'|<direction> <message>)
 //       Format:  (hear <time> 'self'|<direction> <message>)
@@ -370,7 +386,7 @@ Perceptors =
                               SimulationTime, GameTime, PlayMode, TeamSide, PlayerId, 
                               GyroStates, HingeStates, UniversalJointStates,
                               TouchStates, ForceStates, AccelerometerStates,
-                              LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
+                              LandmarkPositions, VisibleLines, TeamMatePositions, OppositionPositions, BallPosition,
                               AgentBattery, AgentTemperature, Messages, AgentPosition);
      .)
     .

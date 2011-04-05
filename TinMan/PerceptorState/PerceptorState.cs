@@ -81,6 +81,8 @@ namespace TinMan
         // TODO move all these to a special VisionPerceptorState type/property as they are only populated every three cycles?
         /// <summary>Gets the position of any landmarks seen by the agent's vision perceptor.</summary>
         public IEnumerable<LandmarkPosition> LandmarkPositions { get; private set; }
+        /// <summary>Gets positional information about all field lines observed by the vision perceptor.</summary>
+        public IEnumerable<VisibleLine> VisibleLines { get; private set; }
         /// <summary>Gets the position of the ball, if seen by the agent's vision perceptor.</summary>
         public Polar? BallPosition { get; private set; }
         /// <summary>Gets the position of any team mates, if seen by the agent's vision perceptor.</summary>
@@ -119,7 +121,7 @@ namespace TinMan
                               int? playerId,
                               IEnumerable<GyroState> gyroRates, IEnumerable<HingeState> hingeJointStates, IEnumerable<UniversalJointState> universalJointStates,
                               IEnumerable<TouchState> touchStates, IEnumerable<ForceState> forceStates, IEnumerable<AccelerometerState> accelerometerStates,
-                              IEnumerable<LandmarkPosition> landmarkPositions,
+                              IEnumerable<LandmarkPosition> landmarkPositions, IEnumerable<VisibleLine> visibleLines,
                               IEnumerable<PlayerPosition> teamMatePositions, IEnumerable<PlayerPosition> oppositionPositions,
                               Polar? ballPosition,
                               double? agentBattery, double? agentTemperature,
@@ -138,6 +140,7 @@ namespace TinMan
             ForceStates = forceStates;
             AccelerometerStates = accelerometerStates;
             LandmarkPositions = landmarkPositions;
+            VisibleLines = visibleLines;
             TeamMatePositions = teamMatePositions;
             OppositionPositions = oppositionPositions;
             BallPosition = ballPosition;

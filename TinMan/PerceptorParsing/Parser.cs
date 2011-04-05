@@ -15,7 +15,7 @@ internal sealed class Parser {
 	public const int _double = 1;
 	public const int _ident = 2;
 	public const int _message = 3;
-	public const int maxT = 49;
+	public const int maxT = 50;
 
     private const bool T = true;
     private const bool x = false;
@@ -44,6 +44,7 @@ public string TeamName;
     private List<TouchState> TouchStates;
     private List<ForceState> ForceStates;
     private List<LandmarkPosition> LandmarkPositions;
+    private List<VisibleLine> VisibleLines;
     private List<PlayerPosition> TeamMatePositions;
     private List<PlayerPosition> OppositionPositions;
     private Polar? BallPosition;
@@ -340,7 +341,9 @@ public string TeamName;
 				PlayerExpr();
 			} else if (la.kind == 46) {
 				MyPosExpr();
-			} else SynErr(50);
+			} else if (la.kind == 47) {
+				LineExpr();
+			} else SynErr(51);
 			Expect(5);
 		}
 		Expect(5);
@@ -385,7 +388,7 @@ public string TeamName;
 			Get();
 			break;
 		}
-		default: SynErr(51); break;
+		default: SynErr(52); break;
 		}
 		PolarPosExpr(out pos);
 		switch (label) {
@@ -442,15 +445,26 @@ public string TeamName;
 		AgentPosition = agentPosition; 
 	}
 
+	void LineExpr() {
+		Expect(47);
+		Polar end1, end2; 
+		PolarPosExpr(out end1);
+		PolarPosExpr(out end2);
+		if (VisibleLines == null)
+		 VisibleLines = new List<VisibleLine>(4);
+		VisibleLines.Add(new VisibleLine(end1, end2));
+		
+	}
+
 	void HearExpr(out HeardMessage message) {
 		TimeSpan time; Angle direction = Angle.NaN; string messageText; 
-		Expect(47);
+		Expect(48);
 		TimeSpan(out time);
-		if (la.kind == 48) {
+		if (la.kind == 49) {
 			Get();
 		} else if (la.kind == 1) {
 			AngleInDegrees(out direction);
-		} else SynErr(52);
+		} else SynErr(53);
 		MessageText(out messageText);
 		Expect(5);
 		message = new HeardMessage(time, direction, new Message(messageText.Trim('\''))); 
@@ -519,7 +533,7 @@ out id, out side);
 				SeeExpr();
 				break;
 			}
-			case 47: {
+			case 48: {
 				if (Messages==null) Messages = new List<HeardMessage>(1); HeardMessage message; 
 				HearExpr(out message);
 				Messages.Add(message); 
@@ -531,7 +545,7 @@ out id, out side);
 		                     SimulationTime, GameTime, PlayMode, TeamSide, PlayerId, 
 		                     GyroStates, HingeStates, UniversalJointStates,
 		                     TouchStates, ForceStates, AccelerometerStates,
-		                     LandmarkPositions, TeamMatePositions, OppositionPositions, BallPosition,
+		                     LandmarkPositions, VisibleLines, TeamMatePositions, OppositionPositions, BallPosition,
 		                     AgentBattery, AgentTemperature, Messages, AgentPosition);
 		
 	}
@@ -548,9 +562,9 @@ out id, out side);
     }
     
     static readonly bool[,] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x},
-		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x,x},
+		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x}
 
     };
 } // end Parser
@@ -662,12 +676,13 @@ public sealed class Errors {
 			case 44: s = "\"P\" expected"; break;
 			case 45: s = "\"(id\" expected"; break;
 			case 46: s = "\"mypos\" expected"; break;
-			case 47: s = "\"(hear\" expected"; break;
-			case 48: s = "\"self\" expected"; break;
-			case 49: s = "??? expected"; break;
-			case 50: s = "invalid SeeExpr"; break;
-			case 51: s = "invalid VisibleItemExpr"; break;
-			case 52: s = "invalid HearExpr"; break;
+			case 47: s = "\"L\" expected"; break;
+			case 48: s = "\"(hear\" expected"; break;
+			case 49: s = "\"self\" expected"; break;
+			case 50: s = "??? expected"; break;
+			case 51: s = "invalid SeeExpr"; break;
+			case 52: s = "invalid VisibleItemExpr"; break;
+			case 53: s = "invalid HearExpr"; break;
 
             default: s = "error code " + n; break;
         }

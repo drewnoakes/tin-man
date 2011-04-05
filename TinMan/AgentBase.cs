@@ -43,6 +43,9 @@ namespace TinMan
         /// <remarks>Will not be <c>null</c>.</remarks>
         public TBody Body { get; private set; }
 
+        /// <summary>Gets a collection of measurements from the field.</summary>
+        public Measures Measures { get; private set; }
+
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>
         /// Exposes the body as an <see cref="IBody"/> as required by the base interface.  This property
@@ -110,6 +113,7 @@ namespace TinMan
             if (body == null)
                 throw new ArgumentNullException("body");
             Body = body;
+            Measures = new Measures();
             Log = Log.Create();
             IsAlive = true;
         }

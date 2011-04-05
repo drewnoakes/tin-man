@@ -290,7 +290,7 @@ namespace TinMan
 
         /// <summary>Repositions the ball at the specified position.
         /// Set <paramref name="newPosition"/>'s <see cref="Vector3.Z"/> value to
-        /// <see cref="FieldGeometry.BallRadiusMetres"/> to position the ball on the ground.</summary>
+        /// <see cref="Measures.BallRadiusMetres"/> to position the ball on the ground.</summary>
         /// <param name="newPosition"></param>
         public void SetBallPosition(Vector3 newPosition)
         {
@@ -299,7 +299,7 @@ namespace TinMan
 
         /// <summary>Repositions the ball and provides it with a particular velocity.
         /// Set <paramref name="newPosition"/>'s <see cref="Vector3.Z"/> value to
-        /// <see cref="FieldGeometry.BallRadiusMetres"/> to position the ball on the ground.</summary>
+        /// <see cref="Measures.BallRadiusMetres"/> to position the ball on the ground.</summary>
         /// <param name="newPosition"></param>
         /// <param name="newVelocity"></param>
         public void SetBallPositionAndVelocity(Vector3 newPosition, Vector3 newVelocity)
@@ -375,6 +375,15 @@ namespace TinMan
         public void RepositionSelectedAgent()
         {
             SendCommand("(repos)");
+        }
+
+        /// <summary>
+        /// Kills the simulation server process.  This method would be of more use to a monitor or test
+        /// harness than to an agent, generally.
+        /// </summary>
+        public void KillSimulator()
+        {
+            SendCommand("(killsim)");
         }
 
         private void SendCommand(string format, params object[] items)

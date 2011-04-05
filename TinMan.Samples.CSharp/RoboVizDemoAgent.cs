@@ -42,11 +42,11 @@ namespace TinManSamples.CSharp
                         };
             var fieldLines = new ShapeSet("fieldlines")
                            {
-                               new Line(FieldGeometry.FlagLeftBottomPosition, FieldGeometry.FlagLeftTopPosition, 1, Color.LightGreen), 
-                               new Line(FieldGeometry.FlagRightTopPosition, FieldGeometry.FlagRightBottomPosition, 1, Color.LightGreen), 
+                               new Line(Measures.FlagLeftBottomPosition, Measures.FlagLeftTopPosition, 1, Color.LightGreen), 
+                               new Line(Measures.FlagRightTopPosition, Measures.FlagRightBottomPosition, 1, Color.LightGreen), 
                            };
-            for (var x = FieldGeometry.FieldXLeft; x <= FieldGeometry.FieldXRight; x++)
-                fieldLines.Add(new Line(new Vector3(x, FieldGeometry.FieldYTop, 0), new Vector3(x, FieldGeometry.FieldYBottom, 0), 1, Color.LightGreen));
+            for (var x = Measures.FieldXLeft; x <= Measures.FieldXRight; x++)
+                fieldLines.Add(new Line(new Vector3(x, Measures.FieldYTop, 0), new Vector3(x, Measures.FieldYBottom, 0), 1, Color.LightGreen));
 
             roboViz.Add(new ShapeSet("static")
                         {
@@ -71,10 +71,10 @@ namespace TinManSamples.CSharp
                                     new Polygon(polygonVertices, Color.FromArgb(128, Color.White))
                                 },
                             fieldLines,
-                            new FieldAnnotation { Text = "LB", Color = Color.Orange, Position = FieldGeometry.FlagLeftBottomPosition },
-                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagLeftTopPosition },
-                            new FieldAnnotation { Text = "RB", Color = Color.Orange, Position = FieldGeometry.FlagRightBottomPosition },
-                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = FieldGeometry.FlagRightTopPosition },
+                            new FieldAnnotation { Text = "LB", Color = Color.Orange, Position = Measures.FlagLeftBottomPosition },
+                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = Measures.FlagLeftTopPosition },
+                            new FieldAnnotation { Text = "RB", Color = Color.Orange, Position = Measures.FlagRightBottomPosition },
+                            new FieldAnnotation { Text = "LT", Color = Color.Orange, Position = Measures.FlagRightTopPosition },
                             new FieldAnnotation { Text = "(0,0)", Color = Color.White, Position = Vector3.Origin }
                         });
 

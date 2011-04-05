@@ -29,6 +29,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using TinMan.PerceptorParsing;
 
 namespace TinMan
@@ -39,9 +40,18 @@ namespace TinMan
     /// </summary>
     public sealed class AgentHost
     {
-        // TODO track whether we're running and raise exceptions if methods are called in an invalid order
-
+        /// <summary>
+        /// The default TCP port number upon upon the <c>rcssserver3d</c> process accepts agent
+        /// connections.  If the server is hosted on a different port, use the <see cref="PortNumber"/>
+        /// property to specify the necessary port number.
+        /// </summary>
         public const int DefaultTcpPort = 3100;
+
+        /// <summary>
+        /// The default network host name upon which the <c>rcssserver3d</c> process accepts is running.
+        /// By default this is <c>localhost</c>.  If the server is hosted on a remote machine, use the
+        /// <see cref="HostName"/> property to specify the necessary host name.
+        /// </summary>
         public const string DefaultHostName = "localhost";
 
         /// <summary>
@@ -59,6 +69,11 @@ namespace TinMan
         private static readonly Log _log = Log.Create();
         private readonly SimulationContext _context;
         private bool _stopRequested;
+        private string _teamName;
+        private string _hostName;
+        private int _portNumber;
+        private int _desiredUniformNumber;
+        private bool _hasRun;
 
         /// <summary>
         /// Creates a new client.  <see cref="HostName"/> is set to <tt>localhost</tt> and
@@ -77,27 +92,80 @@ namespace TinMan
 
         #region Properties
 
-        /// <summary>
-        /// Gets and sets the name of the team to which this agent belongs.  Once the client is
-        /// running, this value should no longer be changed.
-        /// </summary>
-        public string TeamName { get; set; }
+        /// <summary>Gets and sets the name of the team to which this agent belongs.</summary>
+        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
+        /// <exception cref="ArgumentNullException"><param name="value"/> is null.</exception>
+        public string TeamName
+        {
+            get { return _teamName; }
+            set
+            {
+                if (_hasRun)
+                    throw new InvalidOperationException("TeamName cannot be set after AgentHost.Run has been called.");
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                if (!Regex.IsMatch(value, "^[A-Za-z0-9_-]+$"))
+                    throw new ArgumentException("Team name must contain only alpha-numeric characters.", "value");
+                _teamName = value;
+            }
+        }
 
         /// <summary>
         /// Gets and sets the desired uniform number for this player.  A value of zero tells the server to
         /// assign the next available number automatically.  This is the default.
         /// </summary>
-        public int UniformNumber { get; set; }
+        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><param name="value"/> is negative.</exception>
+        public int DesiredUniformNumber
+        {
+            get { return _desiredUniformNumber; }
+            set
+            {
+                if (_hasRun)
+                    throw new InvalidOperationException("DesiredUniformNumber cannot be set after AgentHost.Run has been called.");
+                if (value < 0)
+                    throw new ArgumentOutOfRangeException("value", value, "The desired uniform number must be zero (no preference) or a positive integer.");
+                 _desiredUniformNumber = value;
+            }
+        }
 
         /// <summary>
         /// The name of the host running the server to connect to.  By default this is <tt>localhost</tt>.
         /// </summary>
-        public string HostName { get; set; }
+        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
+        /// <exception cref="ArgumentNullException"><param name="value"/> is null.</exception>
+        public string HostName
+        {
+            get { return _hostName; }
+            set 
+            {
+                if (_hasRun)
+                    throw new InvalidOperationException("HostName cannot be set after AgentHost.Run has been called.");
+                if (value == null)
+                    throw new ArgumentNullException("value");
+                if (value.Trim().Length==0)
+                    throw new ArgumentException("HostName cannot be blank.", "value");
+                _hostName = value;
+            }
+        }
 
         /// <summary>
         /// The TCP port number that the server is listening on.  By default this is 3100.
         /// </summary>
-        public int PortNumber { get; set; }
+        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
+        /// <exception cref="ArgumentOutOfRangeException"><param name="value"/> is zero or less.</exception>
+        public int PortNumber
+        {
+            get { return _portNumber; }
+            set 
+            {
+                if (_hasRun)
+                    throw new InvalidOperationException("PortNumber cannot be set after AgentHost.Run has been called.");
+                if (value <= 0)
+                    throw new ArgumentOutOfRangeException("value", value, "PortNumber must be greater than zero.");
+                _portNumber = value;
+            }
+        }
 
         /// <summary>
         /// Gets the simulation context used by this host.  The context provides appropriately
@@ -114,16 +182,13 @@ namespace TinMan
         /// </summary>
         /// <param name="agent"></param>
         /// <exception cref="ArgumentNullException"><paramref name="agent"/> is <c>null</c>.</exception>
+        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
         public void Run(IAgent agent)
         {
             if (agent == null)
                 throw new ArgumentNullException("agent");
-
-            agent.Context = Context;
-
-            _log.Info("Initialising agent");
-
-            agent.OnInitialise();
+            if (_hasRun)
+                throw new InvalidOperationException("Run can only be called once, and has already been called.");
 
             _log.Info("Connecting via TCP to {0}:{1}", HostName, PortNumber);
 
@@ -141,6 +206,15 @@ namespace TinMan
 
             _log.Info("Connected.");
 
+            // We delay setting this flag until now so that network errors during socket connection may
+            // be retried using the same AgentHost.
+            _hasRun = true;
+            
+            _log.Info("Initialising agent");
+
+            agent.Context = Context;
+            agent.OnInitialise();
+            
             using (client)
             using (var stream = client.GetStream())
             {
@@ -154,7 +228,7 @@ namespace TinMan
                 NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
                 
                 // Specify which player on which team.
-                SendCommands(stream, new[] { new InitialisePlayerCommand(UniformNumber, TeamName) });
+                SendCommands(stream, new[] { new InitialisePlayerCommand(DesiredUniformNumber, TeamName) });
                 NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.5));
 
                 var commands = new List<IEffectorCommand>();
@@ -190,6 +264,8 @@ namespace TinMan
                     // Certain values are only seen once (at startup) so we copy them from the perceptor state to the context and make the permanently available there
                     if (perceptorState.TeamSide != FieldSide.Unknown)
                         _context.TeamSide = perceptorState.TeamSide;
+                    if (perceptorState.PlayMode != PlayMode.Unknown && perceptorState.PlayMode != _context.PlayMode)
+                        _context.PlayMode = perceptorState.PlayMode;
                     if (perceptorState.UniformNumber.HasValue)
                     {
                         Debug.Assert(perceptorState.UniformNumber > 0);

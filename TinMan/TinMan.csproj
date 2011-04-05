@@ -69,6 +69,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -78,7 +79,6 @@
   <ItemGroup>
     <Compile Include="EffectorCommands.cs" />
     <Compile Include="AgentHost.cs" />
-    <Compile Include="FieldGeometry.cs" />
     <Compile Include="Geometry\Angle.cs" />
     <Compile Include="Geometry\AngularSpeed.cs" />
     <Compile Include="Geometry\GeometryUtil.cs" />
@@ -91,6 +91,7 @@
     <Compile Include="IAgent.cs" />
     <Compile Include="IBody.cs" />
     <Compile Include="ISimulationContext.cs" />
+    <Compile Include="Measures.cs" />
     <Compile Include="NaoBody.cs" />
     <Compile Include="NetworkUtil.cs" />
     <Compile Include="PerceptorState\AccelerometerState.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="PerceptorState\TouchState.cs" />
     <Compile Include="PerceptorState\UniversalJointState.cs" />
     <Content Include="RoboViz\ReadMe.txt" />
+    <Compile Include="PerceptorState\VisibleLine.cs" />
     <Compile Include="PidHingeController.cs" />
     <Compile Include="RoboViz\RoboVizRemote.cs" />
     <Compile Include="RoboViz\Shape.cs" />
@@ -119,6 +121,7 @@
     <Compile Include="PlayMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Wizard.cs" />
+    <None Include=".gitignore" />
     <None Include="PerceptorParsing\build-parser.cmd" />
     <None Include="PerceptorParsing\Parser Notes.txt" />
     <None Include="PerceptorParsing\Parser.frame" />

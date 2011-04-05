@@ -42,7 +42,7 @@ namespace TinManSamples.CSharp
             Action addAgent = () =>
                                   {
                                       var agent = new MinimalAgent();
-                                      var agentHost = new AgentHost { UniformNumber = agentHosts.Count + 1, HostName = HostName };
+                                      var agentHost = new AgentHost { DesiredUniformNumber = agentHosts.Count + 1, HostName = HostName };
                                       new Thread(() => agentHost.Run(agent)).Start();
                                       agentHosts.Add(agentHost);
                                   };
@@ -98,7 +98,8 @@ namespace TinManSamples.CSharp
                             Console.WriteLine("Killing agent #1 on left side");
                             break;
                         case 'a':
-                            var pos = FieldGeometry.GetRandomPosition(FieldSide.Left).WithZ(0.45);
+                            var measures = new Measures();
+                            var pos = measures.GetRandomPosition(FieldSide.Left).WithZ(0.45);
                             var num = new Random().Next(agentHosts.Count) + 1;
                             Console.WriteLine("Moving agent {0} to {1}", num, pos);
                             wizard.SetAgentPosition(num, FieldSide.Left, pos);

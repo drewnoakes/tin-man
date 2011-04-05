@@ -21,11 +21,13 @@
 // Created 06/05/2010 15:08
 
 using System;
+using System.Configuration;
 
 namespace TinMan
 {
     // TODO come up with a better name for north/south goals than 'top' and 'bottom' as we now use top/bottom for goals and flags
     // TODO field dimensions may be variable, depending upon simulator (true but this information is only available via the monitor port, afaik)
+    // TODO update field dimensions in below comments to new simulator size
     
     /// <summary>
     /// Holds information about the dimensions and geometry of the soccer field upon which the
@@ -60,84 +62,121 @@ namespace TinMan
     ///                                            (9,6)
     /// </pre>
     /// </remarks>
-    public static class FieldGeometry
+    public sealed class Measures
     {
-        /// <summary>The radius of the ball.</summary>
-        public const double BallRadiusMetres = 0.04;
+        private static readonly Log _log = Log.Create();
+        private readonly Random _random = new Random();
+
+        /// <summary>The radius of the ball in metres.</summary>
+        public double BallRadiusMetres { get; private set; }
         /// <summary>The mass of the ball in kilograms.</summary>
-        public const double BallMassKilograms = 0.026;
+        public double BallMassKilograms { get; private set; }
         /// <summary>The size of the field across its narrower dimension.</summary>
-        public const double FieldYLength = 12.0;
+        public double FieldYLength { get; private set; }
         /// <summary>The size of the field across its wider dimension, from goal to goal.</summary>
-        public const double FieldXLength = 18.0;
+        public double FieldXLength { get; private set; }
         /// <summary>The x-coordinate value at the left edge of the field.</summary>
-        public const double FieldXLeft = -FieldXLength / 2;
+        public double FieldXLeft { get; private set; }
         /// <summary>The x-coordinate value at the right edge of the field.</summary>
-        public const double FieldXRight = FieldXLength / 2;
+        public double FieldXRight { get; private set; }
         /// <summary>The x-coordinate value at the left edge of the field.</summary>
-        public const double FieldYTop = FieldYLength / 2;
+        public double FieldYTop { get; private set; }
         /// <summary>The x-coordinate value at the right edge of the field.</summary>
-        public const double FieldYBottom = -FieldYLength / 2;
+        public double FieldYBottom { get; private set; }
         /// <summary>The height above ground level of the simulated area of the field.</summary>
         /// <remarks>Note that the agent may not be positioned more than 20 above ground level.</remarks>
-        public const double FieldZHeight = 40.0;
+        public double FieldZHeight { get; private set; }
         /// <summary>The width of the goal as a player looks at it.</summary>
-        public const double GoalYLength = 2.1;
+        public double GoalYLength { get; private set; }
         /// <summary>The height that the goal extends above the ground.</summary>
-        public const double GoalZLength = 0.8;
+        public double GoalZLength { get; private set; }
         /// <summary>The depth of the goal.  That is, the distance from the opening of the goal on the field's side to the back of the net.</summary>
-        public const double GoalXLength = 0.6;
+        public double GoalXLength { get; private set; }
         /// <summary></summary>
-        public const double PenaltyAreaXLength = 1.8;
+        public double PenaltyAreaXLength { get; private set; }
         /// <summary></summary>
-        public const double PenaltyAreaYLength = 3.9;
+        public double PenaltyAreaYLength { get; private set; }
         /// <summary></summary>
-        public const double FreeKickDistance = 1.3;
+        public double FreeKickDistance { get; private set; }
         /// <summary></summary>
-        public const double FreeKickMoveDistance = 1.5;
+        public double FreeKickMoveDistance { get; private set; }
         /// <summary></summary>
-        public const double GoalKickDistance = 1.0;
+        public double GoalKickDistance { get; private set; }
 
         /// <summary>The location, in global coordinates, of the base of the top-left (north-west) flag.</summary>
-        public static readonly Vector3 FlagLeftTopPosition;
+        public Vector3 FlagLeftTopPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the base of the bottom-left (south-west) flag.</summary>
-        public static readonly Vector3 FlagLeftBottomPosition;
+        public Vector3 FlagLeftBottomPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the base of the top-right (north-east) flag.</summary>
-        public static readonly Vector3 FlagRightTopPosition;
+        public Vector3 FlagRightTopPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the base of the bottom-right (south-east) flag.</summary>
-        public static readonly Vector3 FlagRightBottomPosition;
+        public Vector3 FlagRightBottomPosition { get; private set; }
 
         /// <summary>The location, in global coordinates, of the top of the top-left (north-west) goal post.</summary>
-        public static readonly Vector3 GoalLeftTopPosition;
+        public Vector3 GoalLeftTopPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the top of the bottom-left (south-west) goal post.</summary>
-        public static readonly Vector3 GoalLeftBottomPosition;
+        public Vector3 GoalLeftBottomPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the top of the top-right (north-east) goal post.</summary>
-        public static readonly Vector3 GoalRightTopPosition;
+        public Vector3 GoalRightTopPosition { get; private set; }
         /// <summary>The location, in global coordinates, of the top of the bottom-right (south-east) goal post.</summary>
-        public static readonly Vector3 GoalRightBottomPosition;
+        public Vector3 GoalRightBottomPosition { get; private set; }
         
-        static FieldGeometry()
+        public Measures()
         {
-            const double flagHeight = 0; // 0.375f;  // TODO verify that the spotted point of the flag is at ground level (Z==0)
-            const double goalPostX = FieldXLength/2; // TODO verify that the flag is exactly on the corner of the field
-            const double goalPostY = GoalYLength/2;  // TODO verify this -- the height of the point spotted on the goal is halfway up it?
+            BallRadiusMetres = GetValue("BallRadiusMetres", 0.04);
+            BallMassKilograms = GetValue("BallMassKilograms", 0.026);
+            FieldYLength = GetValue("FieldYLength", 12.0);
+            FieldXLength = GetValue("FieldXLength", 18.0);
+            FieldZHeight = GetValue("FieldZHeight", 40.0);
+            GoalYLength = GetValue("GoalYLength", 2.1);
+            GoalZLength = GetValue("GoalZLength", 0.8);
+            GoalXLength = GetValue("GoalXLength", 0.6);
+            PenaltyAreaXLength = GetValue("PenaltyAreaXLength", 1.8);
+            PenaltyAreaYLength = GetValue("PenaltyAreaYLength", 3.9);
+            FreeKickDistance = GetValue("FreeKickDistance", 1.3);
+            FreeKickMoveDistance = GetValue("FreeKickMoveDistance", 1.5);
+            GoalKickDistance = GetValue("GoalKickDistance", 1.0);
+            
+            // update derived properties
+            
+            FieldXLeft = -FieldXLength / 2;
+            FieldXRight = FieldXLength / 2;
+            FieldYTop    =  FieldYLength / 2;
+            FieldYBottom = -FieldYLength / 2;
+            
+            const double flagHeight = 0;
+            double goalPostX = FieldXLength/2;
         
             // Using global coordinate system.  (0,0) is the exact center of the field.
-            
             FlagLeftTopPosition     = new Vector3(-FieldXLength/2, +FieldYLength/2, flagHeight);
             FlagRightTopPosition    = new Vector3(+FieldXLength/2, +FieldYLength/2, flagHeight);
             FlagLeftBottomPosition  = new Vector3(-FieldXLength/2, -FieldYLength/2, flagHeight);
             FlagRightBottomPosition = new Vector3(+FieldXLength/2, -FieldYLength/2, flagHeight);
-            GoalLeftTopPosition     = new Vector3(-goalPostX, +GoalYLength/2, goalPostY);
-            GoalRightTopPosition    = new Vector3(+goalPostX, +GoalYLength/2, goalPostY);
-            GoalLeftBottomPosition  = new Vector3(-goalPostX, -GoalYLength/2, goalPostY);
-            GoalRightBottomPosition = new Vector3(+goalPostX, -GoalYLength/2, goalPostY);
+            GoalLeftTopPosition     = new Vector3(-goalPostX, +GoalYLength/2, GoalZLength);
+            GoalRightTopPosition    = new Vector3(+goalPostX, +GoalYLength/2, GoalZLength);
+            GoalLeftBottomPosition  = new Vector3(-goalPostX, -GoalYLength/2, GoalZLength);
+            GoalRightBottomPosition = new Vector3(+goalPostX, -GoalYLength/2, GoalZLength);
+        }
+        
+        private static double GetValue(string keySuffix, double defaultValue)
+        {
+            var key = "TinMan.Measures." + keySuffix;
+            var valueString = ConfigurationManager.AppSettings[key];
+            if (valueString == null)
+                return defaultValue;
+            double parsedValue;
+            if (!double.TryParse(valueString, out parsedValue))
+            {
+                _log.Warn("Unable to parse config key {0} as a double.  Using default value of {1} instead.", valueString, defaultValue);
+                return defaultValue;
+            }
+            return parsedValue;
         }
         
         /// <summary>Gets the location of a landmark in global coordinates.</summary>
         /// <param name="landmark"></param>
         /// <returns></returns>
-        public static Vector3 GetLandmarkPointGlobal(Landmark landmark) 
+        public Vector3 GetLandmarkPointGlobal(Landmark landmark) 
         {
             switch (landmark) 
             {
@@ -158,15 +197,13 @@ namespace TinMan
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
-        public static bool IsInField(Vector3 vector)
+        public bool IsInField(Vector3 vector)
         {
             return vector.X >= -FieldXLength/2 && vector.X <= FieldXLength/2
                 && vector.Y >  -FieldYLength/2 && vector.Y <  FieldYLength/2;
         }
         
-        private static readonly Random _random = new Random();
-        
-        public static Vector3 GetRandomPosition(FieldSide side)
+        public Vector3 GetRandomPosition(FieldSide side)
         {
             double x1 = -FieldXLength/2;
             double x2 = +FieldXLength/2;

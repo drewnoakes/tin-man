@@ -31,29 +31,36 @@ namespace TinMan
     /// <remarks>Threadsafe.</remarks>
     internal sealed class SimulationContext : ISimulationContext
     {
+    	private readonly Log _log = Log.Create();
         private readonly object _lock = new object();
-        private readonly AgentHost _client;
+        private readonly AgentHost _host;
         private BeamCommand _beamCommand;
         private SayCommand _sayCommand;
 
-        public SimulationContext(AgentHost client)
+        public SimulationContext(AgentHost host)
         {
-            if (client == null)
-                throw new ArgumentNullException("client");
+            if (host == null)
+                throw new ArgumentNullException("host");
 
-            _client = client;
+            _host = host;
             
+            // these values are not available until after connection with the server is established
             TeamSide = FieldSide.Unknown;
+            UniformNumber = null;
+            PlayMode = PlayMode.Unknown;
         }
 
         /// <summary>Gets the name assigned to this team.</summary>
         public string TeamName
         {
-            get { return _client.TeamName; }
+            get { return _host.TeamName; }
         }
 
         /// <summary>Gets the side of the playing field that this agent's team has been assigned to.</summary>
         public FieldSide TeamSide { get; internal set; }
+
+        /// <summary>Gets the current play mode.</summary>
+        public PlayMode PlayMode { get; internal set; }
 
         /// <summary>Gets the uniform number assigned to this agent.  If no number has been assigned yet, this value may be <c>null</c>.</summary>
         public int? UniformNumber { get; internal set; }
@@ -82,6 +89,17 @@ namespace TinMan
         /// the right of the field), 90 degrees to positive y axis (to the top of the field).</param>
         public void Beam(double x, double y, Angle rotation)
         {
+        	switch (PlayMode)
+        	{
+        		case PlayMode.BeforeKickOff:
+        		case PlayMode.GoalLeft:
+        		case PlayMode.GoalRight:
+        			break;
+        		default:
+        			_log.Warn("Requested beam during invalid play mode: " + PlayMode);
+        			break;
+        	}
+        	
             lock (_lock)
                 _beamCommand = new BeamCommand(x, y, rotation);
         }

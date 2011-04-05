@@ -47,7 +47,7 @@ namespace TinManSamples.CSharp
             if (_beamToGoal)
             {
                 _beamToGoal = false;
-                Context.Beam(-FieldGeometry.FieldXLength/2, 0, Angle.Zero);
+                Context.Beam(-Measures.FieldXLength/2, 0, Angle.Zero);
             }
 
             var hinge = Body.HJ1;

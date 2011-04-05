@@ -235,8 +235,8 @@ namespace TinMan.PerceptorParsing {
     {
         const char EOL = '\n';
         const int eofSym = 0; /* pdt */
-	const int maxT = 49;
-	const int noSym = 49;
+	const int maxT = 50;
+	const int noSym = 50;
 
     
         public IBuffer buffer; // scanner buffer
@@ -358,7 +358,8 @@ namespace TinMan.PerceptorParsing {
 			case "B": t.kind = 43; break;
 			case "P": t.kind = 44; break;
 			case "mypos": t.kind = 46; break;
-			case "self": t.kind = 48; break;
+			case "L": t.kind = 47; break;
+			case "self": t.kind = 49; break;
 			default: break;
 		}
         }
@@ -403,7 +404,7 @@ namespace TinMan.PerceptorParsing {
 				else {t.kind = 1; break;}
 			case 5:
 				recEnd = pos; recKind = 2;
-				if (ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 5;}
+				if (ch == '-' || ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 5;}
 				else {t.kind = 2; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 			case 6:
 				if (ch >= '!' && ch <= 39 || ch >= '*' && ch <= '/' || ch >= ':' && ch <= '@' || ch >= '[' && ch <= '`' || ch >= '{' && ch <= '~') {AddCh(); goto case 7;}
@@ -541,7 +542,7 @@ namespace TinMan.PerceptorParsing {
 				if (ch == 'r') {AddCh(); goto case 55;}
 				else {goto case 0;}
 			case 55:
-				{t.kind = 47; break;}
+				{t.kind = 48; break;}
 			case 56:
 				recEnd = pos; recKind = 7;
 				if (ch == 'p') {AddCh(); goto case 9;}
