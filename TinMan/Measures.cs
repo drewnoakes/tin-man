@@ -125,9 +125,9 @@ namespace TinMan
         {
             BallRadiusMetres = GetValue("BallRadiusMetres", 0.04);
             BallMassKilograms = GetValue("BallMassKilograms", 0.026);
-            FieldYLength = GetValue("FieldYLength", 12.0);
-            FieldXLength = GetValue("FieldXLength", 18.0);
-            FieldZHeight = GetValue("FieldZHeight", 40.0);
+            FieldYLength = GetValue("FieldYLength", 14);
+            FieldXLength = GetValue("FieldXLength", 21);
+            FieldZHeight = GetValue("FieldZHeight", 40);
             GoalYLength = GetValue("GoalYLength", 2.1);
             GoalZLength = GetValue("GoalZLength", 0.8);
             GoalXLength = GetValue("GoalXLength", 0.6);
