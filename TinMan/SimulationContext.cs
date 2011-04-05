@@ -48,7 +48,11 @@ namespace TinMan
             TeamSide = FieldSide.Unknown;
             UniformNumber = null;
             PlayMode = PlayMode.Unknown;
+            Measures = new Measures();
         }
+
+        /// <summary>Gets a collection of measurements from the field.</summary>
+        public Measures Measures { get; private set; }
 
         /// <summary>Gets the name assigned to this team.</summary>
         public string TeamName

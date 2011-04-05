@@ -43,8 +43,12 @@ namespace TinMan
         /// <remarks>Will not be <c>null</c>.</remarks>
         public TBody Body { get; private set; }
 
-        /// <summary>Gets a collection of measurements from the field.</summary>
-        public Measures Measures { get; private set; }
+        /// <summary>Gets a collection of measurements from the field.  This property returns the same
+        /// object as <see cref="ISimulationContext.Measures"/> and is provided for convenience.</summary>
+        protected Measures Measures
+        {
+            get { return _context.Measures; }
+        }
 
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>
@@ -113,7 +117,6 @@ namespace TinMan
             if (body == null)
                 throw new ArgumentNullException("body");
             Body = body;
-            Measures = new Measures();
             Log = Log.Create();
             IsAlive = true;
         }

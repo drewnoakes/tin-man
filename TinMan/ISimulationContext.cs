@@ -44,6 +44,9 @@ namespace TinMan
         /// </summary>
         int? UniformNumber { get; }
 
+        /// <summary>Gets a collection of measurements from the field.</summary>
+        Measures Measures { get; }
+
         /// <summary>
         /// Causes the agent to speak a message out loud such that nearby agents can hear it.
         /// This is the only method of inter-agent communication allowed in RoboCup.
