@@ -41,7 +41,7 @@ namespace TinManSamples.CSharp
         }
     }
 
-    internal class FullHouse
+    internal static class FullHouse
     {
         public static void Run(int agentCountPerSide)
         {
