@@ -70,12 +70,13 @@ namespace TinMan.RoboViz
 
         protected static void WriteDouble(byte[] buf, int offset, double d)
         {
+            Debug.Assert(!double.IsNaN(d), "Double value may not be NaN");
             // TODO in some cases we truncate the last character -- we could round the number for better accuracy
             var s = d.ToString("#.00000");
             s = s.Substring(0, Math.Min(s.Length, 6));
-            Debug.Assert(s.Length == 6);
+            Debug.Assert(s.Length == 6, string.Format("Formatting of double value {0} should be 6 characters long but was {1}", d, s.Length));
             var byteCount = Encoding.ASCII.GetBytes(s, 0, 6, buf, offset);
-            Debug.Assert(byteCount == 6);
+            Debug.Assert(byteCount == 6, string.Format("Should have 6 bytes but instead have {0}", byteCount));
         }
 
         protected internal static void WriteColor(byte[] buf, int offset, Color color, bool includeAlpha)
@@ -85,6 +86,14 @@ namespace TinMan.RoboViz
             buf[offset++] = color.B;
             if (includeAlpha)
                 buf[offset] = color.A;
+        }
+
+        protected static void ValidateDouble(double value)
+        {
+            if (double.IsNaN(value))
+                throw new ArgumentOutOfRangeException("value", value, "Cannot be NaN.");
+            if (double.IsInfinity(value))
+                throw new ArgumentOutOfRangeException("value", value, "Cannot be infinite.");
         }
     }
 
@@ -120,7 +129,7 @@ namespace TinMan.RoboViz
         public double PixelSize
         {
             get { return _pixelSize; }
-            set { _pixelSize = value; SetDirty(); }
+            set { ValidateDouble(value); _pixelSize = value; SetDirty(); }
         }
 
         public Color Color
@@ -132,25 +141,25 @@ namespace TinMan.RoboViz
         public Vector3 Position
         {
             get { return new Vector3(X, Y, Z); }
-            set { _x = value.X; _y = value.Y; _z = value.Z; SetDirty(); }
+            set { X = value.X; Y = value.Y; Z = value.Z; }
         }
 
         public double X
         {
             get { return _x; }
-            set { _x = value; SetDirty(); }
+            set { ValidateDouble(value); _x = value; SetDirty(); }
         }
 
         public double Y
         {
             get { return _y; }
-            set { _y = value; SetDirty(); }
+            set { ValidateDouble(value); _y = value; SetDirty(); }
         }
 
         public double Z
         {
             get { return _z; }
-            set { _z = value; SetDirty(); }
+            set { ValidateDouble(value); _z = value; SetDirty(); }
         }
 
         #endregion
@@ -220,55 +229,55 @@ namespace TinMan.RoboViz
         public Vector3 End1
         {
             get { return new Vector3(_x1, _y1, _z1); }
-            set { _x1 = value.X; _y1 = value.Y; _z1 = value.Z; SetDirty(); }
+            set { X1 = value.X; Y1 = value.Y; Z1 = value.Z; }
         }
 
         public Vector3 End2
         {
             get { return new Vector3(_x2, _y2, _z2); }
-            set { _x2 = value.X; _y2 = value.Y; _z2 = value.Z; SetDirty(); }
+            set { X2 = value.X; Y2 = value.Y; Z2 = value.Z; }
         }
 
         public double X1
         {
             get { return _x1; }
-            set { _x1 = value; SetDirty(); }
+            set { ValidateDouble(value); _x1 = value; SetDirty(); }
         }
 
         public double Y1
         {
             get { return _y1; }
-            set { _y1 = value; SetDirty(); }
+            set { ValidateDouble(value); _y1 = value; SetDirty(); }
         }
 
         public double Z1
         {
             get { return _z1; }
-            set { _z1 = value; SetDirty(); }
+            set { ValidateDouble(value); _z1 = value; SetDirty(); }
         }
 
         public double X2
         {
             get { return _x2; }
-            set { _x2 = value; SetDirty(); }
+            set { ValidateDouble(value); _x2 = value; SetDirty(); }
         }
 
         public double Y2
         {
             get { return _y2; }
-            set { _y2 = value; SetDirty(); }
+            set { ValidateDouble(value); _y2 = value; SetDirty(); }
         }
 
         public double Z2
         {
             get { return _z2; }
-            set { _z2 = value; SetDirty(); }
+            set { ValidateDouble(value); _z2 = value; SetDirty(); }
         }
 
         public double PixelThickness
         {
             get { return _pixelThickness; }
-            set { _pixelThickness = value; SetDirty(); }
+            set { ValidateDouble(value); _pixelThickness = value; SetDirty(); }
         }
 
         public Color Color
@@ -349,7 +358,7 @@ namespace TinMan.RoboViz
             set { _vertices[index] = value; SetDirty(); }
         }
 
-        public void Add(Vector3  vertex)
+        public void Add(Vector3 vertex)
         {
             _vertices.Add(vertex);
             SetDirty();
@@ -458,25 +467,25 @@ namespace TinMan.RoboViz
         public double CenterX
         {
             get { return _centerX; }
-            set { _centerX = value; SetDirty(); }
+            set { ValidateDouble(value); _centerX = value; SetDirty(); }
         }
 
         public double CenterY
         {
             get { return _centerY; }
-            set { _centerY = value; SetDirty(); }
+            set { ValidateDouble(value); _centerY = value; SetDirty(); }
         }
 
         public double RadiusMetres
         {
             get { return _radiusMetres; }
-            set { _radiusMetres = value; SetDirty(); }
+            set { ValidateDouble(value); _radiusMetres = value; SetDirty(); }
         }
 
         public double PixelThickness
         {
             get { return _pixelThickness; }
-            set { _pixelThickness = value; SetDirty(); }
+            set { ValidateDouble(value); _pixelThickness = value; SetDirty(); }
         }
 
         public Color Color
@@ -561,25 +570,25 @@ namespace TinMan.RoboViz
         public Vector3 Center
         {
             get { return new Vector3(X, Y, Z); }
-            set { _x = value.X; _y = value.Y; _z = value.Z; SetDirty(); }
+            set { X = value.X; Y = value.Y; Z = value.Z; }
         }
 
         public double X
         {
             get { return _x; }
-            set { _x = value; SetDirty(); }
+            set { ValidateDouble(value); _x = value; SetDirty(); }
         }
 
         public double Y
         {
             get { return _y; }
-            set { _y = value; SetDirty(); }
+            set { ValidateDouble(value); _y = value; SetDirty(); }
         }
 
         public double Z
         {
             get { return _z; }
-            set { _z = value; SetDirty(); }
+            set { ValidateDouble(value); _z = value; SetDirty(); }
         }
 
         #endregion
@@ -657,25 +666,25 @@ namespace TinMan.RoboViz
         public Vector3 Position
         {
             get { return new Vector3(X, Y, Z); }
-            set { _x = value.X; _y = value.Y; _z = value.Z; SetDirty(); }
+            set { X = value.X; Y = value.Y; Z = value.Z; }
         }
 
         public double X
         {
             get { return _x; }
-            set { _x = value; SetDirty(); }
+            set { ValidateDouble(value); _x = value; SetDirty(); }
         }
 
         public double Y
         {
             get { return _y; }
-            set { _y = value; SetDirty(); }
+            set { ValidateDouble(value); _y = value; SetDirty(); }
         }
 
         public double Z
         {
             get { return _z; }
-            set { _z = value; SetDirty(); }
+            set { ValidateDouble(value); _z = value; SetDirty(); }
         }
 
         public string Text
