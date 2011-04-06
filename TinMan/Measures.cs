@@ -26,8 +26,6 @@ using System.Configuration;
 namespace TinMan
 {
     // TODO come up with a better name for north/south goals than 'top' and 'bottom' as we now use top/bottom for goals and flags
-    // TODO field dimensions may be variable, depending upon simulator (true but this information is only available via the monitor port, afaik)
-    // TODO update field dimensions in below comments to new simulator size
     
     /// <summary>
     /// Holds information about the dimensions and geometry of the soccer field upon which the
@@ -35,31 +33,31 @@ namespace TinMan
     /// </summary>
     /// <remarks>
     /// <list type="bullet">
-    ///     <item>The dimensions of the soccer field are 18 by 12 meters.</item>
+    ///     <item>The dimensions of the soccer field are 21 by 14 meters.</item>
     ///     <item>The center spot has a radius of 4.5 meters.</item>
     ///     <item>Each goal is 2.1 by 0.6 meter with a height of 0.8 meters.</item>
     ///     <item>The soccer field is surrounded by a border of 10 meters in each direction.</item>
     ///     <item>Space outside this border area is not reachable by an agent.</item>
-    ///     <item>The soccer ball has a radius of 0.04 meter and a mass of 26 grams.</item>
+    ///     <item>The soccer ball has a radius of 0.04 meters and a mass of 26 grams.</item>
     /// </list>
     /// <pre>
-    ///        |--------------- 18 m --------------|
+    ///        |--------------- 21 m --------------|
     ///  
-    ///  (-9,-6)
+    ///  (-11.5,-7)
     ///        *-----------------+-----------------+            ---
     ///        |                 |                 |              |
     ///        |                 |                 |              |
     ///        |                 |                 |              |
-    ///       -* (-9,-1.05)      |                 +-     ---     |
+    ///       -* (-11.5,-1.05)   |                 +-     ---     |
     ///        |                 |                 |        |     |
-    ///   Goal |                 O (0,0)           | Goal  2.1m  12m
+    ///   Goal |                 O (0,0)           | Goal  2.1m  14m
     ///        |                 |                 |        |     |
-    ///       -+ (-9,1.05)       |                 +-     ---     |
+    ///       -+ (-11.5,1.05)    |                 +-     ---     |
     ///        |                 |                 |              |
     ///        |                 |                 |              |
     ///        |                 |                 |              |
     ///        +-----------------+-----------------+            ---
-    ///                                            (9,6)
+    ///                                            (11.5,7)
     /// </pre>
     /// </remarks>
     public sealed class Measures
