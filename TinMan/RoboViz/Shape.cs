@@ -558,7 +558,7 @@ namespace TinMan.RoboViz
         public double RadiusMetres
         {
             get { return _radiusMetres; }
-            set { _radiusMetres = value; SetDirty(); }
+            set { ValidateDouble(value); _radiusMetres = value; SetDirty(); }
         }
 
         public Color Color
