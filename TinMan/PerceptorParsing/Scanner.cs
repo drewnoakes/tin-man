@@ -235,8 +235,8 @@ namespace TinMan.PerceptorParsing {
     {
         const char EOL = '\n';
         const int eofSym = 0; /* pdt */
-	const int maxT = 50;
-	const int noSym = 50;
+	const int maxT = 49;
+	const int noSym = 49;
 
     
         public IBuffer buffer; // scanner buffer
@@ -261,9 +261,8 @@ namespace TinMan.PerceptorParsing {
 		for (int i = 65; i <= 90; ++i) start[i] = 5;
 		for (int i = 97; i <= 122; ++i) start[i] = 5;
 		start[45] = 1; 
-		start[39] = 6; 
-		start[40] = 56; 
-		start[41] = 12; 
+		start[40] = 53; 
+		start[41] = 9; 
 		start[Buffer.EOF] = -1;
 
         }
@@ -331,35 +330,35 @@ namespace TinMan.PerceptorParsing {
 
         private void CheckLiteral() {
 		switch (t.val) {
-			case "now": t.kind = 8; break;
-			case "left": t.kind = 12; break;
-			case "right": t.kind = 13; break;
-			case "t": t.kind = 14; break;
-			case "pm": t.kind = 15; break;
-			case "n": t.kind = 17; break;
-			case "rt": t.kind = 18; break;
-			case "a": t.kind = 20; break;
-			case "ax": t.kind = 22; break;
-			case "ax1": t.kind = 24; break;
-			case "ax2": t.kind = 25; break;
-			case "val": t.kind = 27; break;
-			case "c": t.kind = 29; break;
-			case "f": t.kind = 30; break;
-			case "temp": t.kind = 32; break;
-			case "battery": t.kind = 33; break;
-			case "F1L": t.kind = 35; break;
-			case "F2L": t.kind = 36; break;
-			case "F1R": t.kind = 37; break;
-			case "F2R": t.kind = 38; break;
-			case "G1L": t.kind = 39; break;
-			case "G2L": t.kind = 40; break;
-			case "G1R": t.kind = 41; break;
-			case "G2R": t.kind = 42; break;
-			case "B": t.kind = 43; break;
-			case "P": t.kind = 44; break;
-			case "mypos": t.kind = 46; break;
-			case "L": t.kind = 47; break;
-			case "self": t.kind = 49; break;
+			case "now": t.kind = 7; break;
+			case "left": t.kind = 11; break;
+			case "right": t.kind = 12; break;
+			case "t": t.kind = 13; break;
+			case "pm": t.kind = 14; break;
+			case "n": t.kind = 16; break;
+			case "rt": t.kind = 17; break;
+			case "a": t.kind = 19; break;
+			case "ax": t.kind = 21; break;
+			case "ax1": t.kind = 23; break;
+			case "ax2": t.kind = 24; break;
+			case "val": t.kind = 26; break;
+			case "c": t.kind = 28; break;
+			case "f": t.kind = 29; break;
+			case "temp": t.kind = 31; break;
+			case "battery": t.kind = 32; break;
+			case "F1L": t.kind = 34; break;
+			case "F2L": t.kind = 35; break;
+			case "F1R": t.kind = 36; break;
+			case "F2R": t.kind = 37; break;
+			case "G1L": t.kind = 38; break;
+			case "G2L": t.kind = 39; break;
+			case "G1R": t.kind = 40; break;
+			case "G2R": t.kind = 41; break;
+			case "B": t.kind = 42; break;
+			case "P": t.kind = 43; break;
+			case "mypos": t.kind = 45; break;
+			case "L": t.kind = 46; break;
+			case "self": t.kind = 48; break;
 			default: break;
 		}
         }
@@ -407,42 +406,38 @@ namespace TinMan.PerceptorParsing {
 				if (ch == '-' || ch >= '0' && ch <= '9' || ch >= 'A' && ch <= 'Z' || ch == '_' || ch >= 'a' && ch <= 'z') {AddCh(); goto case 5;}
 				else {t.kind = 2; t.val = new String(tval, 0, tlen); CheckLiteral(); return t;}
 			case 6:
-				if (ch >= '!' && ch <= 39 || ch >= '*' && ch <= '/' || ch >= ':' && ch <= '@' || ch >= '[' && ch <= '`' || ch >= '{' && ch <= '~') {AddCh(); goto case 7;}
+				if (ch == 'o') {AddCh(); goto case 7;}
 				else {goto case 0;}
 			case 7:
-				if (ch >= '!' && ch <= '&' || ch >= '*' && ch <= '/' || ch >= ':' && ch <= '@' || ch >= '[' && ch <= '`' || ch >= '{' && ch <= '~') {AddCh(); goto case 7;}
-				else if (ch == 39) {AddCh(); goto case 8;}
+				if (ch == 'l') {AddCh(); goto case 8;}
 				else {goto case 0;}
 			case 8:
-				recEnd = pos; recKind = 3;
-				if (ch >= '!' && ch <= '&' || ch >= '*' && ch <= '/' || ch >= ':' && ch <= '@' || ch >= '[' && ch <= '`' || ch >= '{' && ch <= '~') {AddCh(); goto case 7;}
-				else if (ch == 39) {AddCh(); goto case 8;}
-				else {t.kind = 3; break;}
+				{t.kind = 3; break;}
 			case 9:
-				if (ch == 'o') {AddCh(); goto case 10;}
-				else {goto case 0;}
+				{t.kind = 4; break;}
 			case 10:
-				if (ch == 'l') {AddCh(); goto case 11;}
+				if (ch == 'm') {AddCh(); goto case 11;}
 				else {goto case 0;}
 			case 11:
-				{t.kind = 4; break;}
+				if (ch == 'e') {AddCh(); goto case 12;}
+				else {goto case 0;}
 			case 12:
 				{t.kind = 5; break;}
 			case 13:
-				if (ch == 'm') {AddCh(); goto case 14;}
-				else {goto case 0;}
+				{t.kind = 8; break;}
 			case 14:
-				if (ch == 'e') {AddCh(); goto case 15;}
+				if (ch == 'n') {AddCh(); goto case 15;}
 				else {goto case 0;}
 			case 15:
-				{t.kind = 6; break;}
-			case 16:
-				{t.kind = 9; break;}
-			case 17:
-				if (ch == 'n') {AddCh(); goto case 18;}
+				if (ch == 'u') {AddCh(); goto case 16;}
 				else {goto case 0;}
+			case 16:
+				if (ch == 'm') {AddCh(); goto case 17;}
+				else {goto case 0;}
+			case 17:
+				{t.kind = 9; break;}
 			case 18:
-				if (ch == 'u') {AddCh(); goto case 19;}
+				if (ch == 'a') {AddCh(); goto case 19;}
 				else {goto case 0;}
 			case 19:
 				if (ch == 'm') {AddCh(); goto case 20;}
@@ -450,125 +445,117 @@ namespace TinMan.PerceptorParsing {
 			case 20:
 				{t.kind = 10; break;}
 			case 21:
-				if (ch == 'a') {AddCh(); goto case 22;}
+				if (ch == 'R') {AddCh(); goto case 22;}
 				else {goto case 0;}
 			case 22:
-				if (ch == 'm') {AddCh(); goto case 23;}
-				else {goto case 0;}
+				{t.kind = 15; break;}
 			case 23:
-				{t.kind = 11; break;}
+				if (ch == 'C') {AddCh(); goto case 24;}
+				else {goto case 0;}
 			case 24:
-				if (ch == 'R') {AddCh(); goto case 25;}
-				else {goto case 0;}
+				{t.kind = 18; break;}
 			case 25:
-				{t.kind = 16; break;}
+				if (ch == 'J') {AddCh(); goto case 26;}
+				else {goto case 0;}
 			case 26:
-				if (ch == 'C') {AddCh(); goto case 27;}
-				else {goto case 0;}
+				{t.kind = 20; break;}
 			case 27:
-				{t.kind = 19; break;}
-			case 28:
-				if (ch == 'J') {AddCh(); goto case 29;}
+				if (ch == 'J') {AddCh(); goto case 28;}
 				else {goto case 0;}
+			case 28:
+				{t.kind = 22; break;}
 			case 29:
-				{t.kind = 21; break;}
+				if (ch == 'C') {AddCh(); goto case 30;}
+				else {goto case 0;}
 			case 30:
-				if (ch == 'J') {AddCh(); goto case 31;}
+				if (ch == 'H') {AddCh(); goto case 31;}
 				else {goto case 0;}
 			case 31:
-				{t.kind = 23; break;}
+				{t.kind = 25; break;}
 			case 32:
-				if (ch == 'C') {AddCh(); goto case 33;}
+				if (ch == 'R') {AddCh(); goto case 33;}
 				else {goto case 0;}
 			case 33:
-				if (ch == 'H') {AddCh(); goto case 34;}
+				if (ch == 'P') {AddCh(); goto case 34;}
 				else {goto case 0;}
 			case 34:
-				{t.kind = 26; break;}
+				{t.kind = 27; break;}
 			case 35:
-				if (ch == 'R') {AddCh(); goto case 36;}
+				if (ch == 'e') {AddCh(); goto case 36;}
 				else {goto case 0;}
 			case 36:
-				if (ch == 'P') {AddCh(); goto case 37;}
+				if (ch == 'n') {AddCh(); goto case 37;}
 				else {goto case 0;}
 			case 37:
-				{t.kind = 28; break;}
+				if (ch == 't') {AddCh(); goto case 38;}
+				else {goto case 0;}
 			case 38:
-				if (ch == 'e') {AddCh(); goto case 39;}
+				if (ch == 'S') {AddCh(); goto case 39;}
 				else {goto case 0;}
 			case 39:
-				if (ch == 'n') {AddCh(); goto case 40;}
+				if (ch == 't') {AddCh(); goto case 40;}
 				else {goto case 0;}
 			case 40:
-				if (ch == 't') {AddCh(); goto case 41;}
+				if (ch == 'a') {AddCh(); goto case 41;}
 				else {goto case 0;}
 			case 41:
-				if (ch == 'S') {AddCh(); goto case 42;}
+				if (ch == 't') {AddCh(); goto case 42;}
 				else {goto case 0;}
 			case 42:
-				if (ch == 't') {AddCh(); goto case 43;}
+				if (ch == 'e') {AddCh(); goto case 43;}
 				else {goto case 0;}
 			case 43:
-				if (ch == 'a') {AddCh(); goto case 44;}
-				else {goto case 0;}
+				{t.kind = 30; break;}
 			case 44:
-				if (ch == 't') {AddCh(); goto case 45;}
+				if (ch == 'e') {AddCh(); goto case 45;}
 				else {goto case 0;}
 			case 45:
 				if (ch == 'e') {AddCh(); goto case 46;}
 				else {goto case 0;}
 			case 46:
-				{t.kind = 31; break;}
+				{t.kind = 33; break;}
 			case 47:
-				if (ch == 'e') {AddCh(); goto case 48;}
+				if (ch == 'd') {AddCh(); goto case 48;}
 				else {goto case 0;}
 			case 48:
-				if (ch == 'e') {AddCh(); goto case 49;}
-				else {goto case 0;}
+				{t.kind = 44; break;}
 			case 49:
-				{t.kind = 34; break;}
+				if (ch == 'e') {AddCh(); goto case 50;}
+				else {goto case 0;}
 			case 50:
-				if (ch == 'd') {AddCh(); goto case 51;}
+				if (ch == 'a') {AddCh(); goto case 51;}
 				else {goto case 0;}
 			case 51:
-				{t.kind = 45; break;}
+				if (ch == 'r') {AddCh(); goto case 52;}
+				else {goto case 0;}
 			case 52:
-				if (ch == 'e') {AddCh(); goto case 53;}
-				else {goto case 0;}
+				{t.kind = 47; break;}
 			case 53:
-				if (ch == 'a') {AddCh(); goto case 54;}
-				else {goto case 0;}
+				recEnd = pos; recKind = 6;
+				if (ch == 'p') {AddCh(); goto case 6;}
+				else if (ch == 't') {AddCh(); goto case 54;}
+				else if (ch == 'G') {AddCh(); goto case 55;}
+				else if (ch == 'u') {AddCh(); goto case 14;}
+				else if (ch == 'A') {AddCh(); goto case 56;}
+				else if (ch == 'H') {AddCh(); goto case 25;}
+				else if (ch == 'U') {AddCh(); goto case 27;}
+				else if (ch == 'T') {AddCh(); goto case 29;}
+				else if (ch == 'F') {AddCh(); goto case 32;}
+				else if (ch == 'S') {AddCh(); goto case 44;}
+				else if (ch == 'i') {AddCh(); goto case 47;}
+				else if (ch == 'h') {AddCh(); goto case 49;}
+				else {t.kind = 6; break;}
 			case 54:
-				if (ch == 'r') {AddCh(); goto case 55;}
+				if (ch == 'i') {AddCh(); goto case 10;}
+				else if (ch == 'e') {AddCh(); goto case 18;}
 				else {goto case 0;}
 			case 55:
-				{t.kind = 48; break;}
+				if (ch == 'S') {AddCh(); goto case 13;}
+				else if (ch == 'Y') {AddCh(); goto case 21;}
+				else {goto case 0;}
 			case 56:
-				recEnd = pos; recKind = 7;
-				if (ch == 'p') {AddCh(); goto case 9;}
-				else if (ch == 't') {AddCh(); goto case 57;}
-				else if (ch == 'G') {AddCh(); goto case 58;}
-				else if (ch == 'u') {AddCh(); goto case 17;}
-				else if (ch == 'A') {AddCh(); goto case 59;}
-				else if (ch == 'H') {AddCh(); goto case 28;}
-				else if (ch == 'U') {AddCh(); goto case 30;}
-				else if (ch == 'T') {AddCh(); goto case 32;}
-				else if (ch == 'F') {AddCh(); goto case 35;}
-				else if (ch == 'S') {AddCh(); goto case 47;}
-				else if (ch == 'i') {AddCh(); goto case 50;}
-				else if (ch == 'h') {AddCh(); goto case 52;}
-				else {t.kind = 7; break;}
-			case 57:
-				if (ch == 'i') {AddCh(); goto case 13;}
-				else if (ch == 'e') {AddCh(); goto case 21;}
-				else {goto case 0;}
-			case 58:
-				if (ch == 'S') {AddCh(); goto case 16;}
-				else if (ch == 'Y') {AddCh(); goto case 24;}
-				else {goto case 0;}
-			case 59:
-				if (ch == 'C') {AddCh(); goto case 26;}
-				else if (ch == 'g') {AddCh(); goto case 38;}
+				if (ch == 'C') {AddCh(); goto case 23;}
+				else if (ch == 'g') {AddCh(); goto case 35;}
 				else {goto case 0;}
 
             }

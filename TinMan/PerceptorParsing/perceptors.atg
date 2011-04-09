@@ -93,6 +93,7 @@
 
     using System.Collections.Generic;
     using System.Globalization;
+    using System.Text;
 
 COMPILER Perceptors
 
@@ -139,13 +140,13 @@ CHARACTERS
 
     letter = 'A'..'Z' + 'a'..'z' .
     digit = "0123456789" .
-    messageChar = '\u0020'..'\u007e' - ' ' - '(' - ')' - digit - letter .
+//    messageChar = '\u0020'..'\u007e' - ' ' - '(' - ')' - digit - letter .
 
 TOKENS
 
     double = ['-'] digit { digit } [ '.' digit { digit } ] .
     ident = letter { letter | digit | '_' | '-' } .
-    message = '\'' messageChar { messageChar } '\'' .
+//    message = '\'' messageChar { messageChar } '\'' .
 
 PRODUCTIONS
 
@@ -181,8 +182,8 @@ PolarPosExpr<out Polar pos> =
     "(pol" Polar<out pos> ')'
     .
 
-MessageText<out string m> = ident               (. m = t.val; .)
-    .
+//MessageText<out string m> = ident               (. m = t.val; .)
+//    .
 
 //////////////////////// SERVER PERCEPTOR EXPRESSIONS
     
@@ -346,12 +347,15 @@ LineExpr =
 //    operators can be found for example. Three characters from this range are, however, excluded:
 //    the white space character and the normal brackets ( and ).
 //    Messages are restricted to a maximal length (currently 20 bytes).
-HearExpr<out HeardMessage message> =                (. TimeSpan time; Angle direction = Angle.NaN; string messageText; .)
+HearExpr<out HeardMessage message> =                (. TimeSpan time; Angle direction = Angle.NaN; var messageText = new StringBuilder(20); .)
     "(hear" 
         TimeSpan<out time>
         ( "self" | AngleInDegrees<out direction> )
-        MessageText<out messageText>
-    ')'                                             (. message = new HeardMessage(time, direction, new Message(messageText.Trim('\''))); .)
+//        MessageText<out messageText>
+        {
+            ANY                                     (. messageText.Append(t.val); .)
+        }
+    ')'                                             (. message = new HeardMessage(time, direction, new Message(messageText.ToString())); .)
     .
 
 Perceptors =

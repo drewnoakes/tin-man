@@ -240,7 +240,17 @@ namespace TinMan.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(12.34), message.RelativeDirection);
             Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
-        
+
+    	[Test] public void ShouldParseMessageWithMiscCharacters() {
+            var parser = Parse("(hear 6.04 -2.16 ]0.uDDI0jOB6wfC6Fucr)");
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            var message = parser.State.HeardMessages.Single();
+            Assert.IsFalse(message.IsFromSelf);
+            Assert.AreEqual("]0.uDDI0jOB6wfC6Fucr", message.Text);
+            Assert.AreEqual(Angle.FromDegrees(-2.16), message.RelativeDirection);
+            Assert.AreEqual(TimeSpan.FromSeconds(6.04), message.HeardAtTime);
+        }
+    	
         [Test] public void ShouldParseSingleDigitDouble() {
             var parser = Parse("(AgentState (temp 0) (battery 1))");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
