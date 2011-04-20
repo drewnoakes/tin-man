@@ -294,19 +294,23 @@ VisibleItemExpr =                           (. string label = la.val; Polar pos;
 //(P (team RoboLog) (id 1) (pol 37.50 16.15 -0.00))
 PlayerExpr =
                                              (. 
-                                                string teamName; 
+                                                var teamName = new StringBuilder(16);
                                                 double playerId;
                                                 var parts = new List<BodyPartPosition>();
                                               .)
         "P"
-        "(team" Ident<out teamName> ')'
+        "(team"
+        {
+            ANY                              (. teamName.Append(t.val); .)
+        }
+        ')'
         "(id" Double<out playerId> ')'
         {
                                             (. string partLabel; Polar pos; .)
             '(' Ident<out partLabel>            
             PolarPosExpr<out pos> ')'       (. parts.Add(new BodyPartPosition(partLabel, pos)); .)
         }
-                                            (. bool isTeamMate = string.Equals(teamName, TeamName, StringComparison.Ordinal);
+                                            (. bool isTeamMate = string.Equals(teamName.ToString(), TeamName, StringComparison.Ordinal);
                                                var player = new PlayerPosition(isTeamMate, (int)playerId, parts);
                                                if (isTeamMate) {
                                                    if (TeamMatePositions==null) TeamMatePositions = new List<PlayerPosition>(4);
@@ -350,7 +354,6 @@ HearExpr<out HeardMessage message> =                (. TimeSpan time; Angle dire
     "(hear" 
         TimeSpan<out time>
         ( "self" | AngleInDegrees<out direction> )
-//        MessageText<out messageText>
         {
             ANY                                     (. messageText.Append(t.val); .)
         }

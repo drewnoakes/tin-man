@@ -402,13 +402,16 @@ public string TeamName;
 	}
 
 	void PlayerExpr() {
-		string teamName; 
+		var teamName = new StringBuilder(16);
 		double playerId;
 		var parts = new List<BodyPartPosition>();
 		
 		Expect(43);
 		Expect(10);
-		Ident(out teamName);
+		while (StartOf(2)) {
+			Get();
+			teamName.Append(t.val); 
+		}
 		Expect(4);
 		Expect(44);
 		Double(out playerId);
@@ -421,7 +424,7 @@ public string TeamName;
 			Expect(4);
 			parts.Add(new BodyPartPosition(partLabel, pos)); 
 		}
-		bool isTeamMate = string.Equals(teamName, TeamName, StringComparison.Ordinal);
+		bool isTeamMate = string.Equals(teamName.ToString(), TeamName, StringComparison.Ordinal);
 		var player = new PlayerPosition(isTeamMate, (int)playerId, parts);
 		if (isTeamMate) {
 		    if (TeamMatePositions==null) TeamMatePositions = new List<PlayerPosition>(4);
