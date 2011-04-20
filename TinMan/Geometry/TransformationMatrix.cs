@@ -33,26 +33,20 @@ namespace TinMan
     /// Represents a 4x4 matrix used to transform <see cref="Vector3"/> instances.
     /// This type is immutable.
     /// </summary>
-    public sealed class TransformationMatrix
+    public sealed class TransformationMatrix : IEquatable<TransformationMatrix>
     {
         private const double Epsilon = 0.0001;
 
         static TransformationMatrix()
         {
-            Identity = new TransformationMatrix(new double[]
-                                                    {
-                                                        1, 0, 0, 0,
-                                                        0, 1, 0, 0,
-                                                        0, 0, 1, 0,
-                                                        0, 0, 0, 1
-                                                    });
-            NaN = new TransformationMatrix(new[]
-                                               {
-                                                   double.NaN, double.NaN, double.NaN, double.NaN,
-                                                   double.NaN, double.NaN, double.NaN, double.NaN,
-                                                   double.NaN, double.NaN, double.NaN, double.NaN,
-                                                   double.NaN, double.NaN, double.NaN, double.NaN
-                                               });
+            Identity = new TransformationMatrix(1, 0, 0, 0,
+                                                0, 1, 0, 0,
+                                                0, 0, 1, 0,
+                                                0, 0, 0, 1);
+            NaN = new TransformationMatrix(double.NaN, double.NaN, double.NaN, double.NaN,
+                                           double.NaN, double.NaN, double.NaN, double.NaN,
+                                           double.NaN, double.NaN, double.NaN, double.NaN,
+                                           double.NaN, double.NaN, double.NaN, double.NaN);
         }
 
         /// <summary>The identity matrix.</summary>
@@ -71,6 +65,14 @@ namespace TinMan
         /// </summary>
         public static TransformationMatrix NaN { get; private set; }
 
+        public static TransformationMatrix Translation(double x, double y, double z)
+        {
+            return new TransformationMatrix(1, 0, 0, x,
+                                            0, 1, 0, y,
+                                            0, 0, 1, z,
+                                            0, 0, 0, 1);
+        }
+        
         /// <summary>
         /// Gets a transformation matrix to transform to the coordinate system specified by the provided
         /// axes.
@@ -81,20 +83,29 @@ namespace TinMan
         /// <returns></returns>
         public static TransformationMatrix GetTransformForCoordinateAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis)
         {
-            return new TransformationMatrix(new[]
-                                                {
-                                                    xAxis.X, yAxis.X, zAxis.X, 0,
-                                                    xAxis.Y, yAxis.Y, zAxis.Y, 0,
-                                                    xAxis.Z, yAxis.Z, zAxis.Z, 0,
-                                                    0, 0, 0, 1
-                                                });
+            // TODO validate that the provided axes are in fact orthonormal otherwise the returned matrix is useless
+            return new TransformationMatrix(xAxis.X, yAxis.X, zAxis.X, 0,
+                                            xAxis.Y, yAxis.Y, zAxis.Y, 0,
+                                            xAxis.Z, yAxis.Z, zAxis.Z, 0,
+                                            0, 0, 0, 1);
         }
 
-        /// <summary>
-        /// The array of 16 double values that backs this matrix.  This array is assigned in the constructor
-        /// and MUST NOT be changed after that time in order to maintain the immutability of this type.
-        /// </summary>
-        private readonly double[] _values;
+        private readonly double _m00;
+        private readonly double _m01;
+        private readonly double _m02;
+        private readonly double _m03;
+        private readonly double _m10;
+        private readonly double _m11;
+        private readonly double _m12;
+        private readonly double _m13;
+        private readonly double _m20;
+        private readonly double _m21;
+        private readonly double _m22;
+        private readonly double _m23;
+        private readonly double _m30;
+        private readonly double _m31;
+        private readonly double _m32;
+        private readonly double _m33;
 
         /// <summary>
         /// Initialises a new transformation matrix from an array of 16 double values.
@@ -106,9 +117,9 @@ namespace TinMan
         ///  12, 13, 14, 15]
         /// </code>
         /// </summary>
-        /// <remarks>Note that the array passed into this method is not copied.  The caller must ensure
-        /// that the array will not be modified after calling this constructor, otherwise the matrix will
-        /// reflect that change.</remarks>
+        /// <remarks>Note that the array passed into this method is copied so may be
+        /// modified safely once this method returns without effecting this
+        /// transformation matrix.</remarks>
         /// <param name="values"></param>
         public TransformationMatrix(double[] values)
         {
@@ -116,7 +127,33 @@ namespace TinMan
                 throw new ArgumentNullException("values");
             if (values.Length != 16)
                 throw new ArgumentException("Array must contain 16 items for a 4x4 transformation matrix.");
-            _values = values;
+            _m00 = values[0];
+            _m01 = values[1];
+            _m02 = values[2];
+            _m03 = values[3];
+            _m10 = values[4];
+            _m11 = values[5];
+            _m12 = values[6];
+            _m13 = values[7];
+            _m20 = values[8];
+            _m21 = values[9];
+            _m22 = values[10];
+            _m23 = values[11];
+            _m30 = values[12];
+            _m31 = values[13];
+            _m32 = values[14];
+            _m33 = values[15];
+        }
+
+        public TransformationMatrix(double m00, double m01, double m02, double m03,
+                                    double m10, double m11, double m12, double m13,
+                                    double m20, double m21, double m22, double m23,
+                                    double m30, double m31, double m32, double m33)
+        {
+            _m00 = m00; _m01 = m01; _m02 = m02; _m03 = m03;
+            _m10 = m10; _m11 = m11; _m12 = m12; _m13 = m13;
+            _m20 = m20; _m21 = m21; _m22 = m22; _m23 = m23;
+            _m30 = m30; _m31 = m31; _m32 = m32; _m33 = m33;
         }
 
         /// <summary>
@@ -129,13 +166,7 @@ namespace TinMan
         /// <returns></returns>
         public TransformationMatrix Translate(double x, double y, double z)
         {
-            return Multiply(new TransformationMatrix(new[]
-                                                         {
-                                                             1, 0, 0, 0,
-                                                             0, 1, 0, 0,
-                                                             0, 0, 1, 0,
-                                                             x, y, z, 1
-                                                         }));
+            return Multiply(TransformationMatrix.Translation(x, y, z));
         }
 
         /// <summary>
@@ -148,13 +179,10 @@ namespace TinMan
         {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new[]
-                                                         {
-                                                             1, 0, 0, 0,
-                                                             0, c, -s, 0,
-                                                             0, s, c, 0,
-                                                             0, 0, 0, 1
-                                                         }));
+            return Multiply(new TransformationMatrix(1, 0,  0, 0,
+                                                     0, c, -s, 0,
+                                                     0, s,  c, 0,
+                                                     0, 0,  0, 1));
         }
 
         /// <summary>
@@ -167,13 +195,10 @@ namespace TinMan
         {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new[]
-                                                         {
-                                                             c, 0, s, 0,
-                                                             0, 1, 0, 0,
-                                                             -s, 0, c, 0,
-                                                             0, 0, 0, 1
-                                                         }));
+            return Multiply(new TransformationMatrix( c, 0, s, 0,
+                                                      0, 1, 0, 0,
+                                                     -s, 0, c, 0,
+                                                      0, 0, 0, 1));
         }
 
         /// <summary>
@@ -186,35 +211,40 @@ namespace TinMan
         {
             double c = angle.Cos;
             double s = angle.Sin;
-            return Multiply(new TransformationMatrix(new[]
-                                                         {
-                                                             c, -s, 0, 0,
-                                                             s, c, 0, 0,
-                                                             0, 0, 1, 0,
-                                                             0, 0, 0, 1
-                                                         }));
+            return Multiply(new TransformationMatrix(c, -s, 0, 0,
+                                                     s, c, 0, 0,
+                                                     0, 0, 1, 0,
+                                                     0, 0, 0, 1));
         }
 
         /// <summary>
-        /// Returns a transformation matrix which is the product of this instance with the specified
-        /// matrix.
+        /// Returns a transformation matrix which is the product of this instance with the
+        /// specified matrix.
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
         public TransformationMatrix Multiply(TransformationMatrix matrix)
         {
-            var newValues = new double[16];
-            for (int i = 0; i < 16; i += 4)
-            {
-                for (int j = 0; j < 4; j++)
-                {
-                    newValues[i + j] = _values[i]*matrix._values[j]
-                                     + _values[i + 1]*matrix._values[4 + j]
-                                     + _values[i + 2]*matrix._values[8 + j]
-                                     + _values[i + 3]*matrix._values[12 + j];
-                }
-            }
-            return new TransformationMatrix(newValues);
+            return new TransformationMatrix(
+            	_m00*matrix._m00 + _m01*matrix._m10 + _m02*matrix._m20 + _m03*matrix._m30,
+    	        _m00*matrix._m01 + _m01*matrix._m11 + _m02*matrix._m21 + _m03*matrix._m31,
+    	        _m00*matrix._m02 + _m01*matrix._m12 + _m02*matrix._m22 + _m03*matrix._m32,
+    	        _m00*matrix._m03 + _m01*matrix._m13 + _m02*matrix._m23 + _m03*matrix._m33,
+    	
+		        _m10*matrix._m00 + _m11*matrix._m10 + _m12*matrix._m20 + _m13*matrix._m30,
+    	        _m10*matrix._m01 + _m11*matrix._m11 + _m12*matrix._m21 + _m13*matrix._m31,
+    	        _m10*matrix._m02 + _m11*matrix._m12 + _m12*matrix._m22 + _m13*matrix._m32,
+    	        _m10*matrix._m03 + _m11*matrix._m13 + _m12*matrix._m23 + _m13*matrix._m33,
+    	
+		        _m20*matrix._m00 + _m21*matrix._m10 + _m22*matrix._m20 + _m23*matrix._m30,
+    	        _m20*matrix._m01 + _m21*matrix._m11 + _m22*matrix._m21 + _m23*matrix._m31,
+    	        _m20*matrix._m02 + _m21*matrix._m12 + _m22*matrix._m22 + _m23*matrix._m32,
+    	        _m20*matrix._m03 + _m21*matrix._m13 + _m22*matrix._m23 + _m23*matrix._m33,
+    	
+		        _m30*matrix._m00 + _m31*matrix._m10 + _m32*matrix._m20 + _m33*matrix._m30,
+    	        _m30*matrix._m01 + _m31*matrix._m11 + _m32*matrix._m21 + _m33*matrix._m31,
+    	        _m30*matrix._m02 + _m31*matrix._m12 + _m32*matrix._m22 + _m33*matrix._m32,
+    	        _m30*matrix._m03 + _m31*matrix._m13 + _m32*matrix._m23 + _m33*matrix._m33);
         }
 
         /// <summary>
@@ -224,13 +254,19 @@ namespace TinMan
         /// <returns></returns>
         public Vector3 Transform(Vector3 input)
         {
-            double x = input.X*_values[0] + input.Y*_values[4] + input.Z*_values[8] + _values[12];
-            double y = input.X*_values[1] + input.Y*_values[5] + input.Z*_values[9] + _values[13];
-            double z = input.X*_values[2] + input.Y*_values[6] + input.Z*_values[10] + _values[14];
-            double s = input.X*_values[3] + input.Y*_values[7] + input.Z*_values[11] + _values[15];
-            if (Math.Abs(s - 0) < Epsilon)
-                return Vector3.Origin;
-            return new Vector3(x/s, y/s, z/s);
+            double x = _m00*input.X + _m01*input.Y + _m02*input.Z + _m03;
+            double y = _m10*input.X + _m11*input.Y + _m12*input.Z + _m13;
+            double z = _m20*input.X + _m21*input.Y + _m22*input.Z + _m23;
+            
+            return new Vector3(x, y, z);
+
+//            double x = input.X*_m00 + input.Y*_m10 + input.Z*_m20 + _m30;
+//            double y = input.X*_m01 + input.Y*_m11 + input.Z*_m21 + _m31;
+//            double z = input.X*_m02 + input.Y*_m12 + input.Z*_m22 + _m32;
+//            double s = input.X*_m03 + input.Y*_m13 + input.Z*_m23 + _m33;
+//            if (Math.Abs(s) < Epsilon)
+//                return Vector3.Origin;
+//            return new Vector3(x/s, y/s, z/s);
         }
 
         #region Untested utility methods
@@ -240,25 +276,25 @@ namespace TinMan
         /// <summary>Get the direction of the x-axis of this transformation.</summary>
         public Vector3 GetXAxis()
         {
-            return new Vector3(_values[0], _values[1], _values[2]);
+            return new Vector3(_m00, _m01, _m02);
         }
 
         /// <summary>Get the direction of the y-axis of this transformation.</summary>
         public Vector3 GetYAxis()
         {
-            return new Vector3(_values[4], _values[5], _values[6]);
+            return new Vector3(_m10, _m11, _m12);
         }
 
         /// <summary>Get the direction of the z-axis of this transformation.</summary>
         public Vector3 GetZAxis()
         {
-            return new Vector3(_values[8], _values[9], _values[10]);
+            return new Vector3(_m20, _m21, _m22);
         }
 
         /// <summary>Get the translation part of this transformation.</summary>
         public Vector3 GetTranslation()
         {
-            return new Vector3(_values[12], _values[13], _values[14]);
+            return new Vector3(_m03, _m13, _m23);
         }
 
         #endregion
@@ -267,38 +303,73 @@ namespace TinMan
 
         public override string ToString()
         {
-            return string.Format("[{0} {1} {2} {3}]\n" +
-                                 "[{4} {5} {6} {7}]\n" +
-                                 "[{8} {9} {10} {11}]\n" +
-                                 "[{12} {13} {14} {15}]", _values.Select(v => (object)v.ToString("0.##")).ToArray());
+            return string.Format("[{0,4:0.##} {1,4:0.##} {2,4:0.##} {3,4:0.##}]\n" +
+                                 "[{4,4:0.##} {5,4:0.##} {6,4:0.##} {7,4:0.##}]\n" +
+                                 "[{8,4:0.##} {9,4:0.##} {10,4:0.##} {11,4:0.##}]\n" +
+                                 "[{12,4:0.##} {13,4:0.##} {14,4:0.##} {15,4:0.##}]", 
+                                _m00,_m01,_m02,_m03,
+                                _m10,_m11,_m12,_m13,
+                                _m20,_m21,_m22,_m23,
+                                _m30,_m31,_m32,_m33);
         }
 
         public override bool Equals(object obj)
         {
             var matrix = obj as TransformationMatrix;
+            
             if (matrix == null)
                 return false;
-            for (int i = 0; i < 16; i++)
-            {
-                if (Math.Abs(matrix._values[i] - _values[i]) > Epsilon)
-                    return false;
-            }
-            return true;
+    		
+            return Equals(matrix);
+        }
+        
+        public bool Equals(TransformationMatrix matrix)
+        {
+            return Math.Abs(matrix._m00 - _m00) <= Epsilon
+                && Math.Abs(matrix._m01 - _m01) <= Epsilon
+                && Math.Abs(matrix._m02 - _m02) <= Epsilon
+                && Math.Abs(matrix._m03 - _m03) <= Epsilon
+                && Math.Abs(matrix._m10 - _m10) <= Epsilon
+                && Math.Abs(matrix._m11 - _m11) <= Epsilon
+                && Math.Abs(matrix._m12 - _m12) <= Epsilon
+                && Math.Abs(matrix._m13 - _m13) <= Epsilon
+                && Math.Abs(matrix._m20 - _m20) <= Epsilon
+                && Math.Abs(matrix._m21 - _m21) <= Epsilon
+                && Math.Abs(matrix._m22 - _m22) <= Epsilon
+                && Math.Abs(matrix._m23 - _m23) <= Epsilon
+                && Math.Abs(matrix._m30 - _m30) <= Epsilon
+                && Math.Abs(matrix._m31 - _m31) <= Epsilon
+                && Math.Abs(matrix._m32 - _m32) <= Epsilon
+                && Math.Abs(matrix._m33 - _m33) <= Epsilon;
         }
 
         public override int GetHashCode()
         {
             unchecked
             {
-                int c = 0;
-                for (int i = 0; i < _values.Length; i++)
-                    c += (int)((i + 1)*_values[i]);
+                int c = (int)_m00;
+                c += (int)(2*_m01);
+                c += (int)(3*_m02);
+                c += (int)(4*_m03);
+                c += (int)(5*_m10);
+                c += (int)(6*_m11);
+                c += (int)(7*_m12);
+                c += (int)(8*_m13);
+                c += (int)(9*_m20);
+                c += (int)(10*_m21);
+                c += (int)(11*_m22);
+                c += (int)(12*_m23);
+                c += (int)(13*_m30);
+                c += (int)(14*_m31);
+                c += (int)(15*_m32);
+                c += (int)(16*_m33);
                 return c;
             }
         }
 
         #endregion
 
+/*
         /// <summary>Calculates the inversion of this transformation matrix.</summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The determinant is zero.</exception>
@@ -345,23 +416,18 @@ namespace TinMan
 
             return true;
         }
+*/
 
+        /// <summary>
+        /// Computes the determinant of this matrix.
+        /// </summary>
+        /// <returns></returns>
         public double GetDeterminant()
         {
-            double[] m = _values;
-            return
-                 m[12] * m[9]  * m[6]  * m[3]   -  m[8] * m[13] * m[6]  * m[3]   -
-                 m[12] * m[5]  * m[10] * m[3]   +  m[4] * m[13] * m[10] * m[3]   +
-                 m[8]  * m[5]  * m[14] * m[3]   -  m[4] * m[9]  * m[14] * m[3]   -
-                 m[12] * m[9]  * m[2]  * m[7]   +  m[8] * m[13] * m[2]  * m[7]   +
-                 m[12] * m[1]  * m[10] * m[7]   -  m[0] * m[13] * m[10] * m[7]   -
-                 m[8]  * m[1]  * m[14] * m[7]   +  m[0] * m[9]  * m[14] * m[7]   +
-                 m[12] * m[5]  * m[2]  * m[11]  -  m[4] * m[13] * m[2]  * m[11]  -
-                 m[12] * m[1]  * m[6]  * m[11]  +  m[0] * m[13] * m[6]  * m[11]  +
-                 m[4]  * m[1]  * m[14] * m[11]  -  m[0] * m[5]  * m[14] * m[11]  -
-                 m[8]  * m[5]  * m[2]  * m[15]  +  m[4] * m[9]  * m[2]  * m[15]  +
-                 m[8]  * m[1]  * m[6]  * m[15]  -  m[0] * m[9]  * m[6]  * m[15]  -
-                 m[4]  * m[1]  * m[10] * m[15]  +  m[0] * m[5]  * m[10] * m[15];
+    	    return _m00*(_m11*_m22*_m33 + _m12*_m23*_m31 + _m13*_m21*_m32 - _m13*_m22*_m31 -_m11*_m23*_m32 - _m12*_m21*_m33)
+    		     - _m01*(_m10*_m22*_m33 + _m12*_m23*_m30 + _m13*_m20*_m32 - _m13*_m22*_m30 -_m10*_m23*_m32 - _m12*_m20*_m33)
+    		     + _m02*(_m10*_m21*_m33 + _m11*_m23*_m30 + _m13*_m20*_m31 - _m13*_m21*_m30 -_m10*_m23*_m31 - _m11*_m20*_m33)
+    		     - _m03*(_m10*_m21*_m32 + _m11*_m22*_m30 + _m12*_m20*_m31 - _m12*_m21*_m30 -_m10*_m22*_m31 - _m11*_m20*_m32);
         }
     }
 }
