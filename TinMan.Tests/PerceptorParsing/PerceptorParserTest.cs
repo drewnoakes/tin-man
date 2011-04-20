@@ -240,19 +240,18 @@ namespace TinMan.PerceptorParsing
             Assert.AreEqual(Angle.FromDegrees(12.34), message.RelativeDirection);
             Assert.AreEqual(TimeSpan.FromSeconds(12.3), message.HeardAtTime);
         }
-
-    	[Test] public void ShouldParseMessageWithMiscCharacters() {
+        
+        [Test] public void ShouldParseMessageWithMiscCharacters() {
             var parser = Parse("(hear 6.04 -2.16 ]0.uDDI0jOB6wfC6Fucr)");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var message = parser.State.HeardMessages.Single();
             Assert.IsFalse(message.IsFromSelf);
             Assert.AreEqual("]0.uDDI0jOB6wfC6Fucr", message.Text);
-            Assert.AreEqual(TimeSpan.FromSeconds(6.04), message.HeardAtTime);
             Assert.AreEqual(Angle.FromDegrees(-2.16), message.RelativeDirection);
+            Assert.AreEqual(TimeSpan.FromSeconds(6.04), message.HeardAtTime);
         }
 
-
-    	[Test] public void ShouldParseMessageWithMiscCharacters2() {
+        [Test] public void ShouldParseMessageWithMiscCharacters2() {
             var parser = Parse("(time (now 61.80))(GS (t 0.00) (pm BeforeKickOff))(hear 0.00 -1.16 L0,SD1HBH)(GYR (n torso) (rt -0.00 -0.00 0.00))(ACC (n torso) (a -0.00 -0.00 0.01))(HJ (n hj1) (ax -0.00))(HJ (n hj2) (ax -19.45))(HJ (n raj1) (ax -27.82))(HJ (n raj2) (ax -44.97))(HJ (n raj3) (ax 0.00))(HJ (n raj4) (ax 67.91))(HJ (n laj1) (ax -27.82))(HJ (n laj2) (ax 44.97))(HJ (n laj3) (ax -0.00))(HJ (n laj4) (ax -67.91))(HJ (n rlj1) (ax -10.59))(HJ (n rlj2) (ax -1.34))(HJ (n rlj3) (ax 47.88))(HJ (n rlj4) (ax -89.63))(HJ (n rlj5) (ax 45.54))(HJ (n rlj6) (ax 0.00))(HJ (n llj1) (ax -10.58))(HJ (n llj2) (ax 1.34))(HJ (n llj3) (ax 47.88))(HJ (n llj4) (ax -89.63))(HJ (n llj5) (ax 45.54))(HJ (n llj6) (ax 0.00))");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
             var message = parser.State.HeardMessages.Single();
@@ -261,7 +260,7 @@ namespace TinMan.PerceptorParsing
             Assert.AreEqual(TimeSpan.FromSeconds(0), message.HeardAtTime);
             Assert.AreEqual(Angle.FromDegrees(-1.16), message.RelativeDirection);
         }
-    	
+
         [Test] public void ShouldParseSingleDigitDouble() {
             var parser = Parse("(AgentState (temp 0) (battery 1))");
             Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
