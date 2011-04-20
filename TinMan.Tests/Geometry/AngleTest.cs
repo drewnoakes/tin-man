@@ -50,5 +50,12 @@ namespace TinMan
             Assert.AreEqual(-180, Angle.RadiansToDegrees(-Math.PI));
             Assert.AreEqual(360, Angle.RadiansToDegrees(Math.PI*2));
         }
+    	
+    	[Test] public void Equals(){
+    		Assert.AreEqual(Angle.NaN, Angle.NaN);
+    		Assert.AreEqual(Angle.Zero, Angle.Zero);
+    		Assert.AreEqual(Angle.FromDegrees(180), Angle.FromRadians(Math.PI));
+    		Assert.AreEqual(Angle.FromRadians(1), Angle.FromRadians(1.000001));
+    	}
     }
 }

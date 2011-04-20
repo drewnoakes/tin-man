@@ -190,7 +190,8 @@ namespace TinMan
 
         public bool Equals(Angle other)
         {
-            return Math.Abs(other.Radians - Radians) < Epsilon;
+        	return (double.IsNaN(Radians) && double.IsNaN(other.Radians))
+        		|| Math.Abs(other.Radians - Radians) < Epsilon;
         }
 
         public override int GetHashCode()
