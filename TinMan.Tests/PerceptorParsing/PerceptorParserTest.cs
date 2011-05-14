@@ -368,6 +368,23 @@ namespace TinMan.PerceptorParsing
         }
 
         [Test]
+        public void ShouldParseMessageWithMiscCharacters4()
+        {
+            var parser = Parse("(time (now 307.99))(GS (t 249.58) (pm PlayOn))(hear 249.58 self BPSn0d1Sn0d1)(hear 249.58 -1.45 l221yEJrw^NuB_VVEA|[)(GYR (n torso) (rt 59.64 16.77 -15.97))(ACC (n torso) (a 1.01 -2.14 4.08))(HJ (n hj1) (ax 0.00))(HJ (n hj2) (ax -0.00))(See (G1L (pol 13.43 33.03 19.78)) (G2L (pol 13.39 42.38 17.73)) (F1L (pol 15.24 8.49 20.00)) (B (pol 2.92 30.52 9.91)) (P (team Strive3D) (id 2) (head (pol 3.13 33.72 18.18)) (rlowerarm (pol 3.16 34.87 13.89)) (llowerarm (pol 3.15 30.89 15.07)) (rfoot (pol 3.19 32.68 9.56)) (lfoot (pol 3.24 30.94 10.59))) (P (team KarachiKoalas) (id 2) (rlowerarm (pol 0.21 -55.46 -35.88)) (llowerarm (pol 0.21 55.44 -35.63))) (P (team Strive3D) (id 1) (head (pol 12.76 37.53 17.56)) (rlowerarm (pol 12.78 38.09 16.71)) (llowerarm (pol 12.74 36.65 16.61)) (rfoot (pol 12.79 37.24 15.52)) (lfoot (pol 12.80 36.80 15.56))) (mypos -2.87 0.32 0.50) (L (pol 3.19 59.99 1.41) (pol 7.88 -32.92 15.79)) (L (pol 14.44 59.94 8.82) (pol 15.23 8.42 19.95)) (L (pol 7.37 -59.98 8.11) (pol 15.25 8.60 20.10)) (L (pol 11.80 27.07 17.40) (pol 11.69 46.22 12.81)) (L (pol 11.79 26.93 17.29) (pol 13.57 28.57 17.39)) (L (pol 11.69 46.21 12.80) (pol 13.48 45.32 13.48)) (L (pol 1.22 18.22 -3.37) (pol 2.03 -7.35 8.02)) (L (pol 2.03 -7.29 8.07) (pol 3.11 -4.78 12.93)) (L (pol 3.12 -4.52 13.14) (pol 4.01 6.11 14.83)) (L (pol 4.01 6.37 15.05) (pol 4.56 19.54 14.48)) (L (pol 4.56 19.57 14.51) (pol 4.70 33.33 12.13)) (L (pol 4.71 33.56 12.32) (pol 4.41 46.60 8.35)) (L (pol 4.42 46.80 8.51) (pol 3.73 58.23 3.54)) (L (pol 3.73 57.89 3.26) (pol 3.41 59.85 1.91)) (L (pol 1.68 60.31 -7.23) (pol 1.67 59.70 -7.74)) (L (pol 1.67 59.95 -7.53) (pol 1.22 18.40 -3.22)))(HJ (n raj1) (ax -27.87))(HJ (n raj2) (ax -45.12))(HJ (n raj3) (ax 0.05))(HJ (n raj4) (ax 68.03))(HJ (n laj1) (ax -27.90))(HJ (n laj2) (ax 45.14))(HJ (n laj3) (ax -0.05))(HJ (n laj4) (ax -68.05))(HJ (n rlj1) (ax 0.79))(HJ (n rlj2) (ax -0.85))(HJ (n rlj3) (ax 44.75))(HJ (n rlj4) (ax -59.37))(HJ (n rlj5) (ax 33.51))(HJ (n rlj6) (ax 0.85))(HJ (n llj1) (ax 1.51))(HJ (n llj2) (ax 0.85))(HJ (n llj3) (ax 24.94))(HJ (n llj4) (ax -43.76))(HJ (n llj5) (ax 36.91))(FRP (n lf) (c 0.03 0.08 -0.01) (f -0.58 -1.04 39.60))(HJ (n llj6) (ax -0.85))");
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            var messages = parser.State.HeardMessages.ToArray();
+            Assert.AreEqual(2, messages.Length);
+            Assert.IsTrue(messages[0].IsFromSelf);
+            Assert.AreEqual("BPSn0d1Sn0d1", messages[0].Text);
+            Assert.AreEqual(TimeSpan.FromSeconds(249.58), messages[0].HeardAtTime);
+            Assert.AreEqual(Angle.NaN, messages[0].RelativeDirection);
+            Assert.IsFalse(messages[1].IsFromSelf);
+            Assert.AreEqual("l221yEJrw^NuB_VVEA|[", messages[1].Text);
+            Assert.AreEqual(TimeSpan.FromSeconds(249.58), messages[1].HeardAtTime);
+            Assert.AreEqual(Angle.FromDegrees(-1.45), messages[1].RelativeDirection);
+        }
+
+        [Test]
         public void ShouldParseSingleDigitDouble()
         {
             var parser = Parse("(AgentState (temp 0) (battery 1))");
@@ -398,6 +415,61 @@ namespace TinMan.PerceptorParsing
         {
             var parser = Parse("gibberish");
             Assert.IsTrue(parser.errors.HasError);
+        }
+
+        [Test]
+        public void ShouldParseVisibleLines()
+        {
+            var parser = Parse("(See " +
+                               "(G1L (pol 13.43 33.03 19.78)) (G2L (pol 13.39 42.38 17.73)) (F1L (pol 15.24 8.49 20.00)) " +
+                               "(B (pol 2.92 30.52 9.91)) " +
+                               "(P (team Strive3D) (id 2) (head (pol 3.13 33.72 18.18)) (rlowerarm (pol 3.16 34.87 13.89)) (llowerarm (pol 3.15 30.89 15.07)) (rfoot (pol 3.19 32.68 9.56)) (lfoot (pol 3.24 30.94 10.59))) (P (team KarachiKoalas) (id 2) (rlowerarm (pol 0.21 -55.46 -35.88)) (llowerarm (pol 0.21 55.44 -35.63))) " +
+                               "(P (team Strive3D) (id 1) (head (pol 12.76 37.53 17.56)) (rlowerarm (pol 12.78 38.09 16.71)) (llowerarm (pol 12.74 36.65 16.61)) (rfoot (pol 12.79 37.24 15.52)) (lfoot (pol 12.80 36.80 15.56))) (mypos -2.87 0.32 0.50) " +
+                               "(L (pol 3.19 59.99 1.41) (pol 7.88 -32.92 15.79)) " +
+                               "(L (pol 14.44 59.94 8.82) (pol 15.23 8.42 19.95)) " +
+                               "(L (pol 7.37 -59.98 8.11) (pol 15.25 8.60 20.10)) " +
+                               "(L (pol 11.80 27.07 17.40) (pol 11.69 46.22 12.81)) " +
+                               "(L (pol 11.79 26.93 17.29) (pol 13.57 28.57 17.39)) " +
+                               "(L (pol 11.69 46.21 12.80) (pol 13.48 45.32 13.48)) " +
+                               "(L (pol 1.22 18.22 -3.37) (pol 2.03 -7.35 8.02)) " +
+                               "(L (pol 2.03 -7.29 8.07) (pol 3.11 -4.78 12.93)) " +
+                               "(L (pol 3.12 -4.52 13.14) (pol 4.01 6.11 14.83)) " +
+                               "(L (pol 4.01 6.37 15.05) (pol 4.56 19.54 14.48)) " +
+                               "(L (pol 4.56 19.57 14.51) (pol 4.70 33.33 12.13)) " +
+                               "(L (pol 4.71 33.56 12.32) (pol 4.41 46.60 8.35)) " +
+                               "(L (pol 4.42 46.80 8.51) (pol 3.73 58.23 3.54)) " +
+                               "(L (pol 3.73 57.89 3.26) (pol 3.41 59.85 1.91)) " +
+                               "(L (pol 1.68 60.31 -7.23) (pol 1.67 59.70 -7.74)) " +
+                               "(L (pol 1.67 59.95 -7.53) (pol 1.22 18.40 -3.22)))");
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            var lines = parser.State.VisibleLines;
+            Assert.IsNotNull(lines);
+            Assert.AreEqual(16,     lines.Count());
+
+            Assert.AreEqual(3.19,   lines.Skip(0).First().End1.Distance, 0.0001);
+            Assert.AreEqual(59.99,  lines.Skip(0).First().End1.Theta.Degrees, 0.0001);
+            Assert.AreEqual(1.41,   lines.Skip(0).First().End1.Phi.Degrees, 0.0001);
+            Assert.AreEqual(7.88,   lines.Skip(0).First().End2.Distance, 0.0001);
+            Assert.AreEqual(-32.92, lines.Skip(0).First().End2.Theta.Degrees, 0.0001);
+            Assert.AreEqual(15.79,  lines.Skip(0).First().End2.Phi.Degrees, 0.0001);
+        }
+
+        [Test]
+        public void ShouldParseNaNDoubles()
+        {
+            var parser = Parse("(See (L (pol 4.06 -11.31 12.96) (pol nan nan nan)))");
+            Assert.IsFalse(parser.errors.HasError, parser.errors.ErrorMessages);
+            var lines = parser.State.VisibleLines;
+            Assert.IsNotNull(lines);
+            Assert.AreEqual(1, lines.Count());
+
+            Assert.AreEqual(4.06,   lines.Skip(0).First().End1.Distance, 0.0001);
+            Assert.AreEqual(-11.31, lines.Skip(0).First().End1.Theta.Degrees, 0.0001);
+            Assert.AreEqual(12.96,  lines.Skip(0).First().End1.Phi.Degrees, 0.0001);
+
+            Assert.IsTrue(double.IsNaN(lines.Skip(0).First().End2.Distance));
+            Assert.IsTrue(double.IsNaN(lines.Skip(0).First().End2.Theta.Degrees));
+            Assert.IsTrue(double.IsNaN(lines.Skip(0).First().End2.Phi.Degrees));
         }
     }
 }

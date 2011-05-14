@@ -15,7 +15,7 @@ internal sealed class Parser {
 	public const int _EOF = 0;
 	public const int _double = 1;
 	public const int _ident = 2;
-	public const int maxT = 49;
+	public const int maxT = 50;
 
     private const bool T = true;
     private const bool x = false;
@@ -54,6 +54,8 @@ public string TeamName;
     public PerceptorState State { get; private set; }
 
     private double AsDouble(string s) {
+        if (s=="nan")
+            return double.NaN;
         double d;
         if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
             SemErr("Unable to convert \"" + s + "\" to a double.");
@@ -124,7 +126,11 @@ public string TeamName;
     }
 
 	void Double(out double d) {
-		Expect(1);
+		if (la.kind == 1) {
+			Get();
+		} else if (la.kind == 3) {
+			Get();
+		} else SynErr(51);
 		d = AsDouble(t.val); 
 	}
 
@@ -153,11 +159,11 @@ public string TeamName;
 	}
 
 	void Polar(out Polar pos) {
-		double distance, angle1, angle2; 
+		double distance, theta, phi; 
 		Double(out distance);
-		Double(out angle1);
-		Double(out angle2);
-		pos = new Polar(distance, Angle.FromDegrees(angle1), Angle.FromDegrees(angle2)); 
+		Double(out theta);
+		Double(out phi);
+		pos = new Polar(distance, Angle.FromDegrees(theta), Angle.FromDegrees(phi)); 
 	}
 
 	void IntFlag(out bool isSet) {
@@ -167,33 +173,33 @@ public string TeamName;
 	}
 
 	void PolarPosExpr(out Polar pos) {
-		Expect(3);
-		Polar(out pos);
 		Expect(4);
+		Polar(out pos);
+		Expect(5);
 	}
 
 	void TimeExpr(out TimeSpan time) {
-		Expect(5);
 		Expect(6);
 		Expect(7);
+		Expect(8);
 		TimeSpan(out time);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 	}
 
 	void GameStateExpr(out TimeSpan time, out PlayMode playMode, out int? playerId, out FieldSide? teamSide) {
-		Expect(8);
+		Expect(9);
 		string pmStr; double playerIdDbl; playerId = null; teamSide = null; 
-		if (la.kind == 9) {
-			Get();
-			Double(out playerIdDbl);
-			Expect(4);
-			playerId = (int)playerIdDbl; 
-		}
 		if (la.kind == 10) {
 			Get();
-			if (la.kind == 11 || la.kind == 12) {
-				if (la.kind == 11) {
+			Double(out playerIdDbl);
+			Expect(5);
+			playerId = (int)playerIdDbl; 
+		}
+		if (la.kind == 11) {
+			Get();
+			if (la.kind == 12 || la.kind == 13) {
+				if (la.kind == 12) {
 					Get();
 					teamSide = FieldSide.Left; 
 				} else {
@@ -201,156 +207,152 @@ public string TeamName;
 					teamSide = FieldSide.Right; 
 				}
 			}
-			Expect(4);
+			Expect(5);
 		}
-		Expect(6);
-		Expect(13);
-		TimeSpan(out time);
-		Expect(4);
-		Expect(6);
+		Expect(7);
 		Expect(14);
+		TimeSpan(out time);
+		Expect(5);
+		Expect(7);
+		Expect(15);
 		Ident(out pmStr);
-		Expect(4);
+		Expect(5);
 		if (!PlayModeUtil.TryParse(pmStr, out playMode))
 		   SemErr("Unable to parse play mode '" + pmStr +"'.");;
 		
-		Expect(4);
+		Expect(5);
 	}
 
 	void GyroStateExpr(out GyroState gyroState) {
 		string label; double x,y,z; 
-		Expect(15);
-		Expect(6);
 		Expect(16);
-		Ident(out label);
-		Expect(4);
-		Expect(6);
+		Expect(7);
 		Expect(17);
+		Ident(out label);
+		Expect(5);
+		Expect(7);
+		Expect(18);
 		Double(out x);
 		Double(out y);
 		Double(out z);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 		gyroState = new GyroState(label, x, y, z); 
 	}
 
 	void AccelerometerStateExpr(out AccelerometerState accState) {
 		string label; Vector3 v; 
-		Expect(18);
-		Expect(6);
-		Expect(16);
-		Ident(out label);
-		Expect(4);
-		Expect(6);
 		Expect(19);
+		Expect(7);
+		Expect(17);
+		Ident(out label);
+		Expect(5);
+		Expect(7);
+		Expect(20);
 		Vector3(out v);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 		accState = new AccelerometerState(label, v); 
 	}
 
 	void HingeJointExpr(out HingeState hj) {
 		string label; Angle angle; 
-		Expect(20);
-		Expect(6);
-		Expect(16);
-		Ident(out label);
-		Expect(4);
-		Expect(6);
 		Expect(21);
+		Expect(7);
+		Expect(17);
+		Ident(out label);
+		Expect(5);
+		Expect(7);
+		Expect(22);
 		AngleInDegrees(out angle);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 		hj = new HingeState(label, angle); 
 	}
 
 	void UniversalJointExpr(out UniversalJointState uj) {
 		string label; Angle angle1, angle2; 
-		Expect(22);
-		Expect(6);
-		Expect(16);
-		Ident(out label);
-		Expect(4);
-		Expect(6);
 		Expect(23);
-		AngleInDegrees(out angle1);
-		Expect(4);
-		Expect(6);
+		Expect(7);
+		Expect(17);
+		Ident(out label);
+		Expect(5);
+		Expect(7);
 		Expect(24);
+		AngleInDegrees(out angle1);
+		Expect(5);
+		Expect(7);
+		Expect(25);
 		AngleInDegrees(out angle2);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 		uj = new UniversalJointState(label, angle1, angle2); 
 	}
 
 	void TouchStateExpr(out TouchState ts) {
 		string label; bool isTouching; 
-		Expect(25);
-		Expect(16);
-		Ident(out label);
 		Expect(26);
+		Expect(17);
+		Ident(out label);
+		Expect(27);
 		IntFlag(out isTouching);
-		Expect(4);
+		Expect(5);
 		ts = new TouchState(label, isTouching); 
 	}
 
 	void ForceStateExpr(out ForceState fs) {
 		string label; Vector3 point, force; 
-		Expect(27);
-		Expect(6);
-		Expect(16);
-		Ident(out label);
-		Expect(4);
-		Expect(6);
 		Expect(28);
-		Vector3(out point);
-		Expect(4);
-		Expect(6);
+		Expect(7);
+		Expect(17);
+		Ident(out label);
+		Expect(5);
+		Expect(7);
 		Expect(29);
+		Vector3(out point);
+		Expect(5);
+		Expect(7);
+		Expect(30);
 		Vector3(out force);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 		fs = new ForceState(label, point, force); 
 	}
 
 	void AgentStateExpr(out double temp, out double battery) {
-		Expect(30);
-		Expect(6);
 		Expect(31);
-		Double(out temp);
-		Expect(4);
-		Expect(6);
+		Expect(7);
 		Expect(32);
+		Double(out temp);
+		Expect(5);
+		Expect(7);
+		Expect(33);
 		Double(out battery);
-		Expect(4);
-		Expect(4);
+		Expect(5);
+		Expect(5);
 	}
 
 	void SeeExpr() {
-		Expect(33);
-		while (la.kind == 6) {
+		Expect(34);
+		while (la.kind == 7) {
 			Get();
 			if (StartOf(1)) {
 				VisibleItemExpr();
-			} else if (la.kind == 43) {
+			} else if (la.kind == 44) {
 				PlayerExpr();
-			} else if (la.kind == 45) {
-				MyPosExpr();
 			} else if (la.kind == 46) {
+				MyPosExpr();
+			} else if (la.kind == 47) {
 				LineExpr();
-			} else SynErr(50);
-			Expect(4);
+			} else SynErr(52);
+			Expect(5);
 		}
-		Expect(4);
+		Expect(5);
 	}
 
 	void VisibleItemExpr() {
 		string label = la.val; Polar pos; 
 		switch (la.kind) {
-		case 34: {
-			Get();
-			break;
-		}
 		case 35: {
 			Get();
 			break;
@@ -383,7 +385,11 @@ public string TeamName;
 			Get();
 			break;
 		}
-		default: SynErr(51); break;
+		case 43: {
+			Get();
+			break;
+		}
+		default: SynErr(53); break;
 		}
 		PolarPosExpr(out pos);
 		switch (label) {
@@ -406,22 +412,22 @@ public string TeamName;
 		double playerId;
 		var parts = new List<BodyPartPosition>();
 		
-		Expect(43);
-		Expect(10);
+		Expect(44);
+		Expect(11);
 		while (StartOf(2)) {
 			Get();
 			teamName.Append(t.val); 
 		}
-		Expect(4);
-		Expect(44);
+		Expect(5);
+		Expect(45);
 		Double(out playerId);
-		Expect(4);
-		while (la.kind == 6) {
+		Expect(5);
+		while (la.kind == 7) {
 			string partLabel; Polar pos; 
 			Get();
 			Ident(out partLabel);
 			PolarPosExpr(out pos);
-			Expect(4);
+			Expect(5);
 			parts.Add(new BodyPartPosition(partLabel, pos)); 
 		}
 		bool isTeamMate = string.Equals(teamName.ToString(), TeamName, StringComparison.Ordinal);
@@ -437,14 +443,14 @@ public string TeamName;
 	}
 
 	void MyPosExpr() {
-		Expect(45);
+		Expect(46);
 		Vector3 agentPosition; 
 		Vector3(out agentPosition);
 		AgentPosition = agentPosition; 
 	}
 
 	void LineExpr() {
-		Expect(46);
+		Expect(47);
 		Polar end1, end2; 
 		PolarPosExpr(out end1);
 		PolarPosExpr(out end2);
@@ -456,31 +462,31 @@ public string TeamName;
 
 	void HearExpr(out HeardMessage message) {
 		TimeSpan time; Angle direction = Angle.NaN; var messageText = new StringBuilder(20); 
-		Expect(47);
+		Expect(48);
 		TimeSpan(out time);
-		if (la.kind == 48) {
+		if (la.kind == 49) {
 			Get();
 		} else if (la.kind == 1) {
 			AngleInDegrees(out direction);
-		} else SynErr(52);
+		} else SynErr(54);
 		while (StartOf(2)) {
 			Get();
 			messageText.Append(t.val); 
 		}
-		Expect(4);
+		Expect(5);
 		message = new HeardMessage(time, direction, new Message(messageText.ToString())); 
 	}
 
 	void Perceptors() {
 		while (StartOf(3)) {
 			switch (la.kind) {
-			case 5: {
+			case 6: {
 				TimeSpan t; 
 				TimeExpr(out t);
 				SimulationTime = t; 
 				break;
 			}
-			case 8: {
+			case 9: {
 				TimeSpan t; PlayMode pm; int? id; FieldSide? side; 
 				GameStateExpr(out t, out pm, 
 out id, out side);
@@ -488,53 +494,53 @@ out id, out side);
 				if (side.HasValue) TeamSide = side.Value; 
 				break;
 			}
-			case 30: {
+			case 31: {
 				double t, b; 
 				AgentStateExpr(out t, out b);
 				AgentTemperature = t; AgentBattery = b; 
 				break;
 			}
-			case 15: {
+			case 16: {
 				if (GyroStates==null) GyroStates = new List<GyroState>(1); GyroState gyroState; 
 				GyroStateExpr(out gyroState);
 				GyroStates.Add(gyroState); 
 				break;
 			}
-			case 18: {
+			case 19: {
 				if (AccelerometerStates==null) AccelerometerStates = new List<AccelerometerState>(1); AccelerometerState accState; 
 				AccelerometerStateExpr(out accState);
 				AccelerometerStates.Add(accState); 
 				break;
 			}
-			case 20: {
+			case 21: {
 				if (HingeStates==null) HingeStates = new List<HingeState>(1); HingeState hjState; 
 				HingeJointExpr(out hjState);
 				HingeStates.Add(hjState); 
 				break;
 			}
-			case 22: {
+			case 23: {
 				if (UniversalJointStates==null) UniversalJointStates = new List<UniversalJointState>(1); UniversalJointState ujState; 
 				UniversalJointExpr(out ujState);
 				UniversalJointStates.Add(ujState); 
 				break;
 			}
-			case 25: {
+			case 26: {
 				if (TouchStates==null) TouchStates = new List<TouchState>(1); TouchState tState; 
 				TouchStateExpr(out tState);
 				TouchStates.Add(tState); 
 				break;
 			}
-			case 27: {
+			case 28: {
 				if (ForceStates==null) ForceStates = new List<ForceState>(1); ForceState fState; 
 				ForceStateExpr(out fState);
 				ForceStates.Add(fState); 
 				break;
 			}
-			case 33: {
+			case 34: {
 				SeeExpr();
 				break;
 			}
-			case 47: {
+			case 48: {
 				if (Messages==null) Messages = new List<HeardMessage>(1); HeardMessage message; 
 				HearExpr(out message);
 				Messages.Add(message); 
@@ -563,10 +569,10 @@ out id, out side);
     }
     
     static readonly bool[,] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x},
-		{x,T,T,T, x,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,x},
-		{x,x,x,x, x,T,x,x, T,x,x,x, x,x,x,T, x,x,T,x, T,x,T,x, x,T,x,T, x,x,T,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x},
+		{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, T,T,T,T, T,T,T,T, x,x,x,x, x,x,x,x},
+		{x,T,T,T, T,x,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,T, T,T,T,x},
+		{x,x,x,x, x,x,T,x, x,T,x,x, x,x,x,x, T,x,x,T, x,T,x,T, x,x,T,x, T,x,x,T, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x}
 
     };
 } // end Parser
@@ -634,56 +640,58 @@ public sealed class Errors {
 			case 0: s = "EOF expected"; break;
 			case 1: s = "double expected"; break;
 			case 2: s = "ident expected"; break;
-			case 3: s = "\"(pol\" expected"; break;
-			case 4: s = "\")\" expected"; break;
-			case 5: s = "\"(time\" expected"; break;
-			case 6: s = "\"(\" expected"; break;
-			case 7: s = "\"now\" expected"; break;
-			case 8: s = "\"(GS\" expected"; break;
-			case 9: s = "\"(unum\" expected"; break;
-			case 10: s = "\"(team\" expected"; break;
-			case 11: s = "\"left\" expected"; break;
-			case 12: s = "\"right\" expected"; break;
-			case 13: s = "\"t\" expected"; break;
-			case 14: s = "\"pm\" expected"; break;
-			case 15: s = "\"(GYR\" expected"; break;
-			case 16: s = "\"n\" expected"; break;
-			case 17: s = "\"rt\" expected"; break;
-			case 18: s = "\"(ACC\" expected"; break;
-			case 19: s = "\"a\" expected"; break;
-			case 20: s = "\"(HJ\" expected"; break;
-			case 21: s = "\"ax\" expected"; break;
-			case 22: s = "\"(UJ\" expected"; break;
-			case 23: s = "\"ax1\" expected"; break;
-			case 24: s = "\"ax2\" expected"; break;
-			case 25: s = "\"(TCH\" expected"; break;
-			case 26: s = "\"val\" expected"; break;
-			case 27: s = "\"(FRP\" expected"; break;
-			case 28: s = "\"c\" expected"; break;
-			case 29: s = "\"f\" expected"; break;
-			case 30: s = "\"(AgentState\" expected"; break;
-			case 31: s = "\"temp\" expected"; break;
-			case 32: s = "\"battery\" expected"; break;
-			case 33: s = "\"(See\" expected"; break;
-			case 34: s = "\"F1L\" expected"; break;
-			case 35: s = "\"F2L\" expected"; break;
-			case 36: s = "\"F1R\" expected"; break;
-			case 37: s = "\"F2R\" expected"; break;
-			case 38: s = "\"G1L\" expected"; break;
-			case 39: s = "\"G2L\" expected"; break;
-			case 40: s = "\"G1R\" expected"; break;
-			case 41: s = "\"G2R\" expected"; break;
-			case 42: s = "\"B\" expected"; break;
-			case 43: s = "\"P\" expected"; break;
-			case 44: s = "\"(id\" expected"; break;
-			case 45: s = "\"mypos\" expected"; break;
-			case 46: s = "\"L\" expected"; break;
-			case 47: s = "\"(hear\" expected"; break;
-			case 48: s = "\"self\" expected"; break;
-			case 49: s = "??? expected"; break;
-			case 50: s = "invalid SeeExpr"; break;
-			case 51: s = "invalid VisibleItemExpr"; break;
-			case 52: s = "invalid HearExpr"; break;
+			case 3: s = "\"nan\" expected"; break;
+			case 4: s = "\"(pol\" expected"; break;
+			case 5: s = "\")\" expected"; break;
+			case 6: s = "\"(time\" expected"; break;
+			case 7: s = "\"(\" expected"; break;
+			case 8: s = "\"now\" expected"; break;
+			case 9: s = "\"(GS\" expected"; break;
+			case 10: s = "\"(unum\" expected"; break;
+			case 11: s = "\"(team\" expected"; break;
+			case 12: s = "\"left\" expected"; break;
+			case 13: s = "\"right\" expected"; break;
+			case 14: s = "\"t\" expected"; break;
+			case 15: s = "\"pm\" expected"; break;
+			case 16: s = "\"(GYR\" expected"; break;
+			case 17: s = "\"n\" expected"; break;
+			case 18: s = "\"rt\" expected"; break;
+			case 19: s = "\"(ACC\" expected"; break;
+			case 20: s = "\"a\" expected"; break;
+			case 21: s = "\"(HJ\" expected"; break;
+			case 22: s = "\"ax\" expected"; break;
+			case 23: s = "\"(UJ\" expected"; break;
+			case 24: s = "\"ax1\" expected"; break;
+			case 25: s = "\"ax2\" expected"; break;
+			case 26: s = "\"(TCH\" expected"; break;
+			case 27: s = "\"val\" expected"; break;
+			case 28: s = "\"(FRP\" expected"; break;
+			case 29: s = "\"c\" expected"; break;
+			case 30: s = "\"f\" expected"; break;
+			case 31: s = "\"(AgentState\" expected"; break;
+			case 32: s = "\"temp\" expected"; break;
+			case 33: s = "\"battery\" expected"; break;
+			case 34: s = "\"(See\" expected"; break;
+			case 35: s = "\"F1L\" expected"; break;
+			case 36: s = "\"F2L\" expected"; break;
+			case 37: s = "\"F1R\" expected"; break;
+			case 38: s = "\"F2R\" expected"; break;
+			case 39: s = "\"G1L\" expected"; break;
+			case 40: s = "\"G2L\" expected"; break;
+			case 41: s = "\"G1R\" expected"; break;
+			case 42: s = "\"G2R\" expected"; break;
+			case 43: s = "\"B\" expected"; break;
+			case 44: s = "\"P\" expected"; break;
+			case 45: s = "\"(id\" expected"; break;
+			case 46: s = "\"mypos\" expected"; break;
+			case 47: s = "\"L\" expected"; break;
+			case 48: s = "\"(hear\" expected"; break;
+			case 49: s = "\"self\" expected"; break;
+			case 50: s = "??? expected"; break;
+			case 51: s = "invalid Double"; break;
+			case 52: s = "invalid SeeExpr"; break;
+			case 53: s = "invalid VisibleItemExpr"; break;
+			case 54: s = "invalid HearExpr"; break;
 
             default: s = "error code " + n; break;
         }

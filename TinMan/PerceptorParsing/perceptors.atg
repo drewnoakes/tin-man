@@ -124,6 +124,8 @@ COMPILER Perceptors
     public PerceptorState State { get; private set; }
 
     private double AsDouble(string s) {
+        if (s=="nan")
+            return double.NaN;
         double d;
         if (!double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
             SemErr("Unable to convert \"" + s + "\" to a double.");
@@ -152,7 +154,7 @@ PRODUCTIONS
 
 //////////////////////// TYPES
 
-Double<out double d> = double               (. d = AsDouble(t.val); .)
+Double<out double d> = (double | "nan")              (. d = AsDouble(t.val); .)
     .
     
 AngleInDegrees<out Angle a> = double        (. a = Angle.FromDegrees(AsDouble(t.val)); .)
@@ -169,9 +171,9 @@ Vector3<out Vector3 v> =                        (. double x, y, z; .)
     Double<out x> Double<out y> Double<out z>   (. v = new Vector3(x, y, z); .)
     .
 
-Polar<out Polar pos> =                          (. double distance, angle1, angle2; .)
-    Double<out distance> Double<out angle1> Double<out angle2>   
-                                                (. pos = new Polar(distance, Angle.FromDegrees(angle1), Angle.FromDegrees(angle2)); .)
+Polar<out Polar pos> =                          (. double distance, theta, phi; .)
+    Double<out distance> Double<out theta> Double<out phi>   
+                                                (. pos = new Polar(distance, Angle.FromDegrees(theta), Angle.FromDegrees(phi)); .)
     .
 
 IntFlag<out bool isSet> =                       (. double d; .)

@@ -61,6 +61,8 @@ namespace TinMan
             if (distance < 0)
                 throw new ArgumentOutOfRangeException("distance", distance, "Must be zero or greater.");
 
+            // TODO have seen NaN values from the server... should these be allowed?
+
             Distance = distance;
             Theta = theta;
             Phi = phi;
