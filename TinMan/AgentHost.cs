@@ -27,6 +27,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -281,11 +282,7 @@ namespace TinMan
 
                     // Collate list of commands to send
                     _context.FlushCommands(commands);
-                    foreach (var hinge in agent.Body.AllHinges)
-                    {
-                        if (hinge.IsDesiredSpeedChanged)
-                            commands.Add(hinge.GetCommand());
-                    }
+                    commands.AddRange(agent.Body.AllHinges.Where(hinge => hinge.IsDesiredSpeedChanged).Select(hinge => hinge.GetCommand()).Cast<IEffectorCommand>());
 
                     if (commands.Count != 0)
                     {
