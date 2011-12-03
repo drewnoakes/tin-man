@@ -105,7 +105,8 @@ namespace TinMan
                     var sexp = new SExpressionReader(_stream, length);
 
                     var ballEvent = BallTransformUpdated;
-                    if (ballEvent != null)
+                    var agentEvent = AgentTransformUpdated;
+                    if (ballEvent != null || agentEvent!=null)
                     {
                         var gameTime = TimeSpan.Zero;
                         // Parse game time
@@ -124,11 +125,10 @@ namespace TinMan
                             if (sexp.Skip(1) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1))
                             {
                                 TransformationMatrix transform;
-                                if (TryReadTransformationMatrix(sexp, out transform))
+                                if (TryReadTransformationMatrix(sexp, out transform) && ballEvent != null)
                                     ballEvent(gameTime, transform);
 
                                 // Parse agent location
-                                var agentEvent = AgentTransformUpdated;
                                 if (agentEvent != null && sexp.Out(2))
                                 {
                                     // Loop through all agents
