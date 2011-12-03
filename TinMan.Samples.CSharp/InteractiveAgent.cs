@@ -32,7 +32,9 @@ namespace TinManSamples.CSharp
     {
         public InteractiveAgent()
             : base(new NaoBody())
-        {}
+        {
+            PrintUsage();
+        }
 
         public override void Think(PerceptorState state)
         {
@@ -42,28 +44,14 @@ namespace TinManSamples.CSharp
 
         private void HandleUserInput(ConsoleKeyInfo keyInfo)
         {
-            switch (keyInfo.KeyChar)
+            switch (char.ToLower(keyInfo.KeyChar))
             {
                 case 'q':
-                case 'Q':
                 {
                     StopSimulation();
                     break;
                 }
-                case '@':
-                {
-                    const double gain = 0.5;
-                    Body.HJ1.MoveToWithGain(Angle.FromDegrees(100), gain);
-                    Body.HJ2.MoveToWithGain(Angle.FromDegrees(40), gain);
-                    Body.LAJ1.MoveToWithGain(Angle.FromDegrees(90), gain);
-                    Body.LAJ2.MoveToWithGain(Angle.FromDegrees(90), gain);
-                    Body.LAJ3.MoveToWithGain(Angle.FromDegrees(90), gain);
-                    Body.RAJ1.MoveToWithGain(Angle.FromDegrees(-90), gain);
-                    Body.RAJ2.MoveToWithGain(Angle.FromDegrees(90), gain);
-                    Body.RAJ3.MoveToWithGain(Angle.FromDegrees(90), gain);
-                    break;
-                }
-                case '|':
+                case '1':
                 {
                     const double gain = 4;
                     Body.HJ1.MoveToWithGain(Angle.FromDegrees(0), gain);
@@ -76,7 +64,32 @@ namespace TinManSamples.CSharp
                     Body.RAJ3.MoveToWithGain(Angle.FromDegrees(0), gain);
                     break;
                 }
+                case '2':
+                {
+                    const double gain = 0.5;
+                    Body.HJ1.MoveToWithGain(Angle.FromDegrees(100), gain);
+                    Body.HJ2.MoveToWithGain(Angle.FromDegrees(40), gain);
+                    Body.LAJ1.MoveToWithGain(Angle.FromDegrees(90), gain);
+                    Body.LAJ2.MoveToWithGain(Angle.FromDegrees(90), gain);
+                    Body.LAJ3.MoveToWithGain(Angle.FromDegrees(90), gain);
+                    Body.RAJ1.MoveToWithGain(Angle.FromDegrees(-90), gain);
+                    Body.RAJ2.MoveToWithGain(Angle.FromDegrees(90), gain);
+                    Body.RAJ3.MoveToWithGain(Angle.FromDegrees(90), gain);
+                    break;
+                }
+                default:
+                {
+                    PrintUsage();
+                    break;
+                }
             }
+        }
+
+        private static void PrintUsage()
+        {
+            Console.Out.WriteLine(@"This agent moves between several predefined poses.  Different levels of gain are also demonstrated.  The process is controlled via the keyboard:
+  1-2 select pose
+  q   quit");
         }
     }
 }

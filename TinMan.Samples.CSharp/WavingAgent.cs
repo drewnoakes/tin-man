@@ -27,9 +27,13 @@ namespace TinManSamples.CSharp
 {
     public sealed class WavingAgent : AgentBase<NaoBody>
     {
+        private readonly Random _random = new Random();
+
         public WavingAgent()
             : base(new NaoBody())
-        {}
+        {
+            Console.Out.WriteLine("Waving agent is controlled via the keyboard.  Press keys '0' through '9' to set the angle directly, or press '?' to repeatedly set a random angle.");
+        }
 
         public override void Think(PerceptorState state)
         {
@@ -52,11 +56,13 @@ namespace TinManSamples.CSharp
             }
             else if (c == '?')
             {
-                // Set a 'control function' that returns a random speed between -50 and +50 for the joint each cycle.
+                // Set a 'control function' that returns a random speed between -100 and +100 for the joint every 250ms.
                 // Note how this control function applies across multiple cycles.  Therefore a single press of the '?'
                 // key will create a sequence of erratic movements that will only stop when another digit key is pressed.
-                var random = new Random();
-                Body.LAJ1.SetControlFunction((hinge, context, perceptorState) => AngularSpeed.FromDegreesPerSecond(random.Next(100) - 50));
+                Body.LAJ1.SetControlFunction((hinge, context, perceptorState) => 
+                    perceptorState.SimulationTime.Milliseconds % 250 == 0 
+                    ? AngularSpeed.FromDegreesPerSecond(_random.Next(200) - 100) 
+                    : AngularSpeed.NaN);
             }
         }
     }

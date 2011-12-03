@@ -37,7 +37,9 @@ namespace TinManSamples.CSharp
 
         public HingeCharacterisationAgent()
             : base(new NaoBody())
-        {}
+        {
+            PrintUsage();
+        }
 
         public override void Think(PerceptorState state)
         {
@@ -51,8 +53,9 @@ namespace TinManSamples.CSharp
             }
 
             var hinge = Body.HJ1;
-            Angle currentAngle = hinge.Angle;
-            AngularSpeed speedLastCycle = (currentAngle - _lastAngle)/(state.SimulationTime - _lastSimulationTime);
+            var currentAngle = hinge.Angle;
+            // TODO calculate SpeedLastCycle (or at AngularDeltaLastCycle) on the Hinge itself
+            var speedLastCycle = (currentAngle - _lastAngle)/(state.SimulationTime - _lastSimulationTime);
             if (_moveCount > 0)
             {
                 hinge.DesiredSpeed = _impulseSpeed;
@@ -80,32 +83,47 @@ namespace TinManSamples.CSharp
 
         private void HandleUserInput(char key)
         {
-            if (key == 'B')
+            switch (key)
             {
-                _beamToGoal = true;
-                Console.WriteLine("Beaming to goal");
+                case 'B':
+                    _beamToGoal = true;
+                    Console.WriteLine("Beaming to goal");
+                    break;
+                case '-':
+                    _impulseSpeed = -_impulseSpeed;
+                    Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
+                    break;
+                case '>':
+                    _impulseSpeed += AngularSpeed.FromDegreesPerSecond(1);
+                    Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
+                    break;
+                case '<':
+                    _impulseSpeed -= AngularSpeed.FromDegreesPerSecond(1);
+                    Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
+                    break;
+                default:
+                    if (key >= '1' && key <= '9')
+                    {
+                        Console.WriteLine("Time,Angle,LastSpeed,SpeedRequest");
+                        _moveCount = key - '0';
+                        _lastAngle = Angle.NaN;
+                    }
+                    else
+                    {
+                        PrintUsage();
+                    }
+                    break;
             }
-            if (key == '-')
-            {
-                _impulseSpeed = -_impulseSpeed;
-                Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
-            }
-            if (key == '>')
-            {
-                _impulseSpeed += AngularSpeed.FromDegreesPerSecond(1);
-                Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
-            }
-            if (key == '<')
-            {
-                _impulseSpeed -= AngularSpeed.FromDegreesPerSecond(1);
-                Console.WriteLine("Speed: {0}", _impulseSpeed.DegreesPerSecond);
-            }
-            if (key >= '1' && key <= '9')
-            {
-                Console.WriteLine("Time,Angle,LastSpeed,SpeedRequest");
-                _moveCount = key - '0';
-                _lastAngle = Angle.NaN;
-            }
+        }
+
+        private static void PrintUsage()
+        {
+            Console.Out.WriteLine(@"This agent sets the HJ1 (left/right neck joint) speed for a number of cycles, and prints out the position and speed of the hinge for successive cycles, both during the impulse and until it comes to rest.  This process is controlled via the keyboard:
+  B   beam to goal
+  -   negate the impulse speed
+  <   decrease the impulse speed by one deg/sec
+  >   increase the impulse speed by one deg/sec
+  1-9 apply the impulse for the selected number of cycles");
         }
     }
 }

@@ -73,7 +73,10 @@ Choose one of the following:
                     break;
                 case 8:
                     for (var i = 0; i < 2; i++)
+                    {
                         new Thread(() => new AgentHost().Run(new SocialAgent())).Start();
+                        Thread.Sleep(TimeSpan.FromSeconds(3));
+                    }
                     break;
                 case 9:
                     new AgentHost().Run(new PidAgent());
