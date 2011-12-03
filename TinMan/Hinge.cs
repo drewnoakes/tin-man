@@ -168,9 +168,12 @@ namespace TinMan
         internal void ComputeControlFunction(ISimulationContext context, PerceptorState perceptorState)
         {
             // Copy the reference for multi-threading safety
-            Func<Hinge, ISimulationContext, PerceptorState, AngularSpeed> fun = _controlFunction;
-            if (fun != null)
-                SetDesiredSpeedInternal(fun(this, context, perceptorState));
+            var fun = _controlFunction;
+            if (fun == null)
+                return;
+            var desiredSpeed = fun(this, context, perceptorState);
+            if (!desiredSpeed.IsNaN)
+                SetDesiredSpeedInternal(desiredSpeed);
         }
 
         #endregion
