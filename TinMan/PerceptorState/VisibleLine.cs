@@ -27,8 +27,8 @@ namespace TinMan
     /// <summary>Represents information about the orientation of observed field lines.</summary>
     public struct VisibleLine
     {
-    	// TODO determine if there is something special about end1 vs end2 and document that here
-    	
+        // TODO determine if there is something special about end1 vs end2 and document that here
+
         /// <summary>Gets an end of the observed line.</summary>
         public Polar End1 { get; private set; }
 
