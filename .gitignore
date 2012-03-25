@@ -3,6 +3,10 @@
 "Screen Captures/*"
 *.user
 *.suo
+*.ReSharper
+*.DotSettings
+*.dotCover
+Thumbs.db
 */bin
 */obj
 Documentation/Thumbs.db
