@@ -102,6 +102,12 @@ namespace TinMan
                 while (_isRunning)
                 {
                     int length = NetworkUtil.ReadInt32(_stream);
+                    // The server has been seen to return zero here when shutting down.
+                    if (length == 0)
+                    {
+                        _log.Warn("Ignoring zero-length message received from server");
+                        continue;
+                    }
                     var sexp = new SExpressionReader(_stream, length);
 
                     var ballEvent = BallTransformUpdated;
@@ -122,7 +128,8 @@ namespace TinMan
                             sexp.Out(2);
 
                             // Parse ball location
-                            if (sexp.Skip(1) && sexp.In(1) && sexp.Skip(14) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1))
+                            // TODO the first time a message is observed, it is the 'full' message -- parse it to determine the static locations of the ball and agent positions
+                            if (sexp.Skip(1) && sexp.In(1) && sexp.Skip(35) && sexp.In(1) && sexp.Skip(1) && sexp.In(1) && sexp.Skip(1))
                             {
                                 TransformationMatrix transform;
                                 if (TryReadTransformationMatrix(sexp, out transform) && ballEvent != null)
