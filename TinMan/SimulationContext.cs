@@ -31,7 +31,7 @@ namespace TinMan
     /// <remarks>Threadsafe.</remarks>
     internal sealed class SimulationContext : ISimulationContext
     {
-    	private readonly Log _log = Log.Create();
+        private readonly Log _log = Log.Create();
         private readonly object _lock = new object();
         private readonly AgentHost _host;
         private BeamCommand _beamCommand;
@@ -93,17 +93,17 @@ namespace TinMan
         /// the right of the field), 90 degrees to positive y axis (to the top of the field).</param>
         public void Beam(double x, double y, Angle rotation)
         {
-        	switch (PlayMode)
-        	{
-        		case PlayMode.BeforeKickOff:
-        		case PlayMode.GoalLeft:
-        		case PlayMode.GoalRight:
-        			break;
-        		default:
-        			_log.Warn("Requested beam during invalid play mode: " + PlayMode);
-        			break;
-        	}
-        	
+            switch (PlayMode)
+            {
+                case PlayMode.BeforeKickOff:
+                case PlayMode.GoalLeft:
+                case PlayMode.GoalRight:
+                    break;
+                default:
+                    _log.Warn("Requested beam during invalid play mode: " + PlayMode);
+                    break;
+            }
+            
             lock (_lock)
                 _beamCommand = new BeamCommand(x, y, rotation);
         }
