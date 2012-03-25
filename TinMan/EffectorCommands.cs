@@ -209,6 +209,21 @@ namespace TinMan
     }
 
     /// <summary>
+    /// A special type of command sent at the end of each cycle to indicate that the agent has completed its response.
+    /// This can be used to run matches faster than real time, perhaps for machine learning purposes.
+    /// </summary>
+    /// <remarks>
+    /// Further information at: http://simspark.sourceforge.net/wiki/index.php/Effectors#Synchronize_Effector
+    /// </remarks>
+    internal sealed class SynchroniseCommand : IEffectorCommand
+    {
+        public void AppendSExpression(StringBuilder s)
+        {
+            s.Append("(syn)");
+        }
+    }
+
+    /// <summary>
     /// Represents a validated message according to the rules specified by the server on what strings
     /// are allowed to be sent between agents on the field.
     /// </summary>
