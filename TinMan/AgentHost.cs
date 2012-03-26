@@ -62,8 +62,6 @@ namespace TinMan
         /// </summary>
         public const double CyclePeriodSeconds = 0.02;
 
-        private const string UseSyncModeConfigKey = "TinMan.UseSyncMode";
-
         /// <summary>
         /// The period of time between simulation steps.  Agents are given the chance to think
         /// and update their effectors in steps of this period.
@@ -78,7 +76,6 @@ namespace TinMan
         private int _portNumber;
         private int _desiredUniformNumber;
         private bool _hasRun;
-        private bool _useSyncMode;
 
         /// <summary>
         /// Creates a new client.  <see cref="HostName"/> is set to <tt>localhost</tt> and
@@ -90,10 +87,6 @@ namespace TinMan
             HostName = DefaultHostName;
             PortNumber = DefaultTcpPort;
             TeamName = "TinManBots";
-
-            var syncModeConfigKeyValue = ConfigurationManager.AppSettings[UseSyncModeConfigKey];
-            if (syncModeConfigKeyValue != null)
-                bool.TryParse(syncModeConfigKeyValue, out _useSyncMode);
 
             _context = new SimulationContext(this);
             Context = _context;
@@ -177,22 +170,6 @@ namespace TinMan
         }
 
         /// <summary>
-        /// Sets whether the agent is run in <i>agent sync mode</i>.  By default this value is taken from the configuration key
-        /// <c>TinMan.UseSyncMode</c>, and if no value exists for that key this property will be <c>false</c>.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"><see cref="Run"/> has already been called on this agent host.</exception>
-        public bool UseSyncMode
-        {
-            get { return _useSyncMode; }
-            set 
-            {
-                if (_hasRun)
-                    throw new InvalidOperationException("UseSyncMode cannot be set after AgentHost.Run has been called.");
-                _useSyncMode = value;
-            }
-        }
-
-        /// <summary>
         /// Gets the simulation context used by this host.  The context provides appropriately
         /// scoped access to resources provided by the TinMan framework for use by an agent.
         /// </summary>
@@ -264,7 +241,7 @@ namespace TinMan
                     // the stream, it would internally load the stream into a buffer anyway.  To avoid this
                     // memory churn, Coco/R should be replaced.
                     var data = NetworkUtil.ReadResponseString(stream, TimeSpan.FromSeconds(0.1));
-                    
+
                     // If we don't receive anything, loop around and wait until a message arrives
                     if (data == null)
                         continue;
@@ -308,14 +285,12 @@ namespace TinMan
                     _context.FlushCommands(commands);
                     commands.AddRange(agent.Body.AllHinges.Where(hinge => hinge.IsDesiredSpeedChanged).Select(hinge => hinge.GetCommand()).Cast<IEffectorCommand>());
 
-                    if (UseSyncMode)
-                        commands.Add(new SynchroniseCommand());
-
-                    if (commands.Count != 0)
-                    {
-                        SendCommands(stream, commands);
-                        commands.Clear();
-                    }
+                    // Append a (syn) message to the outbound string to support agent sync mode
+                    commands.Add(new SynchroniseCommand());
+                    
+                    // Send messages and clear out list for reuse next cycle
+                    SendCommands(stream, commands);
+                    commands.Clear();
                 }
 
                 agent.OnShuttingDown();
