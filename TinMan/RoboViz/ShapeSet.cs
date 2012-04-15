@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
+using TinMan.Annotations;
 
 namespace TinMan.RoboViz
 {
@@ -50,7 +51,7 @@ namespace TinMan.RoboViz
             }
         }
 
-        public void Add(Shape shape)
+        public void Add([NotNull] Shape shape)
         {
             if (shape == null)
                 throw new ArgumentNullException("shape");
@@ -59,18 +60,30 @@ namespace TinMan.RoboViz
             IsDirty = true;
         }
 
-        public void AddRange(IEnumerable<Shape> shapes)
+        public void AddRange([NotNull] IEnumerable<Shape> shapes)
         {
+            if (shapes == null) 
+                throw new ArgumentNullException("shapes");
             foreach (var shape in shapes)
                 Add(shape);
         }
 
-        public void Add(ShapeSet childSubSet)
+        public void Add([NotNull] ShapeSet childSubSet)
         {
             if (childSubSet == null)
                 throw new ArgumentNullException("childSubSet");
             _subsets.Add(childSubSet);
             childSubSet.SetParent(this);
+        }
+
+        /// <summary>
+        /// Removes all <see cref="Shape"/> instances from this <see cref="ShapeSet"/>.  Does not remove sub-sets.
+        /// </summary>
+        public void Clear()
+        {
+            // TODO should this also remove subsets?
+            _shapes.Clear();
+            IsDirty = true;
         }
 
         /// <summary>Translates any contained Shapes and/or nested ShapeSets by the specified offset.</summary>

@@ -216,6 +216,9 @@ namespace TinMan.RoboViz
             _color = Color.White;
         }
 
+        public Line(Vector3 end1, Vector3 end2, double pixelThickness = 1) : this(end1, end2, pixelThickness, Color.Blue)
+        {}
+
         public Line(Vector3 end1, Vector3 end2, double pixelThickness, Color color)
         {
             End1 = end1;

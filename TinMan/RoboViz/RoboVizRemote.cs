@@ -3,15 +3,18 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Net.Sockets;
 using System.Text;
+using TinMan.Annotations;
 
 namespace TinMan.RoboViz
 {
     public sealed class RoboVizOptions
     {
         /// <summary>The default UDP port exposed by the RoboViz monitor.</summary>
+        [PublicAPI]
         public const int DefaultUdpPort = 32769;
 
         /// <summary>The default host name, <c>localhost</c>.</summary>
+        [PublicAPI]
         private const string DefaultHostName = "localhost";
 
         // TODO validation in setters
@@ -31,9 +34,9 @@ namespace TinMan.RoboViz
     public sealed class RoboVizRemote : IRoboVizRemote
     {
         private readonly List<ShapeSet> _sets = new List<ShapeSet>();
-        private readonly ISimulationContext _simulationContext;
         private readonly UdpClient _udpClient;
         private readonly bool _useDefaultPrefix;
+        private readonly ISimulationContext _simulationContext;
         private string _path;
         private bool _isAgentTextDirty;
         private string _agentText;
@@ -44,7 +47,7 @@ namespace TinMan.RoboViz
         /// This remote will be automatically disposed when the agent exits.
         /// </summary>
         /// <returns></returns>
-        public RoboVizRemote(IAgent agent)
+        public RoboVizRemote([NotNull] IAgent agent)
             : this(agent, new RoboVizOptions())
         {}
 
@@ -53,15 +56,16 @@ namespace TinMan.RoboViz
         /// This remote will be automatically disposed when the agent exits.
         /// </summary>
         /// <returns></returns>
-        public RoboVizRemote(IAgent agent, RoboVizOptions options)
+        [PublicAPI]
+        public RoboVizRemote([NotNull] IAgent agent, [NotNull] RoboVizOptions options)
         {
             if (options == null)
                 throw new ArgumentNullException("options");
             if (agent == null)
                 throw new ArgumentNullException("agent");
 
-            _simulationContext = agent.Context;
             _useDefaultPrefix = options.UseDefaultPrefix;
+            _simulationContext = agent.Context;
 
             agent.ThinkCompleted += OnThinkCompleted;
             agent.ShuttingDown += OnShutDown;
@@ -78,10 +82,12 @@ namespace TinMan.RoboViz
         {
             if (shapeSet == null)
                 throw new ArgumentNullException("shapeSet");
+
             _sets.Add(shapeSet);
             shapeSet.SetParent(this);
         }
 
+        [NotNull]
         internal string Path
         {
             get 
@@ -95,7 +101,7 @@ namespace TinMan.RoboViz
                     else
                     {
                         if (!_simulationContext.UniformNumber.HasValue || _simulationContext.TeamSide==FieldSide.Unknown)
-                            throw new InvalidOperationException("Cannot determine default prefix for RoboViz shape set path as the agent's uniform number and team side have not been reported yet.");
+                            throw new InvalidOperationException("Cannot determine default prefix for RoboViz shape set path as the agent's uniform number and team side have not been reported yet.  Make sure you initialise your instance of RoboVizRemote in your overridden IAgent.OnInitialise to avoid this error.");
                         _path = _simulationContext.TeamSide.ToString()[0] + ".A" + _simulationContext.UniformNumber.Value;
                     }
                 }
@@ -103,6 +109,7 @@ namespace TinMan.RoboViz
             }
         }
 
+        [CanBeNull, PublicAPI]
         public string AgentText
         {
             get { return _agentText; }
@@ -115,6 +122,7 @@ namespace TinMan.RoboViz
             }
         }
 
+        [PublicAPI]
         public Color AgentTextColor
         {
             get { return _agentTextColor; }
@@ -135,7 +143,7 @@ namespace TinMan.RoboViz
 
             // TODO reduce number of buffer swaps -- if all sub-sets are dirty and the parent has no shapes, then the parent is as good as dirty
 
-            while (queue.Count!=0)
+            while (queue.Count != 0)
             {
                 var set = queue.Dequeue();
                 if (set.IsDirty)
@@ -198,7 +206,7 @@ namespace TinMan.RoboViz
             }
         }
 
-        private static void SwapBuffer(ShapeSet set, UdpClient udpClient)
+        private static void SwapBuffer([NotNull] ShapeSet set, [NotNull] UdpClient udpClient)
         {
             var pathBytes = set.PathBytes;
             var numBytes = 3 + pathBytes.Length;
@@ -221,6 +229,7 @@ namespace TinMan.RoboViz
 
     public interface IRoboVizRemote
     {
-        void Add(ShapeSet shapeSet);
+        [PublicAPI]
+        void Add([NotNull] ShapeSet shapeSet);
     }
 }

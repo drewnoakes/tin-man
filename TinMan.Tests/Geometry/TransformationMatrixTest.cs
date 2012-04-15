@@ -22,6 +22,7 @@
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 01/06/2010 03:47
 
+using System;
 using NUnit.Framework;
 
 namespace TinMan
@@ -29,7 +30,7 @@ namespace TinMan
     [TestFixture]
     public sealed class TransformationMatrixTest
     {
-        // TODO adjust column widths in ToString to show v. small numbers with E-12 style presentation
+        // TODO adjust column widths in ToString to show v. small numbers with 1.23E-4 style presentation
 
         private static readonly TransformationMatrix _identity = TransformationMatrix.Identity;
 
@@ -173,23 +174,24 @@ namespace TinMan
             Assert.AreEqual(-3, new TransformationMatrix(new double[] {0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0}).GetDeterminant());
         }
 
-/*        
-        [Test] public void Invert() {
+        [Test]
+        public void Invert()
+        {
             // Inverting the identity has no effect
             Assert.AreEqual(TransformationMatrix.Identity, TransformationMatrix.Identity.Invert());
-            // Some random numeric examples
+            // Some numeric examples
             Assert.AreEqual(
-                new TransformationMatrix(new[] {-5/3d,0,1/3d,0,-4/3d,1,-1/3d,0,4/3d,0,-1/6d,0,4/3d,0,-5/3d,1}),
-                new TransformationMatrix(new double[] {1,0,2,0,4,1,6,0,8,0,10,0,12,0,14,1}).Invert());
+                new TransformationMatrix(new[] {-5/3d, 0, 1/3d, 0, -4/3d, 1, -1/3d, 0, 4/3d, 0, -1/6d, 0, 4/3d, 0, -5/3d, 1}),
+                new TransformationMatrix(new[] {1d, 0, 2, 0, 4, 1, 6, 0, 8, 0, 10, 0, 12, 0, 14, 1}).Invert());
             Assert.AreEqual(
-                new TransformationMatrix(new[] {0.01,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0.01}),
-                new TransformationMatrix(new double[] {100,0,0,0,0,1,0,0,0,0,1,0,0,0,0,100}).Invert());
+                new TransformationMatrix(new[] {0.01, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0.01}),
+                new TransformationMatrix(new[] {100d, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 100}).Invert());
             // inversions undo translations and rotations
             Assert.AreEqual(
-                TransformationMatrix.Identity.Translate(-10,-20,-30),
-                TransformationMatrix.Identity.Translate(10,20,30).Invert());
+                TransformationMatrix.Identity.Translate(-10, -20, -30),
+                TransformationMatrix.Identity.Translate(10, 20, 30).Invert());
             Assert.AreEqual(
-                TransformationMatrix.Identity.RotateX(Angle.FromRadians(-Math.PI/2)),
+                TransformationMatrix.Identity.RotateX(-Angle.HalfPi),
                 TransformationMatrix.Identity.RotateX(Angle.HalfPi).Invert());
             Assert.AreEqual(
                 TransformationMatrix.Identity.RotateY(Angle.FromRadians(-Math.PI/4)),
@@ -199,19 +201,21 @@ namespace TinMan
                 TransformationMatrix.Identity.RotateZ(Angle.FromRadians(Math.PI/6)).Invert());
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException))]
-        public void InvertWhenDeterminantIsZero() {
-            new TransformationMatrix(new double[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}).Invert();
+        [Test, ExpectedException(typeof (InvalidOperationException))]
+        public void InvertWhenDeterminantIsZero()
+        {
+            new TransformationMatrix(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}).Invert();
         }
-        
-        [Test] public void TryInversion() {
+
+        [Test]
+        public void TryInversion()
+        {
             TransformationMatrix inversion;
-            Assert.IsFalse(new TransformationMatrix(new double[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}).TryInvert(out inversion));
+            Assert.IsFalse(new TransformationMatrix(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}).TryInvert(out inversion));
             Assert.IsNull(inversion);
             Assert.IsTrue(TransformationMatrix.Identity.TryInvert(out inversion));
             Assert.AreEqual(TransformationMatrix.Identity, inversion);
         }
-*/
 
         [Test]
         public void ToStringTest()

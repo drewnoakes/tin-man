@@ -23,6 +23,7 @@
 // Created 10/05/2010 12:43
 
 using System;
+using TinMan.Annotations;
 
 namespace TinMan
 {
@@ -41,10 +42,12 @@ namespace TinMan
 
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>Will not be <c>null</c>.</remarks>
+        [NotNull]
         public TBody Body { get; private set; }
 
-        /// <summary>Gets a collection of measurements from the field.  This property returns the same
+        /// <summary>Gets a collection of measurements from the environment.  This property returns the same
         /// object as <see cref="ISimulationContext.Measures"/> and is provided for convenience.</summary>
+        [NotNull]
         protected Measures Measures
         {
             get { return _context.Measures; }
@@ -94,6 +97,7 @@ namespace TinMan
         /// <see cref="IAgent.Think"/>.  Attempting to access it before that time will result in an
         /// <see cref="InvalidOperationException"/>.
         /// </summary>
+        [NotNull]
         protected ISimulationContext Context
         {
             get { return ((IAgent)this).Context; }
@@ -103,6 +107,7 @@ namespace TinMan
         public bool IsAlive { get; private set; }
 
         /// <summary>Gets a logger used by the agent.</summary>
+        [NotNull]
         protected Log Log { get; private set; }
 
         #endregion
@@ -112,7 +117,7 @@ namespace TinMan
         /// </summary>
         /// <param name="body"></param>
         /// <exception cref="ArgumentNullException"><paramref name="body"/> is null.</exception>
-        protected AgentBase(TBody body)
+        protected AgentBase([NotNull] TBody body)
         {
             if (body == null)
                 throw new ArgumentNullException("body");
@@ -143,7 +148,8 @@ namespace TinMan
         /// Gives the agent a chance to process the latest body state and perform any necessary actions.
         /// </summary>
         /// <param name="state">The latest snapshot of the agent's state.</param>
-        public abstract void Think(PerceptorState state);
+        [PublicAPI]
+        public abstract void Think([NotNull] PerceptorState state);
 
         #endregion
 
@@ -162,6 +168,7 @@ namespace TinMan
         /// Performs any final action required by the agent as the run loop exits.
         /// Called by the TinMan framework.  You are not required to override this method.
         /// </summary>
+        [PublicAPI]
         protected virtual void OnShutDown() { }
 
         #endregion

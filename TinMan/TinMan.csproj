@@ -85,6 +85,7 @@
     <Compile Include="Geometry\GeometryUtil.cs" />
     <Compile Include="Geometry\Polar.cs" />
     <Compile Include="Geometry\TransformationMatrix.cs" />
+    <Compile Include="Geometry\Vector2.cs" />
     <Compile Include="Geometry\Vector3.cs" />
     <Compile Include="Hinge.cs" />
     <Compile Include="AgentBase.cs" />
@@ -110,6 +111,7 @@
     <Content Include="RoboViz\ReadMe.txt" />
     <Compile Include="PerceptorState\VisibleLine.cs" />
     <Compile Include="PidHingeController.cs" />
+    <Compile Include="RoboViz\RoboVizExtensions.cs" />
     <Compile Include="RoboViz\RoboVizRemote.cs" />
     <Compile Include="RoboViz\Shape.cs" />
     <Compile Include="RoboViz\ShapeSet.cs" />

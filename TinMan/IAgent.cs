@@ -21,6 +21,7 @@
 // Created 10/05/2010 12:43
 
 using System;
+using TinMan.Annotations;
 
 namespace TinMan
 {
@@ -45,6 +46,7 @@ namespace TinMan
 
         /// <summary>Gets the agent's body.</summary>
         /// <remarks>Must not be <c>null</c>.</remarks>
+        [NotNull]
         IBody Body { get; }
 
         /// <summary>Gets whether the agent should remain connected to the server and processing state.</summary>
@@ -55,6 +57,7 @@ namespace TinMan
         /// framework.  This value is unavailable before the first call to <see cref="OnInitialise"/>.  Attempting to
         /// access it before that time will result in an exception.
         /// </summary>
+        [NotNull]
         ISimulationContext Context { get; set; }
 
         /// <summary>
@@ -69,7 +72,7 @@ namespace TinMan
         /// <param name="state"></param>
         /// <remarks>Implementations should raise <see cref="ThinkCompleted"/> after thinking so that external components
         /// that track the agent's life cycle are notified.</remarks>
-        void Think(PerceptorState state);
+        void Think([NotNull] PerceptorState state);
 
         /// <summary>
         /// Called when the agent is about to shut down.  At this point, no further messages will be sent to the server.

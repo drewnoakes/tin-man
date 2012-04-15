@@ -23,6 +23,7 @@
 // Created 07/05/2010 02:50
 
 using System;
+using TinMan.Annotations;
 
 // ReSharper disable MemberCanBeInternal
 
@@ -35,19 +36,19 @@ namespace TinMan
     {
         private const double Epsilon = 0.0001;
 
-        /// <summary>A constant Vector3 of zero, equivalent to the origin or cartesian coordinates.</summary>
+        /// <summary>A constant <see cref="Vector3"/> of zero, equivalent to the origin or cartesian coordinates.</summary>
         public static readonly Vector3 Origin = new Vector3(0, 0, 0);
 
-        /// <summary>A constant Vector3 with a NaN value in all dimensions.</summary>
+        /// <summary>A constant <see cref="Vector3"/> with a NaN value in all dimensions.</summary>
         public static readonly Vector3 NaN = new Vector3(double.NaN, double.NaN, double.NaN);
 
-        /// <summary>A constant Vector3 with unit length that points along the X axis.</summary>
+        /// <summary>A constant <see cref="Vector3"/> with unit length that points along the <see cref="X"/> axis.</summary>
         public static readonly Vector3 UnitX = new Vector3(1, 0, 0);
 
-        /// <summary>A constant Vector3 with unit length that points along the Y axis.</summary>
+        /// <summary>A constant <see cref="Vector3"/> with unit length that points along the <see cref="Y"/> axis.</summary>
         public static readonly Vector3 UnitY = new Vector3(0, 1, 0);
 
-        /// <summary>A constant Vector3 with unit length that points along the Z axis.</summary>
+        /// <summary>A constant <see cref="Vector3"/> with unit length that points along the <see cref="Z"/> axis.</summary>
         public static readonly Vector3 UnitZ = new Vector3(0, 0, 1);
 
         #region Static utility methods
@@ -91,7 +92,7 @@ namespace TinMan
         public double Z { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether X, Y and Z are all equal to zero (i.e. the origin).
+        /// Gets a value indicating whether <see cref="X"/>, <see cref="Y"/> and <see cref="Z"/> are all equal to zero (i.e. the origin).
         /// </summary>
         public bool IsZero
         {
@@ -104,7 +105,7 @@ namespace TinMan
         }
 
         /// <summary>
-        /// Gets a value indicating whether X, Y and Z are all equal to <see cref="double.NaN"/>.
+        /// Gets a value indicating whether <see cref="X"/>, <see cref="Y"/> and <see cref="Z"/> are all equal to <see cref="double.NaN"/>.
         /// </summary>
         public bool IsNaN
         {
@@ -122,7 +123,7 @@ namespace TinMan
         #endregion
 
         /// <summary>
-        /// Initialises a new 3D vector with the specified values.
+        /// Initialises a new <see cref="Vector3"/> with the specified values.
         /// </summary>
         /// <param name="x"></param>
         /// <param name="y"></param>
@@ -138,27 +139,31 @@ namespace TinMan
         /// Returns a vector that has the same direction as this one, but with a length of one (a unit vector).
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public Vector3 Normalize()
         {
-            double length = Length;
+            var length = Length;
 
+            // ReSharper disable CompareOfFloatsByEqualityOperator
             // avoid DivideByZeroException (no Epsilon comparison needed)
-            if (length == 0)
-                return new Vector3();
-
-            return new Vector3(X/length, Y/length, Z/length);
+            return length == 0
+                ? new Vector3() 
+                : new Vector3(X / length, Y / length, Z / length);
+            // ReSharper restore CompareOfFloatsByEqualityOperator
         }
 
         /// <summary>
-        /// Gets the 3D vector that is the result of crossing this vector with the specified one.
+        /// Gets the <see cref="Vector3"/> that is the result of crossing this vector with the specified one.
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
+        [Pure]
         public Vector3 Cross(Vector3 vector)
         {
             return GetCrossProduct(this, vector);
         }
 
+        [Pure]
         public double Dot(Vector3 vector)
         {
             return GetDotProduct(this, vector);
@@ -170,6 +175,7 @@ namespace TinMan
         /// </summary>
         /// <param name="newX">The <see cref="X"/> value to use.</param>
         /// <returns></returns>
+        [Pure]
         public Vector3 WithX(double newX)
         {
             return new Vector3(newX, Y, Z);
@@ -181,6 +187,7 @@ namespace TinMan
         /// </summary>
         /// <param name="newY">The <see cref="Y"/> value to use.</param>
         /// <returns></returns>
+        [Pure]
         public Vector3 WithY(double newY)
         {
             return new Vector3(X, newY, Z);
@@ -192,6 +199,7 @@ namespace TinMan
         /// </summary>
         /// <param name="newZ">The <see cref="Z"/> value to use.</param>
         /// <returns></returns>
+        [Pure]
         public Vector3 WithZ(double newZ)
         {
             return new Vector3(X, Y, newZ);
@@ -201,6 +209,7 @@ namespace TinMan
         /// Returns a copy of this vector having absolute values of each component.
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public Vector3 Abs()
         {
             return new Vector3(Math.Abs(X), Math.Abs(Y), Math.Abs(Z));
@@ -242,8 +251,10 @@ namespace TinMan
 
         public static Vector3 operator /(Vector3 v, double divisor)
         {
+            // ReSharper disable CompareOfFloatsByEqualityOperator
             if (divisor == 0)
                 throw new DivideByZeroException();
+            // ReSharper restore CompareOfFloatsByEqualityOperator
             
             return new Vector3(
                 v.X/divisor,
@@ -277,7 +288,6 @@ namespace TinMan
 
             return Equals((Vector3)obj);
         }
-
 
         public bool Equals(Vector3 that)
         {
@@ -313,9 +323,10 @@ namespace TinMan
         /// </summary>
         /// <param name="v">Vector to measure the angle against.</param>
         /// <returns>The angle in the radian range [0,PI].</returns>
+        [Pure]
         public Angle AngleTo(Vector3 v) 
         { 
-            double dot = this.Dot(v) / (Length*v.Length);
+            var dot = Dot(v) / (Length*v.Length);
             
             if (dot < -1) dot = -1;
             if (dot >  1) dot =  1;

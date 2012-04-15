@@ -47,42 +47,46 @@ Choose one of the following:
   8 SocialAgent
   9 PidAgent
   0 WizardExample
+  S DebugShapeTransformationAgent
 ");
-            switch (Console.ReadKey(true).KeyChar - '0')
+            switch (char.ToLower(Console.ReadKey(true).KeyChar))
             {
-                case 1:
+                case '1':
                     new AgentHost().Run(new WavingAgent());
                     break;
-                case 2:
+                case '2':
                     new AgentHost().Run(new HingeCharacterisationAgent());
                     break;
-                case 3:
+                case '3':
                     FullHouse.Run(2);
                     break;
-                case 4:
+                case '4':
                     new AgentHost().Run(new InteractiveAgent());
                     break;
-                case 5:
+                case '5':
                     new AgentHost().Run(new MinimalAgent());
                     break;
-                case 6:
+                case '6':
                     new AgentHost().Run(new SoccerbotAgent());
                     break;
-                case 7:
+                case '7':
                     new AgentHost().Run(new RoboVizDemoAgent());
                     break;
-                case 8:
+                case '8':
                     for (var i = 0; i < 2; i++)
                     {
                         new Thread(() => new AgentHost().Run(new SocialAgent())).Start();
                         Thread.Sleep(TimeSpan.FromSeconds(3));
                     }
                     break;
-                case 9:
+                case '9':
                     new AgentHost().Run(new PidAgent());
                     break;
-                case 0:
+                case '0':
                     new WizardExample();
+                    break;
+                case 's':
+                    new AgentHost().Run(new DebugShapeTransformationAgent());
                     break;
             }
         }

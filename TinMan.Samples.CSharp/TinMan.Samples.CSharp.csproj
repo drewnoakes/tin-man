@@ -55,6 +55,9 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
   <ItemGroup>
     <Reference Include="System" />
@@ -79,6 +82,7 @@
     <Compile Include="RoboVizDemoAgent.cs" />
     <Compile Include="SoccerbotAgent.cs" />
     <Compile Include="SocialAgent.cs" />
+    <Compile Include="DebugShapeTransformationAgent.cs" />
     <Compile Include="WavingAgent.cs" />
     <Compile Include="WizardExample.cs" />
   </ItemGroup>

@@ -31,9 +31,14 @@ using TinMan.Annotations;
 namespace TinMan
 {
     /// <summary>
-    /// Represents a 4x4 matrix used to transform <see cref="Vector3"/> instances.
-    /// This type is immutable.
+    /// Represents an affine transformation in three dimensional cartesian space.  Instances of this class may be used
+    /// to transform <see cref="Vector3"/> instances between coordinate spaces.  Rotations and translations are supported.
+    /// Transformations may be revesed by <see cref="Invert"/>.
     /// </summary>
+    /// <remarks>
+    /// This class uses homogenous coordinates for 3D translations and rotations and is backed by a 4x4 matrix of double values.
+    /// This type is immutable.  Consequently all of its methods are pure.
+    /// </remarks>
     public sealed class TransformationMatrix : IEquatable<TransformationMatrix>
     {
         private const double Epsilon = 0.0001;
@@ -126,6 +131,8 @@ namespace TinMan
         /// modified safely once this method returns without effecting this
         /// transformation matrix.</remarks>
         /// <param name="values"></param>
+        /// <exception cref="ArgumentNullException"><paramref name="values"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentException"><paramref name="values"/> is not of length 16.</exception>
         public TransformationMatrix([NotNull] double[] values)
         {
             if (values == null)
@@ -150,6 +157,16 @@ namespace TinMan
             _m33 = values[15];
         }
 
+        /// <summary>
+        /// Initialises a new transformation matrix from the 16 provided double values.
+        /// The following pattern is used:
+        /// <code>
+        /// [m00, m01, m02, m03,
+        ///  m04, m05, m06, m07,
+        ///  m08, m09, m10, m11,
+        ///  m12, m13, m14, m15]
+        /// </code>
+        /// </summary>
         public TransformationMatrix(double m00, double m01, double m02, double m03,
                                     double m10, double m11, double m12, double m13,
                                     double m20, double m21, double m22, double m23,
@@ -173,6 +190,18 @@ namespace TinMan
         public TransformationMatrix Translate(double x, double y, double z)
         {
             return Translation(x, y, z).Multiply(this);
+        }
+
+        /// <summary>
+        /// Returns a transformation matrix which is the equivalent of this instance, only
+        /// translated by the specified amount.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        [NotNull, Pure]
+        public TransformationMatrix Translate(Vector3 vector)
+        {
+            return Translate(vector.X, vector.Y, vector.Z);
         }
 
         /// <summary>
@@ -276,15 +305,12 @@ namespace TinMan
             Debug.Assert(_m30 == 0 && _m31 == 0 && _m32 == 0 && _m33 == 1);
             // ReSharper restore CompareOfFloatsByEqualityOperator
 
-            return new Vector3(x, y, z);
-
-//            double x = input.X*_m00 + input.Y*_m10 + input.Z*_m20 + _m30;
-//            double y = input.X*_m01 + input.Y*_m11 + input.Z*_m21 + _m31;
-//            double z = input.X*_m02 + input.Y*_m12 + input.Z*_m22 + _m32;
-//            double s = input.X*_m03 + input.Y*_m13 + input.Z*_m23 + _m33;
+//            double s = input.X*_m30 + input.Y*_m31 + input.Z*_m23 + _m33;
 //            if (Math.Abs(s) < Epsilon)
 //                return Vector3.Origin;
 //            return new Vector3(x/s, y/s, z/s);
+
+            return new Vector3(x, y, z);
         }
 
         #region Untested utility methods
@@ -339,12 +365,9 @@ namespace TinMan
         {
             var matrix = obj as TransformationMatrix;
             
-            if (matrix == null)
-                return false;
-    		
-            return Equals(matrix);
+            return matrix != null && Equals(matrix);
         }
-        
+
         public bool Equals(TransformationMatrix matrix)
         {
             return Math.Abs(matrix._m00 - _m00) <= Epsilon
@@ -369,7 +392,7 @@ namespace TinMan
         {
             unchecked
             {
-                int c = (int)_m00;
+                var c = (int)_m00;
                 c += (int)(2*_m01);
                 c += (int)(3*_m02);
                 c += (int)(4*_m03);
@@ -391,10 +414,10 @@ namespace TinMan
 
         #endregion
 
-/*
         /// <summary>Calculates the inversion of this transformation matrix.</summary>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException">The determinant is zero.</exception>
+        [NotNull, Pure]
         public TransformationMatrix Invert()
         {
             TransformationMatrix inversion;
@@ -406,39 +429,38 @@ namespace TinMan
         /// <summary>Attempts to calculate the inversion of this transformation matrix.</summary>
         /// <param name="inversion"></param>
         /// <returns><c>true</c> if the inversion succeeeded, <c>false</c> if the inversion was not possible because the determinant was zero.</returns>
+        [Pure]
         public bool TryInvert(out TransformationMatrix inversion)
         {
             // TODO investigate potential perf improvement (http://www.devmaster.net/wiki/Transformation_matrices#Inversion) Transformation matrices involving only rotation and translation (ie. no scale) have convenient properties making them very easy to invert.
-            double det = GetDeterminant();
+            var det = GetDeterminant();
             if (Math.Abs(det - 0) < Epsilon)
             {
                 inversion = null;
                 return false;
             }
-            double[] m = _values;
+
             inversion = new TransformationMatrix(new[]
             {
-                (m[9] *m[14]*m[7]  - m[13]*m[10]*m[7]  + m[13]*m[6] *m[11] - m[5] *m[14]*m[11] - m[9] *m[6] *m[15] + m[5] *m[10]*m[15]) / det,
-                (m[13]*m[10]*m[3]  - m[9] *m[14]*m[3]  - m[13]*m[2] *m[11] + m[1] *m[14]*m[11] + m[9] *m[2] *m[15] - m[1] *m[10]*m[15]) / det,
-                (m[5] *m[14]*m[3]  - m[13]*m[6] *m[3]  + m[13]*m[2] *m[7]  - m[1] *m[14]*m[7]  - m[5] *m[2] *m[15] + m[1] *m[6] *m[15]) / det,
-                (m[9] *m[6] *m[3]  - m[5] *m[10]*m[3]  - m[9] *m[2] *m[7]  + m[1] *m[10]*m[7]  + m[5] *m[2] *m[11] - m[1] *m[6] *m[11]) / det,
-                (m[12]*m[10]*m[7]  - m[8] *m[14]*m[7]  - m[12]*m[6] *m[11] + m[4] *m[14]*m[11] + m[8] *m[6] *m[15] - m[4] *m[10]*m[15]) / det,
-                (m[8] *m[14]*m[3]  - m[12]*m[10]*m[3]  + m[12]*m[2] *m[11] - m[0] *m[14]*m[11] - m[8] *m[2] *m[15] + m[0] *m[10]*m[15]) / det,
-                (m[12]*m[6] *m[3]  - m[4] *m[14]*m[3]  - m[12]*m[2] *m[7]  + m[0] *m[14]*m[7]  + m[4] *m[2] *m[15] - m[0] *m[6] *m[15]) / det,
-                (m[4] *m[10]*m[3]  - m[8] *m[6] *m[3]  + m[8] *m[2] *m[7]  - m[0] *m[10]*m[7]  - m[4] *m[2] *m[11] + m[0] *m[6] *m[11]) / det,
-                (m[8] *m[13]*m[7]  - m[12]*m[9] *m[7]  + m[12]*m[5] *m[11] - m[4] *m[13]*m[11] - m[8] *m[5] *m[15] + m[4] *m[9] *m[15]) / det,
-                (m[12]*m[9] *m[3]  - m[8] *m[13]*m[3]  - m[12]*m[1] *m[11] + m[0] *m[13]*m[11] + m[8] *m[1] *m[15] - m[0] *m[9] *m[15]) / det,
-                (m[4] *m[13]*m[3]  - m[12]*m[5] *m[3]  + m[12]*m[1] *m[7]  - m[0] *m[13]*m[7]  - m[4] *m[1] *m[15] + m[0] *m[5] *m[15]) / det,
-                (m[8] *m[5] *m[3]  - m[4] *m[9] *m[3]  - m[8] *m[1] *m[7]  + m[0] *m[9] *m[7]  + m[4] *m[1] *m[11] - m[0] *m[5] *m[11]) / det,
-                (m[12]*m[9] *m[6]  - m[8] *m[13]*m[6]  - m[12]*m[5] *m[10] + m[4] *m[13]*m[10] + m[8] *m[5] *m[14] - m[4] *m[9] *m[14]) / det,
-                (m[8] *m[13]*m[2]  - m[12]*m[9] *m[2]  + m[12]*m[1] *m[10] - m[0] *m[13]*m[10] - m[8] *m[1] *m[14] + m[0] *m[9] *m[14]) / det,
-                (m[12]*m[5] *m[2]  - m[4] *m[13]*m[2]  - m[12]*m[1] *m[6]  + m[0] *m[13]*m[6]  + m[4] *m[1] *m[14] - m[0] *m[5] *m[14]) / det,
-                (m[4] *m[9] *m[2]  - m[8] *m[5] *m[2]  + m[8] *m[1] *m[6]  - m[0] *m[9] *m[6]  - m[4] *m[1] *m[10] + m[0] *m[5] *m[10]) / det
+                (_m21*_m32*_m13 - _m31*_m22*_m13 + _m31*_m12*_m23 - _m11*_m32*_m23 - _m21*_m12*_m33 + _m11*_m22*_m33)/det,
+                (_m31*_m22*_m03 - _m21*_m32*_m03 - _m31*_m02*_m23 + _m01*_m32*_m23 + _m21*_m02*_m33 - _m01*_m22*_m33)/det,
+                (_m11*_m32*_m03 - _m31*_m12*_m03 + _m31*_m02*_m13 - _m01*_m32*_m13 - _m11*_m02*_m33 + _m01*_m12*_m33)/det,
+                (_m21*_m12*_m03 - _m11*_m22*_m03 - _m21*_m02*_m13 + _m01*_m22*_m13 + _m11*_m02*_m23 - _m01*_m12*_m23)/det,
+                (_m30*_m22*_m13 - _m20*_m32*_m13 - _m30*_m12*_m23 + _m10*_m32*_m23 + _m20*_m12*_m33 - _m10*_m22*_m33)/det,
+                (_m20*_m32*_m03 - _m30*_m22*_m03 + _m30*_m02*_m23 - _m00*_m32*_m23 - _m20*_m02*_m33 + _m00*_m22*_m33)/det,
+                (_m30*_m12*_m03 - _m10*_m32*_m03 - _m30*_m02*_m13 + _m00*_m32*_m13 + _m10*_m02*_m33 - _m00*_m12*_m33)/det,
+                (_m10*_m22*_m03 - _m20*_m12*_m03 + _m20*_m02*_m13 - _m00*_m22*_m13 - _m10*_m02*_m23 + _m00*_m12*_m23)/det,
+                (_m20*_m31*_m13 - _m30*_m21*_m13 + _m30*_m11*_m23 - _m10*_m31*_m23 - _m20*_m11*_m33 + _m10*_m21*_m33)/det,
+                (_m30*_m21*_m03 - _m20*_m31*_m03 - _m30*_m01*_m23 + _m00*_m31*_m23 + _m20*_m01*_m33 - _m00*_m21*_m33)/det,
+                (_m10*_m31*_m03 - _m30*_m11*_m03 + _m30*_m01*_m13 - _m00*_m31*_m13 - _m10*_m01*_m33 + _m00*_m11*_m33)/det,
+                (_m20*_m11*_m03 - _m10*_m21*_m03 - _m20*_m01*_m13 + _m00*_m21*_m13 + _m10*_m01*_m23 - _m00*_m11*_m23)/det,
+                (_m30*_m21*_m12 - _m20*_m31*_m12 - _m30*_m11*_m22 + _m10*_m31*_m22 + _m20*_m11*_m32 - _m10*_m21*_m32)/det,
+                (_m20*_m31*_m02 - _m30*_m21*_m02 + _m30*_m01*_m22 - _m00*_m31*_m22 - _m20*_m01*_m32 + _m00*_m21*_m32)/det,
+                (_m30*_m11*_m02 - _m10*_m31*_m02 - _m30*_m01*_m12 + _m00*_m31*_m12 + _m10*_m01*_m32 - _m00*_m11*_m32)/det,
+                (_m10*_m21*_m02 - _m20*_m11*_m02 + _m20*_m01*_m12 - _m00*_m21*_m12 - _m10*_m01*_m22 + _m00*_m11*_m22)/det
             });
-
             return true;
         }
-*/
 
         /// <summary>
         /// Computes the determinant of this matrix.
