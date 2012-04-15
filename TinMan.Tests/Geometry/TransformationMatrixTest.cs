@@ -1,4 +1,5 @@
 ﻿#region License
+
 /* 
  * This file is part of TinMan.
  *
@@ -15,96 +16,163 @@
  * You should have received a copy of the GNU Lesser General Public License
  * along with TinMan.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #endregion
 
 // Copyright Drew Noakes, http://drewnoakes.com
 // Created 01/06/2010 03:47
 
-using System;
 using NUnit.Framework;
 
 namespace TinMan
 {
     [TestFixture]
-    public sealed class TransformationMatrixTest {
-        [Test] public void IdentityConversion() {
-            Assert.AreEqual(Vector3.Origin, TransformationMatrix.Identity.Transform(Vector3.Origin));
-            Assert.AreEqual(new Vector3(1,2,3), TransformationMatrix.Identity.Transform(new Vector3(1,2,3)));
+    public sealed class TransformationMatrixTest
+    {
+        // TODO adjust column widths in ToString to show v. small numbers with E-12 style presentation
+
+        private static readonly TransformationMatrix _identity = TransformationMatrix.Identity;
+
+        [Test]
+        public void IdentityConversion()
+        {
+            Assert.AreEqual(Vector3.Origin, _identity.Transform(Vector3.Origin));
+            Assert.AreEqual(new Vector3(1, 2, 3), _identity.Transform(new Vector3(1, 2, 3)));
         }
-        
-        [Test] public void Multiply() {
-            Assert.AreEqual(TransformationMatrix.Identity, TransformationMatrix.Identity.Multiply(TransformationMatrix.Identity));
+
+        [Test]
+        public void Multiply()
+        {
+            Assert.AreEqual(_identity, _identity.Multiply(_identity));
         }
-        
-        [Test] public void Translation() {
-        	Assert.AreEqual(new TransformationMatrix(1, 0, 0, 10, 0, 1, 0, 10, 0, 0, 1, 10, 0, 0, 0, 1),
-        	                TransformationMatrix.Identity.Translate(10,10,10));
+
+        [Test]
+        public void MultipleTranslations()
+        {
+            var m = _identity.Translate(5, 0, 0).Translate(0, 5, 0).Translate(-5, 0, 5);
+            Assert.AreEqual(new Vector3(0, 5, 5), m.Transform(Vector3.Origin));
+            Assert.AreEqual(new Vector3(5, 5, 5), m.Transform(new Vector3(5, 0, 0)));
+            Assert.AreEqual(new Vector3(5, 10, 10), m.Transform(new Vector3(5, 5, 5)));
+        }
+
+        [Test]
+        public void RotateX()
+        {
+            var xRot90 = _identity.RotateX(Angle.HalfPi);
+            Assert.AreEqual(new Vector3(0, 0, 10), xRot90.Transform(new Vector3(0, 10, 0)));
+            Assert.AreEqual(new Vector3(10, 0, 0), xRot90.Transform(new Vector3(10, 0, 0)));
+
+            var xRot180 = _identity.RotateX(Angle.Pi);
+            Assert.AreEqual(new Vector3(0, -10, 0), xRot180.Transform(new Vector3(0, 10, 0)));
+            Assert.AreEqual(new Vector3(10, 0, 0), xRot180.Transform(new Vector3(10, 0, 0)));
+        }
+
+        [Test]
+        public void MultipleXRotations()
+        {
+            // rotate 90 degrees
+            var xRot90 = _identity.RotateX(Angle.HalfPi);
+            var expected1 = new TransformationMatrix(1, 0, 0, 0,
+                                                     0, 6.1232339E-17, -1, 0,
+                                                     0, 1, 6.1232339E-17, 0,
+                                                     0, 0, 0, 1);
+            Assert.AreEqual(expected1, xRot90);
+
+            // rotate back 90 degrees the other way
+            var reverted = xRot90.RotateX(-Angle.HalfPi);
+            Assert.AreEqual(_identity, reverted);
+
+            // now rotate forward 180 degrees
+            var m = reverted.RotateX(Angle.Pi);
+            var expected3 = new TransformationMatrix(1, 0, 0, 0,
+                                                     0, -1, -1.2246467E-16, 0,
+                                                     0, 1.2246467E-16, -1, 0,
+                                                     0, 0, 0, 1);
+            Assert.AreEqual(expected3, m);
+
+            // try applying this now
+            Assert.AreEqual(new Vector3(0, -10, 0), m.Transform(new Vector3(0, 10, 0)));
             
-            Assert.AreEqual(new Vector3(10,10,10), TransformationMatrix.Identity.Translate(10,10,10).Transform(Vector3.Origin));
-            Assert.AreEqual(new Vector3(10,10,10), TransformationMatrix.Identity.Translate(5,5,5).Transform(new Vector3(5,5,5)));
-            Assert.AreEqual(new Vector3(11,13,15), TransformationMatrix.Identity.Translate(1,2,3).Transform(new Vector3(10,11,12)));
-        }
-        
-        [Test] public void MultipleTranslations() {
-            var m = TransformationMatrix.Identity.Translate(5,0,0).Translate(0,5,0).Translate(-5,0,5);
-            Assert.AreEqual(new Vector3(0,5,5), m.Transform(Vector3.Origin));
-            Assert.AreEqual(new Vector3(5,5,5), m.Transform(new Vector3(5,0,0)));
-            Assert.AreEqual(new Vector3(5,10,10), m.Transform(new Vector3(5,5,5)));
-        }
-        
-        [Test] public void ToStringTest() {
-            Assert.AreEqual("[   1    0    0    0]\n[   0    1    0    0]\n[   0    0    1    0]\n[   0    0    0    1]", TransformationMatrix.Identity.ToString());
-        }
-        
-        [Test] public void RotateX() {
-            Assert.AreEqual(new Vector3(0,0,10), TransformationMatrix.Identity.RotateX(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(0,10,0)));
-            Assert.AreEqual(new Vector3(0,-10,0), TransformationMatrix.Identity.RotateX(Angle.FromRadians(Math.PI)).Transform(new Vector3(0,10,0)));
-            Assert.AreEqual(new Vector3(10,0,0), TransformationMatrix.Identity.RotateX(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(10,0,0)));
+            // do the same thing, in a slightly differet way
+            var xRot90Plus90 = _identity.RotateX(Angle.HalfPi).RotateX(Angle.HalfPi);
+            Assert.AreEqual(new Vector3(0, -10, 0), xRot90Plus90.Transform(new Vector3(0, 10, 0)));
+            Assert.AreEqual(m, xRot90Plus90);
         }
 
-        [Test] public void MultipleXRotations() {
-            var m = TransformationMatrix.Identity.RotateX(Angle.FromRadians(Math.PI/2))
-                                                 .RotateX(Angle.FromRadians(-Math.PI))
-                                                 .RotateX(Angle.FromRadians(Math.PI));
-            Assert.AreEqual(new Vector3(0,-10,0), m.Transform(new Vector3(0,10,0)));
+        [Test]
+        public void RotateY()
+        {
+            var yRot90 = _identity.RotateY(Angle.HalfPi);
+            Assert.AreEqual(new Vector3(0, 0, -10), yRot90.Transform(new Vector3(10, 0, 0)));
+            Assert.AreEqual(new Vector3(0, 10, 0), yRot90.Transform(new Vector3(0, 10, 0)));
+
+            var yRot180 = _identity.RotateY(Angle.Pi);
+            Assert.AreEqual(new Vector3(-10, 0, 0), yRot180.Transform(new Vector3(10, 0, 0)));
+            Assert.AreEqual(new Vector3(0, 10, 0), yRot180.Transform(new Vector3(0, 10, 0)));
         }
 
-        [Test] public void RotateY() {
-            Assert.AreEqual(new Vector3(-10,0,0), TransformationMatrix.Identity.RotateY(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(0,0,10)));
-            Assert.AreEqual(new Vector3(-10,0,0), TransformationMatrix.Identity.RotateY(Angle.FromRadians(Math.PI)).Transform(new Vector3(10,0,0)));
-            Assert.AreEqual(new Vector3(0,10,0), TransformationMatrix.Identity.RotateY(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(0,10,0)));
+        [Test]
+        public void MultipleYRotations()
+        {
+            Assert.AreEqual(_identity.RotateY(Angle.HalfPi), _identity.RotateY(Angle.HalfPi).RotateY(-Angle.Pi).RotateY(Angle.Pi));
         }
 
-        [Test] public void MultipleYRotations() {
-            var m = TransformationMatrix.Identity.RotateY(Angle.FromRadians(Math.PI/2)).RotateY(Angle.FromRadians(-Math.PI)).RotateY(Angle.FromRadians(Math.PI));
-            Assert.AreEqual(new Vector3(-10,0,0), m.Transform(new Vector3(0,0,10)));
-        }
-        
-        [Test] public void RotateZ() {
-            Assert.AreEqual(new Vector3(10,0,0), TransformationMatrix.Identity.RotateZ(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(0,10,0)));
-            Assert.AreEqual(new Vector3(0,-10,0), TransformationMatrix.Identity.RotateZ(Angle.FromRadians(Math.PI)).Transform(new Vector3(0,10,0)));
-            Assert.AreEqual(new Vector3(0,0,10), TransformationMatrix.Identity.RotateZ(Angle.FromRadians(Math.PI/2)).Transform(new Vector3(0,0,10)));
+        [Test]
+        public void RotateZ()
+        {
+            var zRot90 = _identity.RotateZ(Angle.HalfPi);
+            Assert.AreEqual(new Vector3(0, 10, 0), zRot90.Transform(new Vector3(10, 0, 0)));
+            Assert.AreEqual(new Vector3(-10, 0, 0), zRot90.Transform(new Vector3(0, 10, 0)));
+            Assert.AreEqual(new Vector3(0, 0, 10), zRot90.Transform(new Vector3(0, 0, 10)));
+            
+            var zRot180 = _identity.RotateZ(Angle.Pi);
+            Assert.AreEqual(new Vector3(-10, 0, 0), zRot180.Transform(new Vector3(10, 0, 0)));
+            Assert.AreEqual(new Vector3(0, -10, 0), zRot180.Transform(new Vector3(0, 10, 0)));
         }
 
-        [Test] public void MultipleZRotations() {
-            var m = TransformationMatrix.Identity.RotateZ(Angle.FromRadians(Math.PI/2)).RotateZ(Angle.FromRadians(-Math.PI)).RotateZ(Angle.FromRadians(Math.PI));
-            Assert.AreEqual(new Vector3(10,0,0), m.Transform(new Vector3(0,10,0)));
+        [Test]
+        public void MultipleZRotations()
+        {
+            Assert.AreEqual(_identity.RotateZ(Angle.HalfPi), _identity.RotateZ(Angle.HalfPi).RotateZ(-Angle.Pi).RotateZ(Angle.Pi));
         }
-        
-        [Test] public void TranslateThenRotate() {
-            // translate origin 10 units down x-axis, then rotate around y by 90 degrees
-//            var matrix = TransformationMatrix.Identity.Translate(10, 0, 0).RotateY(90);
-            var matrix = TransformationMatrix.Identity.Translate(10, 0, 0).RotateY(Angle.FromDegrees(90));
-            Assert.AreEqual(new Vector3(0,0,10), matrix.Transform(Vector3.Origin));
+
+        [Test]
+        public void Translate()
+        {
+            Assert.AreEqual(new TransformationMatrix(1, 0, 0, 10,
+                                                     0, 1, 0, 10,
+                                                     0, 0, 1, 10,
+                                                     0, 0, 0, 1),
+                            _identity.Translate(10, 10, 10));
+
+            Assert.AreEqual(new Vector3(10, 10, 10), _identity.Translate(10, 10, 10).Transform(Vector3.Origin));
+            Assert.AreEqual(new Vector3(10, 10, 10), _identity.Translate(5, 5, 5).Transform(new Vector3(5, 5, 5)));
+            Assert.AreEqual(new Vector3(11, 13, 15), _identity.Translate(1, 2, 3).Transform(new Vector3(10, 11, 12)));
+
+            Assert.AreEqual(new Vector3(10, 10, 10), _identity.Translate(10, 10, 10).GetTranslation());
+            Assert.AreEqual(new Vector3(1, 2, 3), _identity.Translate(1, 2, 3).GetTranslation());
         }
-        
-        [Test] public void GetDeterminant() {
-            Assert.AreEqual(1, TransformationMatrix.Identity.GetDeterminant());
-            Assert.AreEqual(0, new TransformationMatrix(new double[] {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16}).GetDeterminant());
-            Assert.AreEqual(0, new TransformationMatrix(new double[] {1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4}).GetDeterminant());
-            Assert.AreEqual(-6, new TransformationMatrix(new double[] {1,1,1,1,2,1,2,2,3,3,1,3,4,4,4,1}).GetDeterminant());
-            Assert.AreEqual(-3, new TransformationMatrix(new double[] {0,1,1,1,1,0,1,1,1,1,0,1,1,1,1,0}).GetDeterminant());
+
+        [Test]
+        public void TranslateThenRotate()
+        {
+            // translate origin 10 units along the x-axis, then rotate around y by 90 degrees
+            var matrix = _identity.Translate(10, 0, 0).RotateY(Angle.HalfPi);
+            Assert.AreEqual(new Vector3(0, 0, -10), matrix.GetTranslation());
+            Assert.AreEqual(new Vector3(0, 0, -10), matrix.Transform(Vector3.Origin));
+            Assert.AreEqual(new Vector3(1, 1, -11), matrix.Transform(new Vector3(1,1,1)));
         }
+
+        [Test]
+        public void GetDeterminant()
+        {
+            Assert.AreEqual(1, _identity.GetDeterminant());
+            Assert.AreEqual(0, new TransformationMatrix(new double[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}).GetDeterminant());
+            Assert.AreEqual(0, new TransformationMatrix(new double[] {1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4}).GetDeterminant());
+            Assert.AreEqual(-6, new TransformationMatrix(new double[] {1, 1, 1, 1, 2, 1, 2, 2, 3, 3, 1, 3, 4, 4, 4, 1}).GetDeterminant());
+            Assert.AreEqual(-3, new TransformationMatrix(new double[] {0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1, 1, 0}).GetDeterminant());
+        }
+
 /*        
         [Test] public void Invert() {
             // Inverting the identity has no effect
@@ -122,7 +190,7 @@ namespace TinMan
                 TransformationMatrix.Identity.Translate(10,20,30).Invert());
             Assert.AreEqual(
                 TransformationMatrix.Identity.RotateX(Angle.FromRadians(-Math.PI/2)),
-                TransformationMatrix.Identity.RotateX(Angle.FromRadians(Math.PI/2)).Invert());
+                TransformationMatrix.Identity.RotateX(Angle.HalfPi).Invert());
             Assert.AreEqual(
                 TransformationMatrix.Identity.RotateY(Angle.FromRadians(-Math.PI/4)),
                 TransformationMatrix.Identity.RotateY(Angle.FromRadians(Math.PI/4)).Invert());
@@ -144,5 +212,11 @@ namespace TinMan
             Assert.AreEqual(TransformationMatrix.Identity, inversion);
         }
 */
+
+        [Test]
+        public void ToStringTest()
+        {
+            Assert.AreEqual("[   1    0    0    0]\n[   0    1    0    0]\n[   0    0    1    0]\n[   0    0    0    1]", _identity.ToString());
+        }
     }
 }

@@ -24,15 +24,20 @@
 
 using System;
 using System.Diagnostics;
+using TinMan.Annotations;
 
 // ReSharper disable MemberCanBeInternal
 
 namespace TinMan
 {
     /// <summary>
-    /// Represents an angle as a double-precision floating point value.
-    /// This type is immutable.
+    /// Represents an immutable angle value as a double-precision floating point value.
     /// </summary>
+    /// <remarks>
+    /// The backing value holds the angle in radians, as most operations upon this type require radian values.
+    /// Conversion to degrees is performed as necessary.  There may be some imprecision if creating <see cref="Angle"/>
+    /// instances from degree values, and later converting back to degrees.
+    /// </remarks>
     [DebuggerDisplay("{Degrees} deg")]
     public struct Angle : IEquatable<Angle>
     {
@@ -40,6 +45,10 @@ namespace TinMan
 
         /// <summary>A constant angle of zero.</summary>
         public static readonly Angle Zero = new Angle(0);
+
+        public static readonly Angle TwoPi = new Angle(Math.PI*2);
+        public static readonly Angle HalfPi = new Angle(Math.PI/2);
+        public static readonly Angle Pi = new Angle(Math.PI);
 
         /// <summary>
         /// Gets an angle whose value in degrees and radians is <see cref="double.NaN"/>.
@@ -49,23 +58,89 @@ namespace TinMan
 
         #region Static factory methods and private constructor
 
-        /// <summary>Creates an angle from a source value in radians.</summary>
-        /// <param name="radians"></param>
+        /// <summary>Creates random angle between <see cref="Zero"/> and <see cref="TwoPi"/>.</summary>
+        /// <param name="random"></param>
         /// <returns></returns>
+        [Pure]
+        public static Angle Random(Random random)
+        {
+            return new Angle(random.NextDouble()*2*Math.PI);
+        }
+
+        /// <summary>Creates an angle from a source value in radians.</summary>
+        /// <param name="radians">The angular value, in radians.</param>
+        /// <returns></returns>
+        [Pure]
         public static Angle FromRadians(double radians)
         {
             return new Angle(radians);
         }
 
         /// <summary>Creates an angle from a source value in degrees.</summary>
-        /// <param name="degrees"></param>
+        /// <param name="degrees">The angular value, in degrees.</param>
         /// <returns></returns>
+        [Pure]
         public static Angle FromDegrees(double degrees)
         {
             return new Angle(DegreesToRadians(degrees));
         }
 
-        private Angle(double radians) : this()
+        /// <summary>Returns the <see cref="Angle"/> whose sine is the specified number.</summary>
+        /// <returns>
+        /// An <see cref="Angle"/>, such that -π/2 ≤<see cref="Radians"/>≤π/2 -or- <see cref="Angle.NaN"/> 
+        /// if <paramref name="d"/> &lt; -1 or <paramref name="d"/> &gt; 1.
+        /// </returns>
+        /// <remarks>Uses the <see cref="Math.Asin"/> method.</remarks>
+        /// <param name="d">A number representing a sine, where -1 ≤<paramref name="d"/>≤ 1. </param>
+        [Pure]
+        public static Angle Asin(double d)
+        {
+            return FromRadians(Math.Asin(d));
+        }
+
+        /// <summary>Returns the <see cref="Angle"/> whose cosine is the specified number.</summary>
+        /// <returns>
+        /// An <see cref="Angle"/>, such that 0 ≤<see cref="Radians"/>≤π -or- <see cref="Angle.NaN"/> if
+        /// <paramref name="d"/> &lt; -1 or <paramref name="d"/> &gt; 1.
+        /// </returns>
+        /// <remarks>Uses the <see cref="Math.Acos"/> method.</remarks>
+        /// <param name="d">A number representing a cosine, where -1 ≤<paramref name="d"/>≤ 1. </param>
+        [Pure]
+        public static Angle Acos(double d)
+        {
+            return FromRadians(Math.Acos(d));
+        }
+
+        /// <summary>Returns the <see cref="Angle"/> whose tangent is the specified number.</summary>
+        /// <returns>
+        /// An <see cref="Angle"/>, such that -π/2≤<see cref="Radians"/>≤π/2 -or- <see cref="Angle.NaN"/> if 
+        /// <paramref name="d"/> equals <see cref="Double.NaN"/>, -<see cref="Angle.HalfPi"/>
+        /// if <paramref name="d"/> equals <see cref="Double.NegativeInfinity"/>, or <see cref="Angle.HalfPi"/>
+        /// if <paramref name="d"/> equals <see cref="Double.PositiveInfinity"/>.
+        /// </returns>
+        /// <remarks>Uses the <see cref="Math.Atan"/> method.</remarks>
+        /// <param name="d">A number representing a tangent. </param>
+        [Pure]
+        public static Angle Atan(double d)
+        {
+            return FromRadians(Math.Atan(d));
+        }
+
+        /// <summary>Returns the <see cref="Angle"/> whose tangent is the quotient of two specified numbers.</summary>
+        /// <returns>
+        /// An <see cref="Angle"/> such that -π≤<see cref="Radians"/>≤π, and <see cref="Tan"/> = <paramref name="y"/> / <paramref name="x"/>, 
+        /// where (<paramref name="x"/>, <paramref name="y"/>) is a point in the Cartesian plane. 
+        /// </returns>
+        /// <remarks>Uses the <see cref="Math.Atan2"/> method.</remarks>
+        /// <param name="y">The y coordinate of a point. </param><param name="x">The x coordinate of a point. </param>
+        [Pure]
+        public static Angle Atan2(double y, double x)
+        {
+            return FromRadians(Math.Atan2(y, x));
+        }
+
+        private Angle(double radians)
+            : this()
         {
             Radians = radians;
         }
@@ -153,13 +228,27 @@ namespace TinMan
         /// Returns an equivalent angle within the range of [0,360) degrees.
         /// </summary>
         /// <returns></returns>
-        public Angle Normalise()
+        public Angle NormalisePositive()
         {
-            double radians = Radians;
+            var radians = Radians;
             while (radians < 0)
                 radians += Math.PI*2;
             if (radians >= Math.PI*2)
                 radians = radians%(Math.PI*2);
+            return FromRadians(radians);
+        }
+
+        /// <summary>
+        /// Returns an equivalent angle within the range of [-180,180) degrees.
+        /// </summary>
+        /// <returns></returns>
+        public Angle NormaliseBalanced()
+        {
+            var radians = Radians;
+            while (radians < -Math.PI)
+                radians += Math.PI*2;
+            while (radians >= Math.PI)
+                radians -= 2*Math.PI;
             return FromRadians(radians);
         }
 
@@ -185,13 +274,13 @@ namespace TinMan
 
         public override bool Equals(object obj)
         {
-            return obj is Angle && Equals((Angle)obj);
+            return obj is Angle && Equals((Angle) obj);
         }
 
         public bool Equals(Angle other)
         {
-        	return (double.IsNaN(Radians) && double.IsNaN(other.Radians))
-        		|| Math.Abs(other.Radians - Radians) < Epsilon;
+            return (double.IsNaN(Radians) && double.IsNaN(other.Radians))
+                   || Math.Abs(other.Radians - Radians) < Epsilon;
         }
 
         public override int GetHashCode()
@@ -263,7 +352,7 @@ namespace TinMan
 
         public override string ToString()
         {
-            return string.Format("{0:0.##} degrees", Degrees);
+            return string.Format("{0:0.##}°", Degrees);
         }
     }
 }

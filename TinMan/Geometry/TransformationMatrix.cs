@@ -23,7 +23,8 @@
 // Created 31/05/2010 21:03
 
 using System;
-using System.Linq;
+using System.Diagnostics;
+using TinMan.Annotations;
 
 // ReSharper disable MemberCanBeInternal
 
@@ -58,13 +59,16 @@ namespace TinMan
         /// [0 0 0 1]
         /// </pre>
         /// </remarks>
+        [NotNull]
         public static TransformationMatrix Identity { get; private set; }
 
         /// <summary>
         /// A transformation matrix in which all 16 values are <see cref="double.NaN"/>.
         /// </summary>
+        [NotNull]
         public static TransformationMatrix NaN { get; private set; }
 
+        [NotNull, Pure]
         public static TransformationMatrix Translation(double x, double y, double z)
         {
             return new TransformationMatrix(1, 0, 0, x,
@@ -81,6 +85,7 @@ namespace TinMan
         /// <param name="yAxis"></param>
         /// <param name="zAxis"></param>
         /// <returns></returns>
+        [NotNull, Pure]
         public static TransformationMatrix GetTransformForCoordinateAxes(Vector3 xAxis, Vector3 yAxis, Vector3 zAxis)
         {
             // TODO validate that the provided axes are in fact orthonormal otherwise the returned matrix is useless
@@ -121,7 +126,7 @@ namespace TinMan
         /// modified safely once this method returns without effecting this
         /// transformation matrix.</remarks>
         /// <param name="values"></param>
-        public TransformationMatrix(double[] values)
+        public TransformationMatrix([NotNull] double[] values)
         {
             if (values == null)
                 throw new ArgumentNullException("values");
@@ -164,9 +169,10 @@ namespace TinMan
         /// <param name="y"></param>
         /// <param name="z"></param>
         /// <returns></returns>
+        [NotNull, Pure]
         public TransformationMatrix Translate(double x, double y, double z)
         {
-            return Multiply(TransformationMatrix.Translation(x, y, z));
+            return Translation(x, y, z).Multiply(this);
         }
 
         /// <summary>
@@ -175,14 +181,15 @@ namespace TinMan
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
+        [NotNull, Pure]
         public TransformationMatrix RotateX(Angle angle)
         {
-            double c = angle.Cos;
-            double s = angle.Sin;
-            return Multiply(new TransformationMatrix(1, 0,  0, 0,
-                                                     0, c, -s, 0,
-                                                     0, s,  c, 0,
-                                                     0, 0,  0, 1));
+            var c = angle.Cos;
+            var s = angle.Sin;
+            return new TransformationMatrix(1, 0,  0, 0,
+                                            0, c, -s, 0,
+                                            0, s,  c, 0,
+                                            0, 0,  0, 1).Multiply(this);
         }
 
         /// <summary>
@@ -191,14 +198,15 @@ namespace TinMan
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
+        [NotNull, Pure]
         public TransformationMatrix RotateY(Angle angle)
         {
-            double c = angle.Cos;
-            double s = angle.Sin;
-            return Multiply(new TransformationMatrix( c, 0, s, 0,
-                                                      0, 1, 0, 0,
-                                                     -s, 0, c, 0,
-                                                      0, 0, 0, 1));
+            var c = angle.Cos;
+            var s = angle.Sin;
+            return new TransformationMatrix( c, 0, s, 0,
+                                             0, 1, 0, 0,
+                                            -s, 0, c, 0,
+                                             0, 0, 0, 1).Multiply(this);
         }
 
         /// <summary>
@@ -207,14 +215,15 @@ namespace TinMan
         /// </summary>
         /// <param name="angle"></param>
         /// <returns></returns>
+        [NotNull, Pure]
         public TransformationMatrix RotateZ(Angle angle)
         {
-            double c = angle.Cos;
-            double s = angle.Sin;
-            return Multiply(new TransformationMatrix(c, -s, 0, 0,
-                                                     s, c, 0, 0,
-                                                     0, 0, 1, 0,
-                                                     0, 0, 0, 1));
+            var c = angle.Cos;
+            var s = angle.Sin;
+            return new TransformationMatrix(c, -s, 0, 0,
+                                            s,  c, 0, 0,
+                                            0,  0, 1, 0,
+                                            0,  0, 0, 1).Multiply(this);
         }
 
         /// <summary>
@@ -223,8 +232,12 @@ namespace TinMan
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
-        public TransformationMatrix Multiply(TransformationMatrix matrix)
+        [NotNull, Pure]
+        public TransformationMatrix Multiply([NotNull] TransformationMatrix matrix)
         {
+            if (matrix == null)
+                throw new ArgumentNullException("matrix");
+
             return new TransformationMatrix(
             	_m00*matrix._m00 + _m01*matrix._m10 + _m02*matrix._m20 + _m03*matrix._m30,
     	        _m00*matrix._m01 + _m01*matrix._m11 + _m02*matrix._m21 + _m03*matrix._m31,
@@ -252,12 +265,17 @@ namespace TinMan
         /// </summary>
         /// <param name="input"></param>
         /// <returns></returns>
+        [Pure]
         public Vector3 Transform(Vector3 input)
         {
-            double x = _m00*input.X + _m01*input.Y + _m02*input.Z + _m03;
-            double y = _m10*input.X + _m11*input.Y + _m12*input.Z + _m13;
-            double z = _m20*input.X + _m21*input.Y + _m22*input.Z + _m23;
-            
+            var x = _m00*input.X + _m01*input.Y + _m02*input.Z + _m03;
+            var y = _m10*input.X + _m11*input.Y + _m12*input.Z + _m13;
+            var z = _m20*input.X + _m21*input.Y + _m22*input.Z + _m23;
+
+            // ReSharper disable CompareOfFloatsByEqualityOperator
+            Debug.Assert(_m30 == 0 && _m31 == 0 && _m32 == 0 && _m33 == 1);
+            // ReSharper restore CompareOfFloatsByEqualityOperator
+
             return new Vector3(x, y, z);
 
 //            double x = input.X*_m00 + input.Y*_m10 + input.Z*_m20 + _m30;
@@ -274,30 +292,34 @@ namespace TinMan
         // TODO write unit tests for these, esp when combinations exist
 
         /// <summary>Get the direction of the x-axis of this transformation.</summary>
+        [Pure]
         public Vector3 GetXAxis()
         {
             return new Vector3(_m00, _m01, _m02);
         }
 
         /// <summary>Get the direction of the y-axis of this transformation.</summary>
+        [Pure]
         public Vector3 GetYAxis()
         {
             return new Vector3(_m10, _m11, _m12);
         }
 
         /// <summary>Get the direction of the z-axis of this transformation.</summary>
+        [Pure]
         public Vector3 GetZAxis()
         {
             return new Vector3(_m20, _m21, _m22);
         }
 
+        #endregion
+
         /// <summary>Get the translation part of this transformation.</summary>
+        [Pure]
         public Vector3 GetTranslation()
         {
             return new Vector3(_m03, _m13, _m23);
         }
-
-        #endregion
 
         #region ToString, Equality and Hashing
 
@@ -422,6 +444,7 @@ namespace TinMan
         /// Computes the determinant of this matrix.
         /// </summary>
         /// <returns></returns>
+        [Pure]
         public double GetDeterminant()
         {
     	    return _m00*(_m11*_m22*_m33 + _m12*_m23*_m31 + _m13*_m21*_m32 - _m13*_m22*_m31 -_m11*_m23*_m32 - _m12*_m21*_m33)

@@ -25,8 +25,9 @@
 using System;
 using System.Linq;
 using NUnit.Framework;
+using TinMan.PerceptorParsing;
 
-namespace TinMan.PerceptorParsing
+namespace TinMan
 {
     [TestFixture]
     public sealed class PerceptorParserTest
