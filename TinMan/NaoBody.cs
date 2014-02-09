@@ -47,10 +47,7 @@ namespace TinMan
         public const double Height = 0.57;
 
         /// <summary>Well-known path of the Ruby Scene Graph (RSG) file for the NAO model in the RCSS3D server package.</summary>
-        public string RsgPath
-        {
-            get { return "rsg/agent/nao/nao.rsg"; }
-        }
+		public string RsgPath { get; private set; }
 
         #region Hinges
 
@@ -119,8 +116,10 @@ namespace TinMan
         /// <summary>
         /// Initialises a new instance of <see cref="NaoBody"/>.
         /// </summary>
-        public NaoBody()
+        public NaoBody(string rsgPath = "rsg/agent/nao/nao.rsg")
         {
+			RsgPath = rsgPath;
+
             HJ1 = new Hinge("hj1", "he1", Angle.FromDegrees(-120), Angle.FromDegrees(120));
             HJ2 = new Hinge("hj2", "he2", Angle.FromDegrees(-45),  Angle.FromDegrees(45));
 
