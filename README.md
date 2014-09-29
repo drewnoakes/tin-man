@@ -15,14 +15,14 @@ _TinMan_ is a great base upon which to build such a team.  It takes care of low 
 ### Features
 
 * A simple and powerful object-oriented API
-* Machine learning support via [trainer commands](/drewnoakes/tin-man/wiki/Wizard)
+* Machine learning support via [trainer commands](../../wiki/Wizard)
 * Geometry API with polar/cartesian vectors and transformation matrices
-* [PID control](/drewnoakes/tin-man/wiki/PidHingeController)
-* Support for [RoboViz](/drewnoakes/tin-man/wiki/RoboViz) monitor drawing
+* [PID control](../../wiki/PidHingeController)
+* Support for [RoboViz](../../wiki/RoboViz) monitor drawing
 * Great performance
 * Extensive API documentation
 * Idiomatic use of .NET paradigms
-* Supports any .NET language: C#, VB.NET, [F#](/drewnoakes/tin-man/wiki/FSharp), Boo, C++, etc...
+* Supports any .NET language: C#, VB.NET, [F#](../../wiki/FSharp), Boo, C++, etc...
 * Core types used via interfaces, allowing mock objects for unit testing
 * Runs on MS CLR (Windows) or Mono (Linux/Mac OSX/Windows)
 
