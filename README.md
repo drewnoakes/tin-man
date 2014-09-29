@@ -17,7 +17,7 @@ _TinMan_ is a great base upon which to build such a team.  It takes care of low 
 * A simple and powerful object-oriented API
 * Machine learning support via [trainer commands](../../wiki/Wizard)
 * Geometry API with polar/cartesian vectors and transformation matrices
-* [PID control](../../wiki/PidHingeController)
+* [PID control](../../wiki/PIDControl)
 * Support for [RoboViz](../../wiki/RoboViz) monitor drawing
 * Great performance
 * Extensive API documentation
