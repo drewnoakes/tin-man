@@ -12,3 +12,5 @@ Thumbs.db
 Documentation/Thumbs.db
 Logo
 packages/
+*.nupkg
+
