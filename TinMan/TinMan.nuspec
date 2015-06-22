@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>TinMan</id>
+    <version>$version$</version>
+    <title>TinMan for robotic soccer agents</title>
+    <authors>Drew Noakes</authors>
+    <owners>Drew Noakes</owners>
+    <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
+    <projectUrl>https://github.com/drewnoakes/tin-man</projectUrl>
+<!--<iconUrl>http://ICON_URL_HERE_OR_DELETE_THIS_LINE</iconUrl>-->
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>An API for robotic agents in the RoboCup 3D Simulation League.</summary>
+    <description>
+      This library enables creating robotic agents to compete in the RoboCup 3D Simulation League.
+      It features:
+      - A simple and powerful object-oriented API
+      - Machine learning support via trainer commands
+      - Geometry API with polar/cartesian vectors and transformation matrices
+      - PID control
+      - Support for RoboViz monitor drawing
+      - Great performance
+      - Extensive API documentation
+      - Idiomatic use of .NET paradigms
+    </description>
+<!--<releaseNotes>Summary of changes made in this release of the package.</releaseNotes>-->
+    <copyright>Copyright Drew Noakes 2010–2015</copyright>
+    <tags>Robotics RoboCup Soccer Agents Simulation</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\TinMan.dll" target="lib\net35\" />
+    <file src="bin\Release\TinMan.xml" target="lib\net35\" />
+  </files>
+</package>
