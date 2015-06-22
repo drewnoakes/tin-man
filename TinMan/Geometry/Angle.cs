@@ -24,7 +24,7 @@
 
 using System;
 using System.Diagnostics;
-using TinMan.Annotations;
+using JetBrains.Annotations;
 
 // ReSharper disable MemberCanBeInternal
 

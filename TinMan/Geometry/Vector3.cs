@@ -23,7 +23,7 @@
 // Created 07/05/2010 02:50
 
 using System;
-using TinMan.Annotations;
+using JetBrains.Annotations;
 
 // ReSharper disable MemberCanBeInternal
 

@@ -23,7 +23,7 @@
 // Created 15/04/2012 18:40
 
 using System;
-using TinMan.Annotations;
+using JetBrains.Annotations;
 
 namespace TinMan
 {

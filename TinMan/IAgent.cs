@@ -21,7 +21,7 @@
 // Created 10/05/2010 12:43
 
 using System;
-using TinMan.Annotations;
+using JetBrains.Annotations;
 
 namespace TinMan
 {
