@@ -1,6 +1,6 @@
 # tin-man
 
-![stable](http://badges.github.io/stability-badges/dist/stable.svg)
+[![Build status](https://ci.appveyor.com/api/projects/status/64jrna1i8ate0xb5?svg=true)](https://ci.appveyor.com/project/drewnoakes/tin-man)
 
 > Program your own RoboCup 3D soccer playing agents in .NET
 
