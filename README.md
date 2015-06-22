@@ -1,6 +1,6 @@
 # tin-man
 
-[![Build status](https://ci.appveyor.com/api/projects/status/64jrna1i8ate0xb5?svg=true)](https://ci.appveyor.com/project/drewnoakes/tin-man)
+[![Build status](https://ci.appveyor.com/api/projects/status/64jrna1i8ate0xb5?svg=true)](https://ci.appveyor.com/project/drewnoakes/tin-man) [![TinMan NuGet version](https://img.shields.io/nuget/v/TinMan.svg)](https://www.nuget.org/packages/TinMan/) [![TinMan download stats](https://img.shields.io/nuget/dt/TinMan.svg)](https://www.nuget.org/packages/TinMan/)
 
 > Program your own RoboCup 3D soccer playing agents in .NET
 
