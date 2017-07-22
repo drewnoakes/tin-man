@@ -26,8 +26,8 @@ _TinMan_ is a great base upon which to build such a team.  It takes care of low 
 * Core types used via interfaces, allowing mock objects for unit testing
 * Runs on MS CLR (Windows) or Mono (Linux/Mac OSX/Windows)
 
-_TinMan_ provides the right level of abstraction to make simple things easy and advanced things possible.  It has been designed with the [Pit Of Success](http://blogs.msdn.com/b/brada/archive/2003/10/02/50420.aspx) in mind.
+_TinMan_ provides the right level of abstraction to make simple things easy and advanced things possible.  It has been designed with the [Pit Of Success](https://blog.codinghorror.com/falling-into-the-pit-of-success/) in mind.
 
 ### Used by
 
-* [Karachi Koalas](http://karachikoalas.org) a joint team between IBA in Karachi, Pakistan and UTS in Sydney, Australia
+* [Karachi Koalas](https://twitter.com/karachikoalas) a joint team between IBA in Karachi, Pakistan and UTS in Sydney, Australia
